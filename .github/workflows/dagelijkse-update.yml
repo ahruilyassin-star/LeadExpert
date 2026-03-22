@@ -1,0 +1,154 @@
+name: Dagelijkse AI Les & Marktupdate (11u)
+
+on:
+  schedule:
+    # Elke dag om 11u Belgische tijd (= 9u UTC in zomer, 10u UTC in winter)
+    # Gebruik 9u UTC zodat het in de zomer (CEST) om 11u is
+    - cron: "0 9 * * 1-5"   # Weekdagen (ma-vr)
+    - cron: "0 9 * * 6"     # Zaterdag ook (voor weekend zelfstudie)
+  workflow_dispatch:          # Handmatig triggeren via GitHub UI
+
+jobs:
+  dagelijkse-les:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Installeer Anthropic SDK
+        run: npm install @anthropic-ai/sdk
+
+      - name: Genereer dagelijkse les & update
+        id: genereer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          node << 'EOF'
+          const Anthropic = require("@anthropic-ai/sdk");
+          const fs = require("fs");
+
+          const client = new Anthropic();
+
+          // Kies een willekeurig lesonderwerp
+          const onderwerpen = [
+            "Claude Code automatisering voor WooCommerce webshops",
+            "Automatisch offertes genereren voor bouwbedrijven",
+            "Google My Business posts automatiseren voor lokale horeca",
+            "E-mail prospectie automatiseren voor Vlaamse freelancers",
+            "Klantreviews automatisch beantwoorden",
+            "Weekrapporten genereren voor kleine bedrijven",
+            "Sociale media content calendar automatiseren",
+            "Facturen automatisch verwerken met AI",
+            "Klantenservice chatbot bouwen voor webshops",
+            "LinkedIn automatisering voor B2B prospectie in Vlaanderen",
+          ];
+
+          const vandaag = new Date().toLocaleDateString("nl-BE", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          const onderwerp =
+            onderwerpen[Math.floor(Math.random() * onderwerpen.length)];
+
+          async function main() {
+            const response = await client.messages.create({
+              model: "claude-sonnet-4-6",
+              max_tokens: 1500,
+              messages: [
+                {
+                  role: "user",
+                  content: `Je bent een AI business coach voor Vlaamse freelancers die met Claude Code werken.
+
+          Datum: ${vandaag}
+          Onderwerp van vandaag: ${onderwerp}
+
+          Schrijf een dagelijkse update in het Nederlands (Vlaams) met:
+
+          ## 📅 Dagelijkse AI Update — ${vandaag}
+
+          ### 🎓 Les van Vandaag: ${onderwerp}
+          [Concrete uitleg in 3-4 alinea's hoe je dit bouwt met Claude Code]
+
+          ### 💻 Code Snippet
+          [Een werkend voorbeeld in bash of JavaScript met de Anthropic SDK]
+
+          ### 🏢 Vlaamse Markt Tip
+          [Welk type Vlaams bedrijf heeft dit nodig? Hoe bereik je ze? Wat is een realistisch tarief?]
+
+          ### 📋 Taak van Vandaag
+          [1 concrete actie die de lezer vandaag kan uitvoeren, max 30 minuten]
+
+          ### 💬 Motivatie
+          [1 korte motiverende zin voor Vlaamse freelancers]
+
+          Schrijf in een warm, direct Vlaams Nederlands. Gebruik emoji's spaarzaam.`,
+                },
+              ],
+            });
+
+            const inhoud = response.content[0].text;
+
+            // Sla op als bestand
+            const datum = new Date().toISOString().split("T")[0];
+            const pad = `dagelijkse-updates/${datum}.md`;
+
+            if (!fs.existsSync("dagelijkse-updates")) {
+              fs.mkdirSync("dagelijkse-updates");
+            }
+
+            fs.writeFileSync(pad, inhoud);
+            console.log(`✅ Update opgeslagen: ${pad}`);
+
+            // Zet als output voor het volgende stap
+            const output = inhoud
+              .replace(/'/g, "'\\''")
+              .substring(0, 65000);
+            fs.writeFileSync("/tmp/les_inhoud.txt", inhoud);
+            fs.writeFileSync("/tmp/les_datum.txt", datum);
+            fs.writeFileSync("/tmp/les_onderwerp.txt", onderwerp);
+          }
+
+          main().catch(console.error);
+          EOF
+
+      - name: Commit dagelijkse update
+        run: |
+          git config user.name "Claude AI Bot"
+          git config user.email "ai-bot@little-oummah.be"
+          DATUM=$(cat /tmp/les_datum.txt)
+          git add dagelijkse-updates/
+          git commit -m "📚 Dagelijkse les: $DATUM" || echo "Niets te committen"
+          git push origin HEAD || echo "Push mislukt"
+
+      - name: Maak GitHub Issue aan voor dagelijkse les
+        uses: actions/github-script@v7
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          script: |
+            const fs = require('fs');
+            const inhoud = fs.readFileSync('/tmp/les_inhoud.txt', 'utf8');
+            const datum = fs.readFileSync('/tmp/les_datum.txt', 'utf8').trim();
+            const onderwerp = fs.readFileSync('/tmp/les_onderwerp.txt', 'utf8').trim();
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📚 Dagelijkse Les ${datum}: ${onderwerp}`,
+              body: inhoud,
+              labels: ['dagelijkse-les', 'ai-update']
+            });
+
+            console.log('✅ GitHub Issue aangemaakt!');

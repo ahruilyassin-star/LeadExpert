@@ -1,0 +1,13 @@
+{
+  "name": "little-oummah-ai-automatisering",
+  "version": "1.0.0",
+  "description": "Claude Code automatisering voor de Vlaamse markt",
+  "scripts": {
+    "dagmenu": "node scripts/genereer-dagmenu.js",
+    "klanten-analyse": "node scripts/analyseer-klanten.js",
+    "prospectie-mail": "node scripts/genereer-prospectie-mail.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}
