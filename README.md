@@ -42,10 +42,8 @@ Focusing on high-growth segments: **Motor Skills** (Building blocks) and **Alpha
     - High Priority: Dutch & French (Benelux)
     - Growth Focus: German (DACH region)
 
-## 📁 SEO Files (deploy to WordPress)
-| File | Action |
-|------|--------|
-| `seo/robots.txt` | Upload to WordPress root, replace existing |
-| `seo/seo-functions.php` | Paste into child theme `functions.php` |
-| `seo/schema-markup.php` | Paste into child theme `functions.php` |
-| `seo/keywords-2026.php` | Reference for titles, metas, TranslatePress fields |
+## 📁 SEO Files
+| File | Platform | Actie |
+|------|----------|-------|
+| `seo/robots.txt` | Little Oummah (WordPress) | Upload naar WordPress root |
+| `seo/readdy-seo-webdesign.txt` | webdesign.leadexpert.be (Readdy.ai) | Plak titels/metas in Readdy.ai SEO-velden |
