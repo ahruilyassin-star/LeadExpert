@@ -89,8 +89,34 @@ De AI-chatbot is geconfigureerd als islamitische speelgoed-assistent die:
 - EU-klanten wijst op gratis verzending boven €50
 - Leads verzamelt (naam + e-mail)
 
+## Vercel Proxy (api/readdy.js)
+
+De map `api/` bevat een Vercel serverless proxy die Claude in staat stelt de readdy.ai API
+te benaderen via WebFetch wanneer directe toegang geblokkeerd is.
+
+### Vereiste Vercel omgevingsvariabelen
+| Variabele | Waarde |
+|-----------|--------|
+| `READDY_API_KEY` | Zie `.env` |
+| `PROXY_TOKEN` | Zelf te kiezen geheim token |
+| `READDY_BASE_URL` | `https://readdy.ai/api` (optioneel) |
+
+### Proxy deployen
+```bash
+# Eenmalig, vanuit projectroot:
+npx vercel --prod
+```
+
+### Proxy gebruiken via WebFetch
+```
+GET https://<jouw-vercel-domein>/api/readdy?action=list_sites&token=<PROXY_TOKEN>
+GET https://<jouw-vercel-domein>/api/readdy?action=list_blogs&site_id=<ID>&token=<PROXY_TOKEN>
+```
+
 ## Bestandsstructuur
 ```
+api/
+  readdy.js           # Vercel serverless proxy voor readdy.ai
 readdy/
   __init__.py         # exports
   client.py           # Readdy.ai API client
@@ -102,6 +128,7 @@ readdy/
 .env                  # API credentials (NIET in git)
 .env.example          # Template voor credentials
 requirements.txt      # Python afhankelijkheden
+vercel.json           # Vercel configuratie
 ```
 
 ## Notities
