@@ -52,12 +52,15 @@ GET  /api/project/subdomain/info?projectId=...     – subdomein info
 
 ### AI Assistent (chatbot)
 ```
-GET   /api/assistant/setting?projectId=...  – chatbot instellingen ophalen
-PATCH /api/assistant/setting?projectId=...  – chatbot instellingen aanpassen
-POST  /api/assistant/knowledge?projectId=... – Q&A kennis toevoegen
-      body: {ProjectID, Question, Answer}
-GET   /api/assistant/knowledge_list?projectId=... – kennis ophalen
-GET   /api/assistant/leads?projectId=...    – chatbot leads
+GET /api/assistant/setting?projectId=...  – chatbot instellingen ophalen
+PUT /api/assistant/setting?projectId=...  – chatbot instellingen aanpassen
+    body: {projectID, prompt, language, leadNotice, appoinmentNotice}
+    ⚠️  Readdy.ai gebruikt PUT (niet PATCH) – bevestigd via JS bundle analyse
+    ⚠️  Vereiste: website genereren via readdy.ai dashboard eerst
+POST /api/assistant/knowledge?projectId=... – Q&A kennis toevoegen
+     body: {ProjectID, Question, Answer}
+GET  /api/assistant/knowledge_list?projectId=... – kennis ophalen
+GET  /api/assistant/leads?projectId=...    – chatbot leads
 ```
 
 ### Marketing Content
@@ -72,8 +75,10 @@ GET  /api/marketing/list?projectId=...    – content overzicht
 ### E-mail Campagnes (SAPI)
 ```
 GET  /sapi/batch_email/campaigns          – campagnes ophalen
-POST /sapi/batch_email/campaign           – campagne aanmaken
+POST /sapi/batch_email/campaign           – campagne aanmaken (vereist gekoppeld e-mailaccount)
 POST /sapi/batch_email/campaign/send      – campagne verzenden
+GET  /sapi/batch_task/entitlement         – plan entitlement (eligible=true, quota=3000)
+⚠️  Vereiste: email account koppelen via readdy.ai dashboard > Email Marketing > Connect
 ```
 
 ### Analyse
@@ -155,7 +160,8 @@ De AI-chatbot moet worden geconfigureerd als islamitische speelgoed-assistent di
 - Leads verzamelt (naam + e-mail)
 - Complexe vragen verwijst naar leadexpert911@gmail.com
 
-**PATCH** `/api/assistant/setting?projectId=52d32673-5700-44eb-9821-6ce043bf17b3`
+**PUT** `/api/assistant/setting?projectId=52d32673-5700-44eb-9821-6ce043bf17b3`
+(Readdy.ai gebruikt PUT, niet PATCH. Werkt pas nadat website is gegenereerd via dashboard.)
 ```json
 {
   "projectID": "52d32673-5700-44eb-9821-6ce043bf17b3",

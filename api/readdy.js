@@ -1,122 +1,152 @@
 /**
  * Vercel Proxy voor readdy.ai API – Little Oummah Webshop
  *
+ * Authenticatie: pass de JWT access token (verkregen via OTP login) als `apikey` param.
+ *
  * Gebruik via WebFetch:
- *   GET /api/readdy?action=list_sites&apikey=<KEY>
- *   GET /api/readdy?action=list_blogs&site_id=<ID>&apikey=<KEY>
- *   GET /api/readdy?action=create_blog&site_id=<ID>&title=...&body=...&apikey=<KEY>
+ *   GET /api/readdy?action=list_projects&apikey=<JWT>
+ *   GET /api/readdy?action=get_assistant_setting&project_id=<ID>&apikey=<JWT>
+ *   GET /api/readdy?action=update_assistant_setting&project_id=<ID>&prompt=...&apikey=<JWT>
+ *   GET /api/readdy?action=create_email_campaign&project_id=<ID>&name=...&subject=...&body=...&apikey=<JWT>
  */
 
-const READDY_BASE_URL = process.env.READDY_BASE_URL || "https://readdy.ai/api";
-const ENV_API_KEY     = process.env.READDY_API_KEY  || "";
+const BASE_URL  = process.env.READDY_BASE_URL || "https://readdy.ai/api";
+const SAPI_URL  = "https://readdy.ai/sapi";
+const ENV_API_KEY = process.env.READDY_API_KEY || "";
 
 function getHeaders(apiKey) {
   return {
     "Authorization": `Bearer ${apiKey}`,
-    "X-API-Key": apiKey,
     "Content-Type": "application/json",
     "Accept": "application/json",
   };
 }
 
-async function readdyFetch(method, path, apiKey, body = null) {
+async function readdyFetch(method, url, apiKey, body = null) {
   const opts = { method, headers: getHeaders(apiKey) };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${READDY_BASE_URL}${path}`, opts);
+  if (body && method !== "GET") opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
   const text = await res.text();
   let data;
   try { data = JSON.parse(text); } catch { data = { raw: text }; }
   return { status: res.status, ok: res.ok, data };
 }
 
-function buildBody(q) {
-  const body = {};
-  for (const [k, v] of Object.entries(q)) {
-    if (["action", "site_id", "blog_id", "page_id", "campaign_id", "apikey"].includes(k)) continue;
-    if (k === "tags")         { body.tags     = v.split(",").map(t => t.trim()); continue; }
-    if (k === "keywords")     { body.keywords = v.split(",").map(w => w.trim()); continue; }
-    if (k === "published")    { body.published     = v !== "false"; continue; }
-    if (k === "collect_leads"){ body.collect_leads = v !== "false"; continue; }
-    body[k] = v;
-  }
-  return body;
-}
-
 async function dispatch(q, apiKey) {
-  const { action, site_id, blog_id, page_id, campaign_id } = q;
+  const { action, project_id, campaign_id } = q;
 
   switch (action) {
-    // ── Account ────────────────────────────────────────────────────────────
-    case "get_account":
-      return readdyFetch("GET", "/user/me", apiKey);
 
-    // ── Sites ──────────────────────────────────────────────────────────────
-    case "list_sites":
-      return readdyFetch("GET", "/sites", apiKey);
-    case "get_site":
-      return readdyFetch("GET", `/sites/${site_id}`, apiKey);
-    case "update_site":
-      return readdyFetch("PATCH", `/sites/${site_id}`, apiKey, buildBody(q));
-
-    // ── Pagina's ───────────────────────────────────────────────────────────
-    case "list_pages":
-      return readdyFetch("GET", `/sites/${site_id}/pages`, apiKey);
-    case "get_page":
-      return readdyFetch("GET", `/sites/${site_id}/pages/${page_id}`, apiKey);
-    case "create_page":
-      return readdyFetch("POST", `/sites/${site_id}/pages`, apiKey, buildBody(q));
-    case "update_page":
-      return readdyFetch("PATCH", `/sites/${site_id}/pages/${page_id}`, apiKey, buildBody(q));
-
-    // ── Blog ───────────────────────────────────────────────────────────────
-    case "list_blogs":
-      return readdyFetch("GET", `/sites/${site_id}/blogs`, apiKey);
-    case "get_blog":
-      return readdyFetch("GET", `/sites/${site_id}/blogs/${blog_id}`, apiKey);
-    case "create_blog": {
-      const body = buildBody(q);
-      if (!body.slug && body.title)
-        body.slug = body.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-      if (!body.seo && body.meta_description) {
-        body.seo = { meta_title: body.title, meta_description: body.meta_description };
-        delete body.meta_description;
-      }
-      return readdyFetch("POST", `/sites/${site_id}/blogs`, apiKey, body);
+    // ── Projecten ────────────────────────────────────────────────────────────
+    case "list_projects": {
+      const pageNum  = parseInt(q.page || "1");
+      const pageSize = parseInt(q.page_size || "20");
+      return readdyFetch("POST", `${BASE_URL}/page_gen/project/list`, apiKey,
+        { page: { pageNum, pageSize } });
     }
-    case "update_blog":
-      return readdyFetch("PATCH", `/sites/${site_id}/blogs/${blog_id}`, apiKey, buildBody(q));
-    case "delete_blog":
-      return readdyFetch("DELETE", `/sites/${site_id}/blogs/${blog_id}`, apiKey);
 
-    // ── SEO ────────────────────────────────────────────────────────────────
-    case "get_seo":
-      return readdyFetch("GET", `/sites/${site_id}/seo`, apiKey);
-    case "update_seo":
-      return readdyFetch("PATCH", `/sites/${site_id}/seo`, apiKey, buildBody(q));
-    case "update_page_seo":
-      return readdyFetch("PATCH", `/sites/${site_id}/pages/${page_id}`, apiKey, { seo: buildBody(q) });
+    case "create_project":
+      return readdyFetch("POST", `${BASE_URL}/page_gen/project`, apiKey, {
+        name: q.name || "Little Oummah",
+        category: parseInt(q.category || "2"),
+        template: parseInt(q.template || "1"),
+        framework: q.framework || "react",
+        device: "web",
+        lib: "",
+      });
 
-    // ── Campagnes / E-mail ─────────────────────────────────────────────────
-    case "list_campaigns":
-      return readdyFetch("GET", `/sites/${site_id}/campaigns`, apiKey);
-    case "get_campaign":
-      return readdyFetch("GET", `/sites/${site_id}/campaigns/${campaign_id}`, apiKey);
-    case "create_campaign":
-      return readdyFetch("POST", `/sites/${site_id}/campaigns`, apiKey, buildBody(q));
-    case "send_campaign":
-      return readdyFetch("POST", `/sites/${site_id}/campaigns/${campaign_id}/send`, apiKey, {});
-    case "update_campaign":
-      return readdyFetch("PATCH", `/sites/${site_id}/campaigns/${campaign_id}`, apiKey, buildBody(q));
+    // ── Subdomein ─────────────────────────────────────────────────────────────
+    case "get_subdomain_info":
+      return readdyFetch("GET",
+        `${BASE_URL}/project/subdomain/info?projectId=${project_id}`,
+        apiKey);
 
-    // ── Leads ──────────────────────────────────────────────────────────────
-    case "list_leads":
-      return readdyFetch("GET", `/sites/${site_id}/leads`, apiKey);
+    case "generate_subdomain":
+      return readdyFetch("POST",
+        `${BASE_URL}/project/subdomain/generate?projectId=${project_id}`,
+        apiKey, {});
 
-    // ── Agent (chatbot) ────────────────────────────────────────────────────
-    case "get_agent":
-      return readdyFetch("GET", `/sites/${site_id}/agent`, apiKey);
-    case "update_agent":
-      return readdyFetch("PATCH", `/sites/${site_id}/agent`, apiKey, buildBody(q));
+    case "publish_subdomain":
+      return readdyFetch("POST",
+        `${BASE_URL}/project/subdomain/publish?projectId=${project_id}`,
+        apiKey, {});
+
+    // ── AI-Assistent (Chatbot) ────────────────────────────────────────────────
+    case "get_assistant_setting":
+      return readdyFetch("GET",
+        `${BASE_URL}/assistant/setting?projectId=${project_id}`,
+        apiKey);
+
+    case "update_assistant_setting":
+      return readdyFetch("PATCH",
+        `${BASE_URL}/assistant/setting?projectId=${project_id}`,
+        apiKey, {
+          projectID: project_id,
+          prompt: q.prompt || "",
+          language: q.language || "nl",
+          leadNotice: q.lead_notice !== "false",
+          appoinmentNotice: q.appointment_notice === "true",
+        });
+
+    case "add_knowledge":
+      return readdyFetch("POST",
+        `${BASE_URL}/assistant/knowledge?projectId=${project_id}`,
+        apiKey, {
+          ProjectID: project_id,
+          Question: q.question || "",
+          Answer: q.answer || "",
+        });
+
+    case "list_knowledge":
+      return readdyFetch("GET",
+        `${BASE_URL}/assistant/knowledge_list?projectId=${project_id}`,
+        apiKey);
+
+    case "get_leads":
+      return readdyFetch("GET",
+        `${BASE_URL}/assistant/leads?projectId=${project_id}`,
+        apiKey);
+
+    // ── Marketing / Blog ──────────────────────────────────────────────────────
+    case "get_marketing_topics":
+      return readdyFetch("POST",
+        `${BASE_URL}/marketing/topics?projectId=${project_id}`,
+        apiKey, { ProjectID: project_id });
+
+    case "list_marketing_content":
+      return readdyFetch("GET",
+        `${BASE_URL}/marketing/list?projectId=${project_id}`,
+        apiKey);
+
+    // ── E-mail Campagnes (SAPI) ───────────────────────────────────────────────
+    case "list_email_campaigns":
+      return readdyFetch("GET",
+        `${SAPI_URL}/batch_email/campaigns?projectId=${project_id}`,
+        apiKey);
+
+    case "create_email_campaign":
+      return readdyFetch("POST",
+        `${SAPI_URL}/batch_email/campaign`,
+        apiKey, {
+          projectId: project_id,
+          name: q.name || "",
+          subject: q.subject || "",
+          body: q.body || "",
+        });
+
+    case "send_email_campaign":
+      return readdyFetch("POST",
+        `${SAPI_URL}/batch_email/campaign/send`,
+        apiKey, {
+          projectId: project_id,
+          campaignId: campaign_id,
+        });
+
+    // ── Statistieken ──────────────────────────────────────────────────────────
+    case "get_stats":
+      return readdyFetch("GET",
+        `${BASE_URL}/analysis/project/num_stats?projectId=${project_id}`,
+        apiKey);
 
     default:
       return { status: 400, ok: false, data: { error: `Onbekende actie: ${action}` } };
@@ -125,10 +155,11 @@ async function dispatch(q, apiKey) {
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (req.method === "OPTIONS") { res.status(200).end(); return; }
 
-  const q = req.query || {};
+  const q = { ...(req.query || {}), ...(req.body || {}) };
   const apiKey = q.apikey || ENV_API_KEY;
 
   if (!apiKey) {
@@ -138,7 +169,15 @@ export default async function handler(req, res) {
   if (!q.action) {
     return res.status(400).json({
       error: "Vereiste parameter 'action' ontbreekt",
-      voorbeeld: "/api/readdy?action=list_sites&apikey=<KEY>",
+      beschikbare_acties: [
+        "list_projects", "create_project",
+        "get_subdomain_info", "generate_subdomain", "publish_subdomain",
+        "get_assistant_setting", "update_assistant_setting",
+        "add_knowledge", "list_knowledge", "get_leads",
+        "get_marketing_topics", "list_marketing_content",
+        "list_email_campaigns", "create_email_campaign", "send_email_campaign",
+        "get_stats",
+      ],
     });
   }
 

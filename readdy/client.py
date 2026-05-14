@@ -77,10 +77,13 @@ def _post(path: str, body: dict, params: dict | None = None) -> dict:
         return r.json()
 
 
-def _patch(path: str, body: dict, params: dict | None = None) -> dict:
-    """PATCH – vereist voor o.a. /api/assistant/setting update."""
+def _put(path: str, body: dict, params: dict | None = None) -> dict:
+    """PUT – gebruikt voor /api/assistant/setting update.
+    Readdy.ai gebruikt PUT niet PATCH (bevestigd via JS bundle analyse).
+    Let op: werkt alleen nadat website content is gegenereerd (via dashboard).
+    """
     with httpx.Client(timeout=30) as client:
-        r = client.patch(f"{BASE_URL}{path}", headers=_headers(), json=body, params=params or {})
+        r = client.put(f"{BASE_URL}{path}", headers=_headers(), json=body, params=params or {})
         r.raise_for_status()
         return r.json()
 
@@ -176,10 +179,12 @@ def update_assistant_setting(
     appointment_notice: bool = False,
 ) -> dict:
     """
-    Pas de chatbot-instellingen aan via PATCH.
+    Pas de chatbot-instellingen aan via PUT.
+    Readdy.ai gebruikt PUT (niet PATCH) – bevestigd via JS bundle analyse.
     Veld 'appoinmentNotice' heeft een typefout in de readdy.ai API.
+    Vereiste: website moet eerst gegenereerd zijn via het readdy.ai dashboard.
     """
-    return _patch("/assistant/setting", {
+    return _put("/assistant/setting", {
         "projectID": project_id,
         "prompt": prompt,
         "language": language,
