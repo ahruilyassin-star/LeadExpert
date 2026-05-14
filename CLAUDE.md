@@ -15,8 +15,8 @@
 ## Little Oummah Project (aangemaakt 2026-05-14)
 - **Project ID**: `52d32673-5700-44eb-9821-6ce043bf17b3`
 - **Subdomein**: `xsnlgi.readdy.co`
-- **Sessie ID**: `f885d09b-fff0-4f03-be14-edbb5cffa0b6`
-- **Status**: Project aangemaakt, inhoud te genereren via readdy.ai dashboard
+- **Sessie ID**: `f20d4ccc-171a-451d-bd14-cd9e6291eaf9` (gegenereerd 2026-05-14)
+- **Status**: ✅ Website gegenereerd via SSE (486 events, 37.8KB, Tailwind CSS, EN). ⚠️ Nog te publiceren via dashboard (1-klik)
 
 ## Authenticatie – BELANGRIJK
 
@@ -216,7 +216,7 @@ Claude (deze sessie)
 ### Edge Function
 - **URL**: `https://fgqwoaxqzdwhnjnssfiy.supabase.co/functions/v1/readdy-proxy?secret=little-oummah-2026`
 - **Project**: `fgqwoaxqzdwhnjnssfiy` (Supabase, eu-west-3)
-- **Versie**: 7 (laatste)
+- **Versie**: 8 (laatste)
 - **verify_jwt**: false (beveiligd via `?secret=` param)
 
 ### pg_net aanroep (standaard patroon)
@@ -266,29 +266,73 @@ SELECT net.http_post(url:='...readdy-proxy?secret=...', headers:='{"Content-Type
 `get_assistant_setting`, `update_assistant_setting`, `add_knowledge`, `list_knowledge`, `get_leads`,
 `get_marketing_topics`, `generate_marketing_copies`, `list_marketing_content`,
 `list_email_campaigns`, `create_email_campaign`, `send_email_campaign`,
-`get_batch_entitlement`, `get_stats`, `get_daily_stats`
+`get_batch_entitlement`, `get_stats`, `get_daily_stats`,
+`raw_request` (vrije endpoint probe: `{method, path, body}`)
+
+### Publish beperking – KRITISCH (ontdekt 2026-05-14)
+`publish_subdomain` API vereist een "project version" die ALLEEN door de readdy.ai dashboard-UI
+wordt aangemaakt (compileer/build stap). Er bestaat GEEN publieke API voor dit compile-stap
+(alle mogelijke endpoints geprobed, allemaal 404).
+
+Volledige test gedaan met `react` EN `react_v2` framework → zelfde error: `ProjectFileNotExists`.
+
+**Oplossing**: Na SSE-generatie via API, publiceer eenmalig via readdy.ai dashboard UI (1 klik):
+1. Open readdy.ai dashboard → project
+2. Klik "Publish" / "Publiceer" knop
+3. Daarna werkt chatbot, stats, en custom domain koppeling
+
+**Uitzondering**: `9715cf58-a1f0-4848-be5c-6d9122cee23d` (webdesign.leadexpert.be) is al
+gepubliceerd door de gebruiker via dashboard. Subdomain `hlpswx.readdy.co` status=4 (gepubliceerd
+met redirect). Re-publish via API geblokkeerd: "sub domain is redirecting."
 
 ---
 
 ## webdesign.leadexpert.be Project
 - **Project ID**: `9715cf58-a1f0-4848-be5c-6d9122cee23d`
-- **Subdomein**: `hlpswx.readdy.co` (status=4, gepubliceerd)
+- **Subdomein**: `hlpswx.readdy.co` (status=4, gepubliceerd via dashboard)
 - **Sessie ID**: `2879a599-01f4-4728-85e4-316e9d70335f`
 - **Inhoud**: Landing page gegenereerd 2026-05-14 (594 SSE events, 45KB HTML, Tailwind CSS)
 - **Titel**: "LeadExpert - Professional Web Design & E-commerce Solutions from €999"
+- **Status**: ✅ Gepubliceerd (gebruiker publiceerde via dashboard vóór dit project)
 
 ### Extra Landing Pages (aangemaakt 2026-05-14)
-| Project | ID | Subdomein | Focus |
-|---------|-----|-----------|-------|
-| LeadExpert - Webshop Landing | `7670a606-f072-44c2-b387-1bad037bd19d` | `xermrj.readdy.co` | WooCommerce/Shopify vanaf €1.499 |
-| LeadExpert - Lokale SEO Landing | `659e1a86-106c-4d95-9ae7-4fac5993772b` | `jengyy.readdy.co` | Lokale SEO vanaf €799/mnd |
+| Project | ID | Subdomein | Status |
+|---------|-----|-----------|--------|
+| LeadExpert - Webshop Landing | `7670a606-f072-44c2-b387-1bad037bd19d` | `xermrj.readdy.co` | ⚠️ Gegenereerd, nog te publiceren via dashboard |
+| LeadExpert - Lokale SEO Landing | `659e1a86-106c-4d95-9ae7-4fac5993772b` | `jengyy.readdy.co` | ⚠️ Gegenereerd, nog te publiceren via dashboard |
+| LeadExpert - Test v2 (wegooibaar) | `d0bd4c8e-08b5-4eb1-bdff-b2245883c841` | `itbyjn.readdy.co` | ⚠️ Test project, kan worden verwijderd |
 
 ---
+
+## Volledige Automatisering Workflow
+
+### Wat volledig geautomatiseerd is via API
+| Stap | Actie | Status |
+|------|-------|--------|
+| 1 | Project aanmaken | ✅ `create_project` |
+| 2 | Subdomein genereren | ✅ `generate_subdomain` |
+| 3 | Website genereren (SSE) | ✅ `generate_website` |
+| 4 | Chatbot configureren | ⚠️ Vereist dat site gepubliceerd is |
+| 5 | Q&A kennis toevoegen | ⚠️ Vereist dat site gepubliceerd is |
+| 6 | Marketing topics genereren | ✅ `get_marketing_topics` |
+| 7 | Social media copies genereren | ✅ `generate_marketing_copies` |
+| 8 | E-mail campagnes aanmaken | ⚠️ Vereist e-mailaccount koppeling |
+| 9 | Statistieken ophalen | ✅ `get_stats` |
+
+### Handmatige stappen (eenmalig per project via dashboard)
+1. **Publiceren**: Open readdy.ai dashboard → project → klik "Publish" (compile + deploy)
+2. **E-mail koppelen**: Dashboard > Email Marketing > Connect (OAuth)
+3. **Daarna** werken chatbot-configuratie en e-mailcampagnes volledig via API
+
+### Bevestigde API beperkingen (getest 2026-05-14)
+- `publish_subdomain` → `ProjectFileNotExists` (geen compile-API beschikbaar)
+- `update_assistant_setting` → `InternalError` als website nog niet gepubliceerd
+- `add_knowledge` → `InternalError` als website nog niet gepubliceerd
 
 ## Notities
 - `.env` staat in `.gitignore` en wordt NIET gepusht naar GitHub
 - readdy.ai gebruikt JWT (OTP e-mail flow), niet API key bearer
-- Website generatie via SSE is nu volledig geautomatiseerd via de Edge Function
+- Website generatie via SSE is volledig geautomatiseerd via de Edge Function
 - De `rdy_` API key is voor embedded chatbot widgets, niet voor de REST API
-- `publish_subdomain` mislukt als subdomein al een redirect heeft (bestaand project) → gebruik readdy.ai dashboard
-- Email campagnes vereisen OAuth e-mailaccount koppeling via readdy.ai dashboard > Email Marketing > Connect
+- JWT is 1 uur geldig; vernieuwen via: `request_otp` → Gmail MCP lees OTP → `login_with_otp`
+- Edge Function v8: voeg `raw_request` toe voor endpoint probing
