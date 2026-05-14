@@ -203,8 +203,92 @@ requirements.txt      # Python afhankelijkheden
 vercel.json           # Vercel configuratie
 ```
 
+## Autonoom Systeem – Claude geeft rechtstreeks opdrachten aan readdy.ai
+
+### Architectuur
+```
+Claude (deze sessie)
+  → Supabase pg_net (SQL POST)
+    → Supabase Edge Function readdy-proxy v7
+      → readdy.ai API (incl. SSE streaming)
+```
+
+### Edge Function
+- **URL**: `https://fgqwoaxqzdwhnjnssfiy.supabase.co/functions/v1/readdy-proxy?secret=little-oummah-2026`
+- **Project**: `fgqwoaxqzdwhnjnssfiy` (Supabase, eu-west-3)
+- **Versie**: 7 (laatste)
+- **verify_jwt**: false (beveiligd via `?secret=` param)
+
+### pg_net aanroep (standaard patroon)
+```sql
+SELECT net.http_post(
+  url := 'https://fgqwoaxqzdwhnjnssfiy.supabase.co/functions/v1/readdy-proxy?secret=little-oummah-2026',
+  headers := '{"Content-Type":"application/json"}'::jsonb,
+  body := jsonb_build_object(
+    'action', 'generate_website',
+    'jwt', '<JWT_TOKEN>',
+    'project_id', '<PROJECT_ID>',
+    'prompt', '...',
+    'device_type', 'web', 'style', '1', 'seq', 1
+  ),
+  timeout_milliseconds := 150000  -- VERPLICHT voor generate_website (SSE duurt 60-120s)
+) AS request_id;
+-- Check resultaat: SELECT status_code, error_msg, left(content,3000) FROM net._http_response WHERE id = <request_id>;
+```
+
+### JWT vernieuwen (automatisch via Gmail MCP)
+```sql
+-- Stap 1: OTP aanvragen (geen JWT nodig)
+SELECT net.http_post(url:='...readdy-proxy?secret=...', headers:='{"Content-Type":"application/json"}'::jsonb,
+  body:='{"action":"request_otp","email":"leadexpert911@gmail.com"}'::jsonb) AS id;
+-- Stap 2: OTP lezen via Gmail MCP tool (from:readdy subject:code newer_than:5m)
+-- Stap 3: Inloggen
+SELECT net.http_post(url:='...readdy-proxy?secret=...', headers:='{"Content-Type":"application/json"}'::jsonb,
+  body:=jsonb_build_object('action','login_with_otp','email','leadexpert911@gmail.com','code','<OTP>')) AS id;
+-- JWT zit in: SELECT content->>'accessToken' FROM net._http_response WHERE id = <id>;
+```
+
+### generate_website – CodeBotInput velden (ontdekt 2026-05-14)
+```json
+{
+  "DeviceType": "web",
+  "Style": "1",
+  "Desc": "<prompt>",
+  "seq": 1,
+  "SessionKey": "<session_uuid>"
+}
+```
+⚠️ `seq` is een **integer** (niet string) met **lowercase** JSON key
+
+### Beschikbare acties
+`request_otp`, `login_with_otp`, `list_projects`, `create_project`, `create_session`,
+`generate_website` (SSE), `get_subdomain_info`, `generate_subdomain`, `publish_subdomain`,
+`get_assistant_setting`, `update_assistant_setting`, `add_knowledge`, `list_knowledge`, `get_leads`,
+`get_marketing_topics`, `generate_marketing_copies`, `list_marketing_content`,
+`list_email_campaigns`, `create_email_campaign`, `send_email_campaign`,
+`get_batch_entitlement`, `get_stats`, `get_daily_stats`
+
+---
+
+## webdesign.leadexpert.be Project
+- **Project ID**: `9715cf58-a1f0-4848-be5c-6d9122cee23d`
+- **Subdomein**: `hlpswx.readdy.co` (status=4, gepubliceerd)
+- **Sessie ID**: `2879a599-01f4-4728-85e4-316e9d70335f`
+- **Inhoud**: Landing page gegenereerd 2026-05-14 (594 SSE events, 45KB HTML, Tailwind CSS)
+- **Titel**: "LeadExpert - Professional Web Design & E-commerce Solutions from €999"
+
+### Extra Landing Pages (aangemaakt 2026-05-14)
+| Project | ID | Subdomein | Focus |
+|---------|-----|-----------|-------|
+| LeadExpert - Webshop Landing | `7670a606-f072-44c2-b387-1bad037bd19d` | `xermrj.readdy.co` | WooCommerce/Shopify vanaf €1.499 |
+| LeadExpert - Lokale SEO Landing | `659e1a86-106c-4d95-9ae7-4fac5993772b` | `jengyy.readdy.co` | Lokale SEO vanaf €799/mnd |
+
+---
+
 ## Notities
 - `.env` staat in `.gitignore` en wordt NIET gepusht naar GitHub
 - readdy.ai gebruikt JWT (OTP e-mail flow), niet API key bearer
-- Website generatie via `page_gen/generate` vereist SSE streaming → gebruik het readdy.ai dashboard
+- Website generatie via SSE is nu volledig geautomatiseerd via de Edge Function
 - De `rdy_` API key is voor embedded chatbot widgets, niet voor de REST API
+- `publish_subdomain` mislukt als subdomein al een redirect heeft (bestaand project) → gebruik readdy.ai dashboard
+- Email campagnes vereisen OAuth e-mailaccount koppeling via readdy.ai dashboard > Email Marketing > Connect
