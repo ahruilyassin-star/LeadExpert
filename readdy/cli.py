@@ -5,20 +5,27 @@ Beheer uw website, blogs, SEO en e-mails vanuit de command line.
 Gebruik:
   python -m readdy.cli <commando> [opties]
 
+Authenticatie (eenmalig per sessie):
+  otp                       OTP-e-mail aanvragen
+  login <otp_code>          Inloggen met OTP-code
+
 Commando's:
-  account               Toon accountinformatie
-  projects              Lijst van alle projecten
-  status   <site_id>    Project overzicht
-  blogs    <site_id>    Lijst van alle blogs
-  blog-new <site_id>    Nieuw blogartikel aanmaken
-  seo-audit <site_id>   SEO analyse
-  seo-fix  <site_id>    SEO-template toepassen
-  seo-pages <site_id>   SEO van alle pagina's controleren
-  email-list <site_id>  Lijst van campagnes
-  email-leads <site_id> Lijst van leads
-  email-setup <site_id> Alle e-mailreeksen instellen
-  agent    <site_id>    AI-chatbot configureren
-  setup    <site_id>    Volledige installatie (SEO + agent + e-mail)
+  projects                  Lijst van alle projecten
+  status   <project_id>     Project overzicht
+  agent    <project_id>     AI-chatbot configureren
+  setup    <project_id>     Volledige installatie (chatbot + e-mail)
+  stats    <project_id>     Bezoekersstatistieken
+
+  topics   <project_id>     Blog-onderwerpen genereren via AI
+  blogs    <project_id>     Marketing content lijst
+  prepared                  Toon vooraf geschreven blogartikelen
+
+  email-list  <project_id>  Lijst van campagnes
+  email-leads <project_id>  Lijst van chatbot leads
+  email-setup <project_id>  Alle e-mailreeksen instellen
+  email-send  <project_id> <campaign_id>  Campagne verzenden
+
+  seo-recommend             SEO-aanbevelingen tonen
 """
 
 import sys
@@ -36,13 +43,26 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "account":
+    # ─── Authenticatie ────────────────────────────────────────────────────────
+    if cmd == "otp":
         try:
-            info = client.get_account()
-            print(json.dumps(info, indent=2, ensure_ascii=False))
+            result = client.request_otp()
+            print("✅ OTP-e-mail verstuurd naar", client.EMAIL)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
         except Exception as e:
             print(f"❌ Fout: {e}")
 
+    elif cmd == "login" and len(args) >= 2:
+        try:
+            result = client.login_with_otp(args[1])
+            if result.get("data", {}).get("accessToken"):
+                print("✅ Ingelogd! JWT token opgeslagen.")
+            else:
+                print("⚠️  Inloggen mislukt:", json.dumps(result, indent=2))
+        except Exception as e:
+            print(f"❌ Fout: {e}")
+
+    # ─── Projecten ────────────────────────────────────────────────────────────
     elif cmd == "projects":
         try:
             project_manager.list_projects()
@@ -55,40 +75,34 @@ def main():
         except Exception as e:
             print(f"❌ Fout: {e}")
 
+    elif cmd == "stats" and len(args) >= 2:
+        try:
+            seo_manager.show_stats(args[1])
+        except Exception as e:
+            print(f"❌ Fout: {e}")
+
+    # ─── Blog / Marketing ─────────────────────────────────────────────────────
     elif cmd == "blogs" and len(args) >= 2:
         try:
             blog_manager.list_blogs(args[1])
         except Exception as e:
             print(f"❌ Fout: {e}")
 
-    elif cmd == "blog-new" and len(args) >= 2:
+    elif cmd == "topics" and len(args) >= 2:
         try:
-            blog_manager.create_blog_interactive(args[1])
+            blog_manager.generate_topics(args[1])
         except Exception as e:
             print(f"❌ Fout: {e}")
 
-    elif cmd == "seo-audit" and len(args) >= 2:
-        try:
-            seo_manager.audit_seo(args[1])
-        except Exception as e:
-            print(f"❌ Fout: {e}")
+    elif cmd == "prepared":
+        blog_manager.show_prepared_blogs()
 
-    elif cmd == "seo-fix" and len(args) >= 2:
-        try:
-            seo_manager.apply_seo_template(args[1])
-        except Exception as e:
-            print(f"❌ Fout: {e}")
-
-    elif cmd == "seo-pages" and len(args) >= 2:
-        try:
-            seo_manager.audit_pages_seo(args[1])
-        except Exception as e:
-            print(f"❌ Fout: {e}")
-
+    # ─── SEO ──────────────────────────────────────────────────────────────────
     elif cmd == "seo-recommend":
         rec = seo_manager.generate_seo_recommendations()
         print(json.dumps(rec, indent=2, ensure_ascii=False))
 
+    # ─── E-mail ───────────────────────────────────────────────────────────────
     elif cmd == "email-list" and len(args) >= 2:
         try:
             email_manager.list_campaigns(args[1])
@@ -107,6 +121,13 @@ def main():
         except Exception as e:
             print(f"❌ Fout: {e}")
 
+    elif cmd == "email-send" and len(args) >= 3:
+        try:
+            email_manager.send_campaign(args[1], args[2])
+        except Exception as e:
+            print(f"❌ Fout: {e}")
+
+    # ─── Agent / Setup ────────────────────────────────────────────────────────
     elif cmd == "agent" and len(args) >= 2:
         try:
             project_manager.configure_agent(args[1])

@@ -2,15 +2,14 @@
 Email Manager – beheer e-mailopvolgingen en campagnes voor Little Oummah.
 
 Gebruik:
-  python -m readdy.email_manager list     <site_id>
-  python -m readdy.email_manager send     <site_id> <campaign_id>
-  python -m readdy.email_manager leads    <site_id>
-  python -m readdy.email_manager followup <site_id>
+  python -m readdy.email_manager list     <project_id>
+  python -m readdy.email_manager send     <project_id> <campaign_id>
+  python -m readdy.email_manager leads    <project_id>
+  python -m readdy.email_manager followup <project_id>
 """
 
 import sys
 import json
-from datetime import datetime
 from . import client
 
 # Voorgemaakte e-mailsequenties voor Little Oummah
@@ -153,28 +152,31 @@ Team Little Oummah""",
 }
 
 
-def list_campaigns(site_id: str):
-    campaigns = client.list_campaigns(site_id)
-    print(f"\n📧 E-mailcampagnes voor site {site_id}:")
+def list_campaigns(project_id: str):
+    campaigns = client.list_email_campaigns(project_id)
+    print(f"\n📧 E-mailcampagnes voor project {project_id}:")
+    if not campaigns:
+        print("  Geen campagnes gevonden.")
+        return
     for c in campaigns:
         print(f"  [{c.get('id')}] {c.get('name')} — Status: {c.get('status', 'onbekend')}")
 
 
-def list_leads(site_id: str):
-    leads = client.list_leads(site_id)
-    print(f"\n👥 Leads ({len(leads)} totaal):")
+def list_leads(project_id: str):
+    leads = client.get_assistant_leads(project_id)
+    print(f"\n👥 Chatbot Leads ({len(leads)} totaal):")
     for lead in leads:
-        print(f"  📨 {lead.get('email')} — {lead.get('name', 'Naam onbekend')} — {lead.get('created_at', '')}")
+        print(f"  📨 {lead.get('email')} — {lead.get('name', 'Naam onbekend')} — {lead.get('createTime', '')}")
 
 
-def setup_welcome_sequence(site_id: str):
+def setup_welcome_sequence(project_id: str):
     """Maak de complete welkomst-e-mailreeks aan."""
     seq = EMAIL_SEQUENCES["welcome"]
     print(f"\n📤 Welkomstreeks instellen: {seq['name']}")
     results = []
     for i, email in enumerate(seq["emails"], 1):
-        result = client.create_campaign(
-            site_id=site_id,
+        result = client.create_email_campaign(
+            project_id=project_id,
             name=f"{seq['name']} – E-mail {i}",
             subject=email["subject"],
             body=email["body"],
@@ -184,14 +186,14 @@ def setup_welcome_sequence(site_id: str):
     return results
 
 
-def setup_abandoned_cart_sequence(site_id: str):
+def setup_abandoned_cart_sequence(project_id: str):
     """Maak verlaten winkelwagen opvolgings-e-mails aan."""
     seq = EMAIL_SEQUENCES["abandoned_cart"]
     print(f"\n🛒 Verlaten winkelwagen reeks instellen...")
     results = []
     for i, email in enumerate(seq["emails"], 1):
-        result = client.create_campaign(
-            site_id=site_id,
+        result = client.create_email_campaign(
+            project_id=project_id,
             name=f"{seq['name']} – E-mail {i}",
             subject=email["subject"],
             body=email["body"],
@@ -201,12 +203,12 @@ def setup_abandoned_cart_sequence(site_id: str):
     return results
 
 
-def setup_eu_launch_campaign(site_id: str):
+def setup_eu_launch_campaign(project_id: str):
     """Maak EU-expansie aankondigings-e-mail aan."""
     seq = EMAIL_SEQUENCES["eu_launch"]
     email = seq["emails"][0]
-    result = client.create_campaign(
-        site_id=site_id,
+    result = client.create_email_campaign(
+        project_id=project_id,
         name=seq["name"],
         subject=email["subject"],
         body=email["body"],
@@ -215,17 +217,17 @@ def setup_eu_launch_campaign(site_id: str):
     return result
 
 
-def send_campaign(site_id: str, campaign_id: str):
-    result = client.send_campaign(site_id, campaign_id)
+def send_campaign(project_id: str, campaign_id: str):
+    result = client.send_email_campaign(project_id, campaign_id)
     print(f"✅ Campagne {campaign_id} verstuurd:", json.dumps(result, indent=2, ensure_ascii=False))
 
 
-def setup_all_sequences(site_id: str):
+def setup_all_sequences(project_id: str):
     """Stel alle e-mailreeksen in één keer in."""
     print("\n🚀 Alle e-mailreeksen instellen voor Little Oummah...")
-    setup_welcome_sequence(site_id)
-    setup_abandoned_cart_sequence(site_id)
-    setup_eu_launch_campaign(site_id)
+    setup_welcome_sequence(project_id)
+    setup_abandoned_cart_sequence(project_id)
+    setup_eu_launch_campaign(project_id)
     print("\n✅ Alle e-mailreeksen zijn ingesteld!")
 
 

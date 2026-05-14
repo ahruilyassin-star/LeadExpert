@@ -9,50 +9,121 @@
 ## Readdy.ai Account
 - **Platform**: readdy.ai (AI Website Builder)
 - **Account**: leadexpert911@gmail.com
-- **API Key**: Opgeslagen in `.env` als `READDY_API_KEY`
 - **API Base URL**: https://readdy.ai/api
+- **SAPI URL**: https://readdy.ai/sapi  (voor e-mail campagnes)
 
-## Wat ik (Claude) kan doen via de integratie
+## Little Oummah Project (aangemaakt 2026-05-14)
+- **Project ID**: `52d32673-5700-44eb-9821-6ce043bf17b3`
+- **Subdomein**: `xsnlgi.readdy.co`
+- **Sessie ID**: `f885d09b-fff0-4f03-be14-edbb5cffa0b6`
+- **Status**: Project aangemaakt, inhoud te genereren via readdy.ai dashboard
 
-### Blog beheer
-```bash
-python -m readdy.cli blogs    <site_id>    # lijst van blogs
-python -m readdy.cli blog-new <site_id>    # nieuw artikel aanmaken
+## Authenticatie – BELANGRIJK
+
+readdy.ai gebruikt **JWT via OTP e-mail**, GEEN API key bearer token.
+De `rdy_`-sleutel in `.env` is voor embedded widgets, niet voor de REST API.
+
+### Login flow
+```python
+from readdy import client
+
+# Stap 1: OTP aanvragen
+client.request_otp("leadexpert911@gmail.com")
+
+# Stap 2: OTP uit e-mail lezen en inloggen (token geldig 1 uur)
+client.login_with_otp("123456")
+
+# Stap 3: API gebruiken
+projects = client.list_projects()
 ```
 
-### SEO optimalisatie
-```bash
-python -m readdy.cli seo-audit   <site_id>  # huidige SEO analyseren
-python -m readdy.cli seo-fix     <site_id>  # SEO-template toepassen
-python -m readdy.cli seo-pages   <site_id>  # alle pagina's controleren
-python -m readdy.cli seo-recommend          # SEO-aanbevelingen tonen
+## Correcte API Eindpunten (ontdekt via JS bundle analyse)
+
+### Projectbeheer
+```
+POST /api/page_gen/project               – project aanmaken
+POST /api/page_gen/project/list          – projecten ophalen (body: {page:{pageNum,pageSize}})
+POST /api/page_gen/session?projectId=... – sessie aanmaken {name: str, seq: str}
+POST /api/page_gen/generate?projectId=... – website genereren (SSE streaming – via UI)
+POST /api/project/subdomain/generate?projectId=... – subdomein aanmaken
+POST /api/project/subdomain/publish?projectId=...  – publiceren
+GET  /api/project/subdomain/info?projectId=...     – subdomein info
 ```
 
-### E-mail opvolgingen
-```bash
-python -m readdy.cli email-list  <site_id>  # campagnes tonen
-python -m readdy.cli email-leads <site_id>  # leads tonen
-python -m readdy.cli email-setup <site_id>  # alle reeksen instellen
+### AI Assistent (chatbot)
+```
+GET   /api/assistant/setting?projectId=...  – chatbot instellingen ophalen
+PATCH /api/assistant/setting?projectId=...  – chatbot instellingen aanpassen
+POST  /api/assistant/knowledge?projectId=... – Q&A kennis toevoegen
+      body: {ProjectID, Question, Answer}
+GET   /api/assistant/knowledge_list?projectId=... – kennis ophalen
+GET   /api/assistant/leads?projectId=...    – chatbot leads
 ```
 
-### AI Agent (chatbot)
-```bash
-python -m readdy.cli agent  <site_id>  # chatbot configureren
+### Marketing Content
+```
+POST /api/marketing/topics?projectId=...  – onderwerpen genereren
+     body: {ProjectID: str}
+POST /api/marketing/copies?projectId=...  – social media content genereren
+     body: {ProjectID, contentId, topic: {id, title, description}}
+GET  /api/marketing/list?projectId=...    – content overzicht
 ```
 
-### Volledig project overzicht
-```bash
-python -m readdy.cli projects             # alle projecten
-python -m readdy.cli status  <site_id>    # project details
-python -m readdy.cli setup   <site_id>    # volledige installatie
+### E-mail Campagnes (SAPI)
+```
+GET  /sapi/batch_email/campaigns          – campagnes ophalen
+POST /sapi/batch_email/campaign           – campagne aanmaken
+POST /sapi/batch_email/campaign/send      – campagne verzenden
 ```
 
-## Hoe de site_id ophalen
-Voer uit: `python -m readdy.cli projects` — dit toont alle sites met hun ID's.
+### Analyse
+```
+GET /api/analysis/project/num_stats?projectId=...    – bezoekersstatistieken
+GET /api/analysis/project/daily_stats?projectId=...  – dagstatistieken
+GET /api/assistant/leads?projectId=...               – chatbot leads
+```
 
-## Installatie afhankelijkheden
+### KRITISCHE NOOT: projectId als query parameter
+Veel POST-eindpunten verwachten `projectId` als **query parameter** (niet in body):
+```
+✅ POST /api/marketing/topics?projectId=52d32673-...   body: {ProjectID: "52d32673-..."}
+❌ POST /api/marketing/topics                           body: {projectId: "52d32673-..."}
+```
+
+## CLI Commando's
+
+```bash
+# Authenticatie
+python -m readdy.cli login        # OTP aanvragen + inloggen
+
+# Projecten
+python -m readdy.cli projects     # alle projecten tonen
+python -m readdy.cli status <project_id>  # project details
+
+# Marketing content
+python -m readdy.cli topics <project_id>   # onderwerpen genereren
+python -m readdy.cli copies <project_id>   # marketing content maken
+
+# AI Assistent
+python -m readdy.cli agent <project_id>    # chatbot instellingen
+python -m readdy.cli knowledge <project_id> <vraag> <antwoord>
+
+# E-mail
+python -m readdy.cli email-list <project_id>   # campagnes
+python -m readdy.cli email-leads <project_id>  # leads
+```
+
+## Installatie
+
 ```bash
 pip install -r requirements.txt
+```
+
+Vereiste `.env` variabelen:
+```
+READDY_ACCOUNT_EMAIL=leadexpert911@gmail.com
+READDY_API_KEY=rdy_3gohelmrrdnavjuearvd7to3t4yntrye
+READDY_BASE_URL=https://readdy.ai/api
 ```
 
 ## SEO Strategie 2026
@@ -76,50 +147,45 @@ pip install -r requirements.txt
 4. Schema.org Product markup toevoegen
 5. Afbeeldingen optimaliseren (WebP, alt-tekst)
 
-## E-mail Reeksen
-1. **Welkomst-reeks** (3 e-mails): na eerste aankoop
-2. **Verlaten winkelwagen** (2 e-mails): 1u en 24u na verlaten
-3. **EU Expansie aankondiging**: eenmalig naar bestaande klanten
-4. **Maandelijkse nieuwsbrief**: productupdates, blogs, aanbiedingen
-
 ## Readdy Agent Configuratie
-De AI-chatbot is geconfigureerd als islamitische speelgoed-assistent die:
+De AI-chatbot moet worden geconfigureerd als islamitische speelgoed-assistent die:
 - Bezoekers begroet met "Assalamu Alaikum"
 - Vragen beantwoordt in NL, EN, FR en AR
 - EU-klanten wijst op gratis verzending boven €50
 - Leads verzamelt (naam + e-mail)
+- Complexe vragen verwijst naar leadexpert911@gmail.com
 
-## Vercel Proxy (api/readdy.js)
-
-De map `api/` bevat een Vercel serverless proxy die Claude in staat stelt de readdy.ai API
-te benaderen via WebFetch wanneer directe toegang geblokkeerd is.
-
-### Vereiste Vercel omgevingsvariabelen
-| Variabele | Waarde |
-|-----------|--------|
-| `READDY_API_KEY` | Zie `.env` |
-| `PROXY_TOKEN` | Zelf te kiezen geheim token |
-| `READDY_BASE_URL` | `https://readdy.ai/api` (optioneel) |
-
-### Proxy deployen
-```bash
-# Eenmalig, vanuit projectroot:
-npx vercel --prod
+**PATCH** `/api/assistant/setting?projectId=52d32673-5700-44eb-9821-6ce043bf17b3`
+```json
+{
+  "projectID": "52d32673-5700-44eb-9821-6ce043bf17b3",
+  "prompt": "Je bent de vriendelijke assistent van Little Oummah...",
+  "language": "nl",
+  "leadNotice": true,
+  "appoinmentNotice": false
+}
 ```
 
-### Proxy gebruiken via WebFetch
-```
-GET https://<jouw-vercel-domein>/api/readdy?action=list_sites&token=<PROXY_TOKEN>
-GET https://<jouw-vercel-domein>/api/readdy?action=list_blogs&site_id=<ID>&token=<PROXY_TOKEN>
-```
+## Gegenereerde Marketing Content (2026-05-14)
+
+Via `/api/marketing/copies` zijn 4 sets social media content aangemaakt:
+
+| # | Taal | Onderwerp |
+|---|------|-----------|
+| 1 | EN | Best Islamic Educational Toys 2026 – Motor Skills Focus |
+| 2 | EN | Arabic Alphabet Magnetic Letters: Complete Buyer Guide |
+| 3 | EN | Top 10 Halal Toys for Toddlers with EU Shipping |
+| 4 | NL | Islamitisch Speelgoed: Beste Keuzes voor Peuters in Nederland 2026 |
+
+Elke set bevat content voor: X (Twitter), Facebook, Instagram.
 
 ## Bestandsstructuur
 ```
 api/
-  readdy.js           # Vercel serverless proxy voor readdy.ai
+  readdy.js           # Vercel serverless proxy (legacy, JWT auth vereist)
 readdy/
   __init__.py         # exports
-  client.py           # Readdy.ai API client
+  client.py           # Readdy.ai API client (bijgewerkt met juiste endpoints)
   cli.py              # Command-line interface
   blog_manager.py     # Blog beheer
   seo_manager.py      # SEO optimalisatie
@@ -133,5 +199,6 @@ vercel.json           # Vercel configuratie
 
 ## Notities
 - `.env` staat in `.gitignore` en wordt NIET gepusht naar GitHub
-- De readdy.ai API endpoints zijn gebaseerd op de platformdocumentatie
-- Bij API-fouten: controleer of de API key nog geldig is via readdy.ai/user/api-key
+- readdy.ai gebruikt JWT (OTP e-mail flow), niet API key bearer
+- Website generatie via `page_gen/generate` vereist SSE streaming → gebruik het readdy.ai dashboard
+- De `rdy_` API key is voor embedded chatbot widgets, niet voor de REST API

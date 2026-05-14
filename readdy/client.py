@@ -1,6 +1,35 @@
 """
 Readdy.ai API Client voor Little Oummah Webshop.
-Beheert blogs, SEO, email-opvolgingen en projectaanpassingen via de Readdy API.
+
+AUTHENTICATIE: readdy.ai gebruikt JWT via OTP-e-mail (GEEN API key bearer).
+Stroom:
+  1. POST /api/auth/auth_code  {"email": EMAIL}   → stuurt OTP e-mail
+  2. POST /api/auth/login      {"email": EMAIL, "code": OTP}  → {"accessToken": JWT}
+  3. Gebruik Bearer JWT in Authorization header
+
+BELANGRIJK: Veel POST-eindpunten verwachten `projectId` als QUERY-PARAMETER,
+niet in de request body!
+
+Ontdekte eindpunten (via JS bundle analyse):
+  POST /api/page_gen/project               – project aanmaken
+  POST /api/page_gen/project/list          – projecten ophalen (body: {page:{pageNum,pageSize}})
+  GET  /api/page_gen/project/list          – (alternatief)
+  POST /api/page_gen/session?projectId=... – sessie aanmaken {name: str, seq: str}
+  POST /api/page_gen/generate?projectId=... – website genereren (SSE streaming)
+  POST /api/project/subdomain/generate?projectId=... – subdomein aanmaken
+  POST /api/project/subdomain/publish?projectId=...  – publiceren
+  GET  /api/project/subdomain/info?projectId=...     – subdomein info
+  GET  /api/assistant/setting?projectId=...          – chatbot instellingen
+  POST /api/assistant/knowledge?projectId=...        – Q&A kennis toevoegen
+  GET  /api/assistant/knowledge_list?projectId=...   – kennis ophalen
+  POST /api/marketing/topics?projectId=...           – blog-onderwerpen genereren
+  POST /api/marketing/copies?projectId=...           – marketing content genereren
+  GET  /api/marketing/list?projectId=...             – content overzicht
+  POST /sapi/batch_email/campaign                    – e-mailcampagne aanmaken
+  GET  /sapi/batch_email/campaigns                   – campagnes ophalen
+  POST /sapi/batch_email/campaign/send               – campagne verzenden
+  GET  /api/analysis/project/num_stats?projectId=... – statistieken
+  GET  /api/assistant/leads?projectId=...            – chatbot leads
 """
 
 import os
@@ -11,15 +40,23 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-API_KEY   = os.getenv("READDY_API_KEY", "")
 BASE_URL  = os.getenv("READDY_BASE_URL", "https://readdy.ai/api")
-EMAIL     = os.getenv("READDY_ACCOUNT_EMAIL", "")
+SAPI_URL  = "https://readdy.ai/sapi"  # server API voor e-mail campaigns
+EMAIL     = os.getenv("READDY_ACCOUNT_EMAIL", "leadexpert911@gmail.com")
+
+# JWT token – wordt per sessie opgeslagen na inloggen
+_ACCESS_TOKEN: str = ""
+
+
+def set_token(token: str) -> None:
+    """Sla JWT access token op voor gebruik in API calls."""
+    global _ACCESS_TOKEN
+    _ACCESS_TOKEN = token
 
 
 def _headers() -> dict:
     return {
-        "Authorization": f"Bearer {API_KEY}",
-        "X-API-Key": API_KEY,
+        "Authorization": f"Bearer {_ACCESS_TOKEN}",
         "Content-Type": "application/json",
         "Accept": "application/json",
     }
@@ -32,244 +69,243 @@ def _get(path: str, params: dict | None = None) -> dict:
         return r.json()
 
 
-def _post(path: str, body: dict) -> dict:
+def _post(path: str, body: dict, params: dict | None = None) -> dict:
+    """POST – gebruik params voor query-parameters zoals projectId."""
     with httpx.Client(timeout=30) as client:
-        r = client.post(f"{BASE_URL}{path}", headers=_headers(), json=body)
+        r = client.post(f"{BASE_URL}{path}", headers=_headers(), json=body, params=params or {})
         r.raise_for_status()
         return r.json()
 
 
-def _patch(path: str, body: dict) -> dict:
+def _patch(path: str, body: dict, params: dict | None = None) -> dict:
+    """PATCH – vereist voor o.a. /api/assistant/setting update."""
     with httpx.Client(timeout=30) as client:
-        r = client.patch(f"{BASE_URL}{path}", headers=_headers(), json=body)
+        r = client.patch(f"{BASE_URL}{path}", headers=_headers(), json=body, params=params or {})
         r.raise_for_status()
         return r.json()
 
 
-def _delete(path: str) -> dict:
-    with httpx.Client(timeout=30) as client:
-        r = client.delete(f"{BASE_URL}{path}", headers=_headers())
-        r.raise_for_status()
-        return r.json()
+# ─── Authenticatie ────────────────────────────────────────────────────────────
+
+def request_otp(email: str = EMAIL) -> dict:
+    """Stap 1: Vraag OTP-code aan via e-mail."""
+    return _post("/auth/auth_code", {"email": email})
 
 
-# ─── Account ─────────────────────────────────────────────────────────────────
-
-def get_account() -> dict:
-    """Haal account informatie op."""
-    return _get("/user/me")
-
-
-# ─── Sites / Projecten ───────────────────────────────────────────────────────
-
-def list_sites() -> list:
-    """Lijst van alle websites / projecten."""
-    data = _get("/sites")
-    return data.get("sites", data)
+def login_with_otp(otp_code: str, email: str = EMAIL) -> dict:
+    """Stap 2: Log in met OTP en sla JWT token op. Geeft token terug."""
+    result = _post("/auth/login", {"email": email, "code": otp_code})
+    token = result.get("data", {}).get("accessToken", "")
+    if token:
+        set_token(token)
+    return result
 
 
-def get_site(site_id: str) -> dict:
-    """Haal details op van een specifieke site."""
-    return _get(f"/sites/{site_id}")
+def refresh_token() -> dict:
+    """Vernieuw het JWT token (vereist geldig token)."""
+    return _post("/auth/refresh_token", {})
 
 
-def update_site(site_id: str, **kwargs) -> dict:
-    """Pas site-instellingen aan (naam, beschrijving, etc.)."""
-    return _patch(f"/sites/{site_id}", kwargs)
+# ─── Projecten ────────────────────────────────────────────────────────────────
+
+def list_projects(page: int = 1, page_size: int = 20) -> list:
+    """Alle readdy.ai projecten ophalen."""
+    result = _post("/page_gen/project/list", {"page": {"pageNum": page, "pageSize": page_size}})
+    return result.get("data", {}).get("projects", [])
 
 
-# ─── Pagina's ─────────────────────────────────────────────────────────────────
-
-def list_pages(site_id: str) -> list:
-    """Alle pagina's van een site."""
-    data = _get(f"/sites/{site_id}/pages")
-    return data.get("pages", data)
+def get_project_total() -> int:
+    """Totaal aantal projecten in het account."""
+    result = _post("/page_gen/project/list", {"page": {"pageNum": 1, "pageSize": 1}})
+    return result.get("data", {}).get("page", {}).get("total", 0)
 
 
-def get_page(site_id: str, page_id: str) -> dict:
-    return _get(f"/sites/{site_id}/pages/{page_id}")
-
-
-def create_page(site_id: str, title: str, content: str, slug: str = "", seo_description: str = "") -> dict:
-    return _post(f"/sites/{site_id}/pages", {
-        "title": title,
-        "content": content,
-        "slug": slug or title.lower().replace(" ", "-"),
-        "seo": {"description": seo_description},
+def create_project(name: str, category: int = 2, template: int = 1, framework: str = "react") -> dict:
+    """Maak een nieuw project aan. Geeft {"id": project_uuid} terug."""
+    result = _post("/page_gen/project", {
+        "name": name,
+        "category": category,
+        "template": template,
+        "framework": framework,
+        "device": "web",
+        "lib": "",
     })
+    return result.get("data", {})
 
 
-def update_page(site_id: str, page_id: str, **kwargs) -> dict:
-    return _patch(f"/sites/{site_id}/pages/{page_id}", kwargs)
+# ─── Sessie & Generatie ───────────────────────────────────────────────────────
+
+def create_session(project_id: str, name: str = "Little Oummah website", seq: str = "1") -> dict:
+    """Maak een chat-sessie aan voor AI-generatie."""
+    result = _post("/page_gen/session", {"name": name, "seq": seq},
+                   params={"projectId": project_id})
+    return result.get("data", {})
 
 
-# ─── Blog ─────────────────────────────────────────────────────────────────────
-
-def list_blogs(site_id: str) -> list:
-    """Alle blogartikelen van een site."""
-    data = _get(f"/sites/{site_id}/blogs")
-    return data.get("blogs", data)
+def get_subdomain_info(project_id: str) -> dict:
+    """Haal subdomein-informatie op."""
+    result = _get("/project/subdomain/info", params={"projectId": project_id})
+    return result.get("data", {})
 
 
-def get_blog(site_id: str, blog_id: str) -> dict:
-    return _get(f"/sites/{site_id}/blogs/{blog_id}")
+def generate_subdomain(project_id: str) -> dict:
+    """Genereer een readdy.co subdomein voor het project."""
+    result = _post("/project/subdomain/generate", {}, params={"projectId": project_id})
+    return result.get("data", {})
 
 
-def create_blog(
-    site_id: str,
-    title: str,
-    body: str,
-    slug: str = "",
-    meta_description: str = "",
-    tags: list[str] | None = None,
-    published: bool = True,
+def publish_subdomain(project_id: str) -> dict:
+    """Publiceer de site op het gegenereerde subdomein."""
+    result = _post("/project/subdomain/publish", {}, params={"projectId": project_id})
+    return result.get("data", {})
+
+
+# ─── AI-Assistent (Chatbot) ───────────────────────────────────────────────────
+
+def get_assistant_setting(project_id: str) -> dict:
+    """Haal de chatbot-instellingen op."""
+    result = _get("/assistant/setting", params={"projectId": project_id})
+    return result.get("data", {})
+
+
+def update_assistant_setting(
+    project_id: str,
+    prompt: str = "",
+    language: str = "nl",
+    lead_notice: bool = True,
+    appointment_notice: bool = False,
 ) -> dict:
-    """Maak een nieuw blogartikel aan."""
-    return _post(f"/sites/{site_id}/blogs", {
-        "title": title,
-        "body": body,
-        "slug": slug or title.lower().replace(" ", "-"),
-        "seo": {
-            "meta_title": title,
-            "meta_description": meta_description,
-        },
-        "tags": tags or [],
-        "published": published,
-    })
+    """
+    Pas de chatbot-instellingen aan via PATCH.
+    Veld 'appoinmentNotice' heeft een typefout in de readdy.ai API.
+    """
+    return _patch("/assistant/setting", {
+        "projectID": project_id,
+        "prompt": prompt,
+        "language": language,
+        "leadNotice": lead_notice,
+        "appoinmentNotice": appointment_notice,
+    }, params={"projectId": project_id})
 
 
-def update_blog(site_id: str, blog_id: str, **kwargs) -> dict:
-    """Pas een bestaand blogartikel aan."""
-    return _patch(f"/sites/{site_id}/blogs/{blog_id}", kwargs)
+def add_knowledge(project_id: str, question: str, answer: str) -> dict:
+    """Voeg een Q&A-kennisitem toe aan de chatbot."""
+    result = _post("/assistant/knowledge", {
+        "ProjectID": project_id,
+        "Question": question,
+        "Answer": answer,
+    }, params={"projectId": project_id})
+    return result.get("data", {})
 
 
-def delete_blog(site_id: str, blog_id: str) -> dict:
-    return _delete(f"/sites/{site_id}/blogs/{blog_id}")
+def list_knowledge(project_id: str) -> list:
+    """Haal alle kennisitems van de chatbot op."""
+    result = _get("/assistant/knowledge_list", params={"projectId": project_id})
+    return result.get("data", {}).get("list", [])
 
 
-# ─── SEO ──────────────────────────────────────────────────────────────────────
+def get_assistant_leads(project_id: str) -> list:
+    """Haal leads op die via de chatbot zijn verzameld."""
+    result = _get("/assistant/leads", params={"projectId": project_id})
+    return result.get("data", {}).get("list", [])
 
-def get_seo(site_id: str) -> dict:
-    """Haal de SEO-instellingen van de site op."""
-    return _get(f"/sites/{site_id}/seo")
+
+# ─── Marketing & Blog Content ─────────────────────────────────────────────────
+
+def get_marketing_topics(project_id: str) -> dict:
+    """
+    Genereer blog-onderwerpen voor het project via AI.
+    Geeft {contentId: int, topics: [{id, title, description}]} terug.
+    """
+    result = _post("/marketing/topics", {"ProjectID": project_id},
+                   params={"projectId": project_id})
+    return result.get("data", {})
 
 
-def update_seo(
-    site_id: str,
-    title: str = "",
-    description: str = "",
-    keywords: list[str] | None = None,
-    og_image: str = "",
+def generate_marketing_copies(
+    project_id: str,
+    content_id: int,
+    topic: dict,
 ) -> dict:
-    """Pas SEO-instellingen aan voor de hele site."""
-    payload = {}
-    if title:
-        payload["title"] = title
-    if description:
-        payload["description"] = description
-    if keywords:
-        payload["keywords"] = keywords
-    if og_image:
-        payload["og_image"] = og_image
-    return _patch(f"/sites/{site_id}/seo", payload)
+    """
+    Genereer marketing content (X, Facebook, Instagram) voor een onderwerp.
+    topic = {"id": "t1", "title": "...", "description": "..."}
+    """
+    result = _post("/marketing/copies", {
+        "ProjectID": project_id,
+        "contentId": content_id,
+        "topic": topic,
+    }, params={"projectId": project_id})
+    return result.get("data", {})
 
 
-def update_page_seo(
-    site_id: str,
-    page_id: str,
-    meta_title: str = "",
-    meta_description: str = "",
-    slug: str = "",
-) -> dict:
-    """Pas SEO-instellingen aan van een specifieke pagina."""
-    seo_data: dict = {}
-    if meta_title:
-        seo_data["meta_title"] = meta_title
-    if meta_description:
-        seo_data["meta_description"] = meta_description
-    if slug:
-        seo_data["slug"] = slug
-    return _patch(f"/sites/{site_id}/pages/{page_id}", {"seo": seo_data})
+def list_marketing_content(project_id: str) -> list:
+    """Haal opgeslagen marketing content op."""
+    result = _get("/marketing/list", params={"projectId": project_id})
+    return result.get("data", {}).get("list", [])
 
 
-# ─── Email / Outreach Campaigns ───────────────────────────────────────────────
+# ─── E-mail Campagnes (SAPI) ──────────────────────────────────────────────────
 
-def list_campaigns(site_id: str) -> list:
-    """Lijst van alle e-mailcampagnes."""
-    data = _get(f"/sites/{site_id}/campaigns")
-    return data.get("campaigns", data)
-
-
-def get_campaign(site_id: str, campaign_id: str) -> dict:
-    return _get(f"/sites/{site_id}/campaigns/{campaign_id}")
+def _sapi_get(path: str, params: dict | None = None) -> dict:
+    with httpx.Client(timeout=30) as client:
+        r = client.get(f"{SAPI_URL}{path}", headers=_headers(), params=params or {})
+        r.raise_for_status()
+        return r.json()
 
 
-def create_campaign(
-    site_id: str,
+def _sapi_post(path: str, body: dict) -> dict:
+    with httpx.Client(timeout=30) as client:
+        r = client.post(f"{SAPI_URL}{path}", headers=_headers(), json=body)
+        r.raise_for_status()
+        return r.json()
+
+
+def list_email_campaigns(project_id: str) -> list:
+    """Haal alle e-mailcampagnes op."""
+    result = _sapi_get("/batch_email/campaigns", params={"projectId": project_id})
+    return result.get("data", {}).get("list", [])
+
+
+def create_email_campaign(
+    project_id: str,
     name: str,
     subject: str,
     body: str,
-    recipients: list[str] | None = None,
-    schedule: str = "",
 ) -> dict:
     """Maak een nieuwe e-mailcampagne aan."""
-    return _post(f"/sites/{site_id}/campaigns", {
+    result = _sapi_post("/batch_email/campaign", {
+        "projectId": project_id,
         "name": name,
         "subject": subject,
         "body": body,
-        "recipients": recipients or [],
-        "schedule": schedule,
     })
+    return result.get("data", {})
 
 
-def send_campaign(site_id: str, campaign_id: str) -> dict:
-    """Verstuur een campagne meteen."""
-    return _post(f"/sites/{site_id}/campaigns/{campaign_id}/send", {})
-
-
-# ─── Readdy Agent ─────────────────────────────────────────────────────────────
-
-def get_agent(site_id: str) -> dict:
-    """Haal de configuratie van de Readdy Agent (AI-chatbot) op."""
-    return _get(f"/sites/{site_id}/agent")
-
-
-def update_agent(
-    site_id: str,
-    persona: str = "",
-    instructions: str = "",
-    greeting: str = "",
-    collect_leads: bool = True,
-) -> dict:
-    """Pas de AI-chatbot-instellingen aan."""
-    payload: dict = {"collect_leads": collect_leads}
-    if persona:
-        payload["persona"] = persona
-    if instructions:
-        payload["instructions"] = instructions
-    if greeting:
-        payload["greeting"] = greeting
-    return _patch(f"/sites/{site_id}/agent", payload)
-
-
-# ─── Leads ────────────────────────────────────────────────────────────────────
-
-def list_leads(site_id: str) -> list:
-    """Lijst van alle verzamelde leads / contacten."""
-    data = _get(f"/sites/{site_id}/leads")
-    return data.get("leads", data)
-
-
-# ─── AI-inhoudsondersteuning ──────────────────────────────────────────────────
-
-def generate_content(prompt: str, context: str = "Little Oummah – Islamitisch educatief speelgoed") -> dict:
-    """Genereer AI-inhoud via de Readdy Agent API."""
-    return _post("/ai/generate", {
-        "prompt": prompt,
-        "context": context,
+def send_email_campaign(project_id: str, campaign_id: str) -> dict:
+    """Verstuur een e-mailcampagne."""
+    result = _sapi_post("/batch_email/campaign/send", {
+        "projectId": project_id,
+        "campaignId": campaign_id,
     })
+    return result.get("data", {})
+
+
+# ─── Analyses ─────────────────────────────────────────────────────────────────
+
+def get_stats(project_id: str) -> dict:
+    """Haal bezoekersstatistieken op."""
+    result = _get("/analysis/project/num_stats", params={"projectId": project_id})
+    return result.get("data", {})
 
 
 if __name__ == "__main__":
-    print("Readdy.ai client geladen. API Key:", API_KEY[:12] + "..." if API_KEY else "NIET INGESTELD")
+    print("Readdy.ai client geladen.")
     print("Account e-mail:", EMAIL)
+    print("Token status:", "ingesteld" if _ACCESS_TOKEN else "NIET INGESTELD – roep login_with_otp() aan")
+    print()
+    print("Gebruik:")
+    print("  1. request_otp()          – OTP-e-mail aanvragen")
+    print("  2. login_with_otp('123456') – inloggen met OTP")
+    print("  3. list_projects()        – projecten ophalen")

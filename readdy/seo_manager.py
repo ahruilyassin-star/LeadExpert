@@ -2,9 +2,8 @@
 SEO Manager – analyseer en optimaliseer de SEO van de Little Oummah website.
 
 Gebruik:
-  python -m readdy.seo_manager audit   <site_id>
-  python -m readdy.seo_manager update  <site_id>
-  python -m readdy.seo_manager pages   <site_id>
+  python -m readdy.seo_manager stats      <project_id>
+  python -m readdy.seo_manager recommend
 """
 
 import sys
@@ -59,60 +58,15 @@ SITE_SEO_TEMPLATE = {
 }
 
 
-def audit_seo(site_id: str):
-    """Controleer de huidige SEO-instellingen en geef advies."""
-    seo = client.get_seo(site_id)
-    print(f"\n🔍 SEO Audit – site {site_id}")
-    print(f"  Titel    : {seo.get('title', '❌ ONTBREEKT')}")
-    print(f"  Omschr.  : {seo.get('description', '❌ ONTBREEKT')}")
-    kw = seo.get("keywords", [])
-    print(f"  Keywords : {', '.join(kw) if kw else '❌ GEEN'}")
-
-    print("\n📊 Aanbevolen wijzigingen:")
-    if not seo.get("title"):
-        print(f"  ➕ Voeg toe: titel = \"{SITE_SEO_TEMPLATE['title']}\"")
-    if not seo.get("description"):
-        print(f"  ➕ Voeg toe: beschrijving = \"{SITE_SEO_TEMPLATE['description'][:80]}...\"")
-    missing_kw = [k for k in TARGET_KEYWORDS["global"] if k not in kw]
-    if missing_kw:
-        print(f"  ➕ Ontbrekende keywords: {', '.join(missing_kw)}")
-
-
-def apply_seo_template(site_id: str):
-    """Pas de geoptimaliseerde SEO-instellingen toe op de site."""
-    print(f"\n🚀 SEO-template toepassen op site {site_id}...")
-    result = client.update_seo(
-        site_id=site_id,
-        title=SITE_SEO_TEMPLATE["title"],
-        description=SITE_SEO_TEMPLATE["description"],
-        keywords=SITE_SEO_TEMPLATE["keywords"],
-    )
-    print("✅ SEO bijgewerkt:", json.dumps(result, indent=2, ensure_ascii=False))
-
-
-def audit_pages_seo(site_id: str):
-    """Controleer SEO van alle pagina's."""
-    pages = client.list_pages(site_id)
-    print(f"\n📄 Pagina SEO Audit – {len(pages)} pagina's gevonden")
-    issues = []
-    for p in pages:
-        seo = p.get("seo", {})
-        title_ok = bool(seo.get("meta_title"))
-        desc_ok  = bool(seo.get("meta_description"))
-        slug_ok  = bool(p.get("slug"))
-        status = "✅" if (title_ok and desc_ok and slug_ok) else "⚠️"
-        print(f"  {status} {p.get('title')} [{p.get('id')}]")
-        if not title_ok:
-            issues.append(f"    ❌ Geen meta-titel: {p.get('title')}")
-        if not desc_ok:
-            issues.append(f"    ❌ Geen meta-beschrijving: {p.get('title')}")
-        if not slug_ok:
-            issues.append(f"    ❌ Geen slug: {p.get('title')}")
-    if issues:
-        print("\n🔧 Te repareren:")
-        print("\n".join(issues))
-    else:
-        print("\n✅ Alle pagina's hebben SEO-instellingen!")
+def show_stats(project_id: str):
+    """Haal bezoekersstatistieken op voor het project."""
+    try:
+        stats = client.get_stats(project_id)
+        print(f"\n📊 Statistieken – project {project_id}")
+        for k, v in stats.items():
+            print(f"  {k}: {v}")
+    except Exception as e:
+        print(f"❌ Statistieken ophalen mislukt: {e}")
 
 
 def generate_seo_recommendations() -> dict:
@@ -147,12 +101,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     cmd = args[0]
-    if cmd == "audit" and len(args) >= 2:
-        audit_seo(args[1])
-    elif cmd == "update" and len(args) >= 2:
-        apply_seo_template(args[1])
-    elif cmd == "pages" and len(args) >= 2:
-        audit_pages_seo(args[1])
+    if cmd == "stats" and len(args) >= 2:
+        show_stats(args[1])
     elif cmd == "recommend":
         print(json.dumps(generate_seo_recommendations(), indent=2, ensure_ascii=False))
     else:
