@@ -302,6 +302,14 @@ met redirect). Re-publish via API geblokkeerd: "sub domain is redirecting."
 | LeadExpert - Lokale SEO Landing | `659e1a86-106c-4d95-9ae7-4fac5993772b` | `jengyy.readdy.co` | ⚠️ Gegenereerd, nog te publiceren via dashboard |
 | LeadExpert - Test v2 (wegooibaar) | `d0bd4c8e-08b5-4eb1-bdff-b2245883c841` | `itbyjn.readdy.co` | ⚠️ Test project, kan worden verwijderd |
 
+## Le Brood – Sandwich Keten (aangemaakt 2026-05-14)
+- **Project ID**: `ef2ad1e1-f000-4e9e-85ae-3eeb675eec97`
+- **Subdomein**: `ckbyin.readdy.co`
+- **Sessie ID**: `0d622e05-c6d4-4015-9a92-ca50bf906153`
+- **Status**: ⚠️ Website gegenereerd via SSE (758 events, 61.7KB – grootste website tot nu toe!), nog te publiceren via dashboard
+- **Inhoud**: McDonald's-niveau website met volledig menu, vestigingen, loyaliteitskaart (BroodBonus), online bestellen, carrière, franchise, allergenen
+- **Merkkleur**: Orange `#FF6B35`, Cream `#FFF8F0`, Dark `#2D1810`
+
 ---
 
 ## Volledige Automatisering Workflow
