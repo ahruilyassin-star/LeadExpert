@@ -298,7 +298,7 @@ met redirect). Re-publish via API geblokkeerd: "sub domain is redirecting."
 ### Extra Landing Pages (aangemaakt 2026-05-14)
 | Project | ID | Subdomein | Status |
 |---------|-----|-----------|--------|
-| LeadExpert - Webshop Landing | `7670a606-f072-44c2-b387-1bad037bd19d` | `xermrj.readdy.co` | ⚠️ Gegenereerd, nog te publiceren via dashboard |
+| LeadExpert - Webshop Landing | `7670a606-f072-44c2-b387-1bad037bd19d` | `xermrj.readdy.co` | ⚠️ Gegenereerd (sessie `a0fed796`, 581 events, 46KB), nog te publiceren via dashboard |
 | LeadExpert - Lokale SEO Landing | `659e1a86-106c-4d95-9ae7-4fac5993772b` | `jengyy.readdy.co` | ⚠️ Gegenereerd, nog te publiceren via dashboard |
 | LeadExpert - Test v2 (wegooibaar) | `d0bd4c8e-08b5-4eb1-bdff-b2245883c841` | `itbyjn.readdy.co` | ⚠️ Test project, kan worden verwijderd |
 
