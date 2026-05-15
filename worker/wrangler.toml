@@ -1,0 +1,13 @@
+name = "leadexpert"
+main = "worker.js"
+compatibility_date = "2026-05-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "leadexpert-db"
+database_id = "e6b185cd-cd70-463e-a1f6-1136b8c76cc7"
+
+# Daily WhatsApp campagne om 08:00 UTC (= 10:00 Brussel zomertijd / 09:00 wintertijd).
+# Verwerkt maximaal 50 wachtende leads per run, 2 sec delay tussen berichten.
+[triggers]
+crons = ["0 8 * * *"]
