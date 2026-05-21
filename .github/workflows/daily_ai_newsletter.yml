@@ -1,0 +1,35 @@
+name: Daily AI Earnings Newsletter
+
+on:
+  schedule:
+    # Elke dag om 07:00 Amsterdam tijd (06:00 UTC zomer / 07:00 UTC winter)
+    - cron: '0 6 * * *'
+  workflow_dispatch:  # Handmatig starten via GitHub UI
+
+jobs:
+  send-newsletter:
+    name: Verstuur Dagelijkse AI Verdien Gids
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Python instellen
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Nieuwsbrief versturen
+        env:
+          GMAIL_SENDER: ${{ secrets.GMAIL_SENDER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python scripts/ai_earnings_newsletter.py
+
+      - name: Bevestiging
+        if: success()
+        run: echo "✅ AI Verdien Gids succesvol verstuurd naar ahruil.yassin@gmail.com"
+
+      - name: Foutmelding
+        if: failure()
+        run: echo "❌ Versturen mislukt — controleer de GMAIL_SENDER en GMAIL_APP_PASSWORD secrets"
