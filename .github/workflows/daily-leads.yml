@@ -1,0 +1,41 @@
+name: Daily webdesign intent-leads
+
+on:
+  schedule:
+    # 07:00 Brussel-tijd = 06:00 UTC (zomer) / 06:00 UTC (winter dichter bij 08:00 BE)
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-leads:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/daily-webdesign-leads-Le4c5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch Reddit intent-leads
+        id: fetch
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+        run: python scripts/fetch_reddit_leads.py
+
+      - name: Commit and push
+        run: |
+          git config user.name  "leads-bot"
+          git config user.email "leads-bot@users.noreply.github.com"
+          git add leads/
+          if git diff --staged --quiet; then
+            echo "No new leads today — skipping commit."
+            exit 0
+          fi
+          git commit -m "Daily intent-leads ${{ steps.fetch.outputs.date }} (${{ steps.fetch.outputs.lead_count }} qualified / ${{ steps.fetch.outputs.raw_count }} raw)"
+          git push origin claude/daily-webdesign-leads-Le4c5
