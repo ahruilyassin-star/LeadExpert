@@ -1,0 +1,31 @@
+bedrijfsnaam,sector,stad,provincie,telefoon,email,website,adres,doelgroep_segment,reden_lead,bron,kwalificatie_status
+Loodgieter Stan Vermassen,Loodgieter,Antwerpen,Antwerpen,,,https://www.loodgieterantwerpen.net/,,Lokale dienstverlener,"Solo-loodgieter, .net-domein, site oogt sober — typisch one-man-band die baat heeft bij modernere site",WebSearch,Te kwalificeren
+Loodgietersbedrijf Van Haren,Loodgieter,Antwerpen,Antwerpen,03-3448433,,https://www.loodgietersbedrijfantwerpen.be/,,Lokale dienstverlener,Vast nummer zonder mobiel — klassiek KMO-profiel,WebSearch,Te kwalificeren
+Santech BV,Loodgieter / Sanitair,Antwerpen,Antwerpen,,,https://santech.be/,,Lokale dienstverlener,Generic domeinnaam — vaak teken van templatesite,WebSearch,Te kwalificeren
+Emiel BVBA,Loodgieter,Merksem,Antwerpen,,,https://www.emielbvba.be/,,Lokale dienstverlener,.aspx URLs in nav — duidt op oudere ASP.NET-stack,WebSearch,Te kwalificeren
+Kapsalon Kaprijke,Kapsalon,Gent,Oost-Vlaanderen,09 234 34 26,,https://www.kaprijkekapsalon.be/,Sint-Niklaasstraat 40 9000 Gent,Lokale dienstverlener,Kleine onafhankelijke kapper — vaak verouderde brochure-site,WebSearch,Te kwalificeren
+Kapsalon Olivier,Kapsalon,Oostakker (Gent),Oost-Vlaanderen,09 430 55 30,info@kapsalonolivier.be,https://kapsalonolivier.be/,Pijphoekstraat 54 9041 Oostakker,Lokale dienstverlener,Solo dames-/herenkapper,WebSearch,Te kwalificeren
+Kapsalon Red Gent,Kapsalon,Gent,Oost-Vlaanderen,+32 9 223 37 44,gent@red-stylists.be,,Zuidstationstraat 41 Gent,Lokale dienstverlener,Onafhankelijke zaak — site checken,WebSearch,Te kwalificeren
+Maysa Hairdresser,Kapsalon,Gent,Oost-Vlaanderen,09 223 57 67,info@maysa.be,https://www.maysa.be/,Voldersstraat 68 9000 Gent,Lokale dienstverlener,Single-location kapper,WebSearch,Te kwalificeren
+Tougou Fijnproeverij,Restaurant / Traiteur,Brugge,West-Vlaanderen,050 70 58 02,proef@tougou.be,https://www.tougou.be/,Smedenstraat 47 8000 Brugge,Lokale dienstverlener,Werkt enkel op bestelling — geen online ordering = duidelijke upsell,WebSearch,Te kwalificeren
+Cambrinus Bierbrasserie,Restaurant,Brugge,West-Vlaanderen,+32 50 33 23 28,info@bierbrasseriecambrinus.eu,https://www.bierbrasseriecambrinus.eu/,Philipstockstraat 19 8000 Brugge,Lokale dienstverlener,.eu-domein + familiezaak — typisch profiel oudere site,WebSearch,Te kwalificeren
+One Restaurant Brugge,Restaurant,Brugge,West-Vlaanderen,,,https://www.onerestaurant.be/,Arsenaalstraat 55 8000 Brugge,Lokale dienstverlener,Onafhankelijke zaak — verifieer reserveringsmodule,WebSearch,Te kwalificeren
+Schrijnwerker Verstappen Willy,Schrijnwerker,Maaseik,Limburg,089 56 78 80 / 0478 39 26 74,,,Glazentrapstraat 35 3680 Maaseik,Lokale dienstverlener,Geen website gevonden in zoekresultaten — sterke lead,WebSearch,Geen site detected
+Thijs Interieurbouw,Schrijnwerker,Zonhoven,Limburg,,,,,Lokale dienstverlener,30 jaar oude zaak — site checken op modernisatie-nood,WebSearch,Te kwalificeren
+Bakkerij Vanderstraeten,Bakker,Hasselt,Limburg,011 66 34 62,,https://bakkerijvanderstraeten.be/,Minderbroederstraat 32 3500 Hasselt,Lokale dienstverlener,Klassieke buurtbakker — vaak basic site,WebSearch,Te kwalificeren
+Bakkerij Tomassen,Bakker,Genk,Limburg,,,,Spoorwegstraat 9 b1 3600 Genk,Lokale dienstverlener,Vermeld op stad.genk.be — eigen site onduidelijk,WebSearch,Te kwalificeren
+Bakkersdochter,Bakker,Hasselt,Limburg,,,https://www.bakkersdochter.be/,Hasselt centrum,Lokale dienstverlener,Klein artisanaal — site checken,WebSearch,Te kwalificeren
+Tuinaanleg Bergmans Hans,Hovenier / Tuinaanleg,Wezemaal,Vlaams-Brabant,0475/44.71.85,,,Kloosterbroekpad 5 3111 Wezemaal,Lokale dienstverlener,Geen aparte website gevonden — enkel via directory zichtbaar,WebSearch,Geen site detected
+Kwootech,Elektricien,Mechelen,Antwerpen,0489 618 220,,https://www.kwootech.be/,,Lokale dienstverlener,Solo elektricien-profiel,WebSearch,Te kwalificeren
+SK Elektriciteit (Stefan Kochuyt),Elektricien,Lier,Antwerpen,,,https://sk-elektriciteit.be/,,Lokale dienstverlener,Eénmanszaak — typisch zwakke conversiesite,WebSearch,Te kwalificeren
+Elektro Wonders,Elektricien,Mechelen,Antwerpen,0484 10 67 04,elektrowonders@gmail.com,https://www.elektrowonders.com/,,Lokale dienstverlener,Gmail als contact = amateuristische opzet — sterke webdesign-lead,WebSearch,Sterk profiel
+Maison Couture (Italiaans naaiatelier),Naaiatelier / Retouches,Jette (Brussel),Brussel,,,https://www.reparationretouchesbruxelles.be/nl,Jette 1090 Brussel,Lokale dienstverlener,25 jaar zaak — site checken,WebSearch,Te kwalificeren
+CYCLUP Atelier-Boutiek,Kleermaker / Atelier,Brussel,Brussel,0492 91 55 16,,,Hoogstraat 298c-300 1000 Brussel,Lokale dienstverlener,Sociale economie / OCMW — geen eigen domein gevonden,WebSearch,Geen site detected
+NS Clean,Schoonmaakbedrijf,Leuven,Vlaams-Brabant,,,https://www.nsclean.be/,,Lokale dienstverlener,KMO schoonmaak — vaak templatesites,WebSearch,Te kwalificeren
+The Housekeepers,Schoonmaakbedrijf,Leuven,Vlaams-Brabant,,,https://thehousekeepers.be/,,Lokale dienstverlener,Verifieer SEO/Lokale ranking,WebSearch,Te kwalificeren
+Notaris DEGROOTE Liesbet,Notaris,Kortrijk,West-Vlaanderen,+32 56 43 90 81,,,Beneluxpark 13 8500 Kortrijk,Lokale dienstverlener,Solo-notaris — vaak Lex.be-listing zonder eigen site,WebSearch,Te kwalificeren
+Vancoppernolle & Sabbe (geassocieerde notarissen),Notaris,Kortrijk,West-Vlaanderen,+32 56 23 15 30,,,Beverlaai 71 8500 Kortrijk,Lokale dienstverlener,Klassiek profiel notaris,WebSearch,Te kwalificeren
+Notaris Verstraete & Viaene,Notaris,Roeselare,West-Vlaanderen,,,http://www.aktius.be/,Westlaan/Weststraat Roeselare,Lokale dienstverlener,http (geen https) = sterke modernisatie-lead,WebSearch,Sterk profiel
+TRUST Advocaten,Advocatenkantoor,Roeselare + Kortrijk,West-Vlaanderen,051 23 13 53 / 056 21 29 00,,https://trustadvocaten.be/,Henri Horriestraat 44-46 8800 Roeselare,Lokale dienstverlener,Twee vestigingen — verifieer site,WebSearch,Te kwalificeren
+Garage Pierard Fils (Garage Pierard Racing),Garage / Carrosserie,Charleroi,Henegouwen,,Garage.pierard@gmail.com,,Rue de Montigny 248 6000 Charleroi,Lokale dienstverlener,Gmail-contact = waarschijnlijk geen of zwakke site,WebSearch,Sterk profiel
+Carrosserie Gendrin,Carrosserie,Namen,Namen,,,,,Lokale dienstverlener,Familiezaak — site onduidelijk,WebSearch,Te kwalificeren
