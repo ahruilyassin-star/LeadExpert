@@ -21,12 +21,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Fetch Reddit intent-leads
+      - name: Fetch intent-leads from all sources
         id: fetch
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
-        run: python scripts/fetch_reddit_leads.py
+        run: python scripts/daily.py
 
       - name: Commit and push
         run: |

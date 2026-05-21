@@ -1,0 +1,26 @@
+{
+  "_comment": "Voeg hier RSS-feeds toe. Elke entry: { name, url, source_label, default_keyword }. De default_keyword wordt gebruikt als matched_keyword in de scoring. Verwijder de _example regel en voeg je eigen Google Alerts URLs toe.",
+
+  "_setup_google_alerts": [
+    "1. Ga naar https://www.google.com/alerts",
+    "2. Maak een Alert met een van deze queries (kies zelf taal):",
+    "   - 'webdesigner gezocht' site:reddit.com OR site:quora.com OR site:facebook.com",
+    "   - 'website laten maken' België",
+    "   - 'cherche webdesigner' Belgique",
+    "   - 'freelance web designer' Belgium",
+    "   - 'wie kan mijn website' OR 'iemand die websites maakt'",
+    "3. Bij 'Deliver to' kies 'RSS feed' (i.p.v. e-mail)",
+    "4. Klik op het RSS-icoon naast de Alert en kopieer de URL",
+    "5. Voeg toe als entry in de 'feeds' array hieronder"
+  ],
+
+  "feeds": [
+    {
+      "name": "VOORBEELD - vervang dit",
+      "url": "https://www.google.com/alerts/feeds/PLACEHOLDER/PLACEHOLDER",
+      "source_label": "google-alerts:webdesigner-be",
+      "default_keyword": "webdesigner",
+      "enabled": false
+    }
+  ]
+}
