@@ -20,6 +20,9 @@ from common import Lead, deduplicate, filter_and_rank, write_csv, write_markdown
 SOURCES = [
     ("reddit", "fetch_reddit"),
     ("hackernews", "fetch_hackernews"),
+    ("2dehands", "fetch_2dehands"),
+    ("mastodon", "fetch_mastodon"),
+    ("bluesky", "fetch_bluesky"),
     ("rss", "fetch_rss"),
 ]
 

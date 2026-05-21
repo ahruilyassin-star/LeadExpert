@@ -44,7 +44,19 @@ GitHub Actions cron-schedules vuren **alleen** als het workflow-bestand op de de
 |------|--------|-------|----------------|
 | Reddit | `scripts/fetch_reddit.py` | OAuth-secrets (zie hieronder) | 0-3/dag |
 | HackerNews | `scripts/fetch_hackernews.py` | Geen setup — publieke Algolia API | +5-10/maand |
+| **2dehands.be** | `scripts/fetch_2dehands.py` | Geen setup — publieke classifieds (HTML scrape) | +2-8/week |
+| **Mastodon** | `scripts/fetch_mastodon.py` | Geen setup — publieke `/api/v2/search` op 5 instances | +1-3/week |
+| **Bluesky** | `scripts/fetch_bluesky.py` | Geen setup — publieke `searchPosts` API | +1-5/week |
 | RSS feeds (Google Alerts, jobs) | `scripts/fetch_rss.py` | Feeds toevoegen aan `config/rss_feeds.json` | varieert |
+
+### Over de 2dehands-scraper
+
+2dehands.be heeft een "Diensten en Vakmensen" rubriek waar zoekertjes verschijnen zoals *"webdesigner gezocht"*, *"website gezocht"*, *"iemand die mijn website kan maken"*. De scraper haalt enkel publieke zoekresultatenpagina's op (geen authenticatie), parseert de ad-tegels, en filtert op intent-keywords in de titel.
+
+Beperkingen:
+- HTML scraping is fragiel — als 2dehands hun layout wijzigt moeten de selectors aangepast worden
+- Crawl-rate is bewust traag (2 sec tussen queries) om vriendelijk te blijven
+- Werkt enkel vanaf vrije netwerken (GitHub Actions runners). Containers met strikte allowlist (zoals deze Claude-omgeving) krijgen 403
 
 ## Setup — eenmalig
 
@@ -152,9 +164,12 @@ Minimum-score voor kwalificatie: **5 punten**.
 |------|---------|----------|-----------|
 | Reddit | 0-1 | 0-3 | 1-10 |
 | HackerNews | 0 | 0-1 | 1-3 (rond 1e v.d. maand) |
+| 2dehands.be | 0-2 | 2-8 | 8-30 |
+| Mastodon | 0 | 1-3 | 3-12 |
+| Bluesky | 0-1 | 1-5 | 4-20 |
 | Google Alerts NL/FR | 0-2 | 1-8 | 4-30 |
 | Job-RSS feeds | 0-1 | 1-5 | 4-20 |
-| **Totaal verwacht** | **1-4** | **3-15** | **10-60** |
+| **Totaal verwacht** | **1-7** | **7-30** | **25-120** |
 
 Dit is **substantieel minder dan 25/dag**, maar elke lead is een persoon die zelf om hulp vraagt — conversieratio een orde van grootte hoger dan koude prospects.
 
@@ -191,6 +206,9 @@ scripts/
   daily.py             ← orchestrator (roept alle bronnen + dashboard build)
   fetch_reddit.py      ← Reddit OAuth scraper
   fetch_hackernews.py  ← HN Algolia API
+  fetch_2dehands.py    ← 2dehands.be classifieds HTML scraper
+  fetch_mastodon.py    ← Mastodon publieke search-API (5 instances)
+  fetch_bluesky.py     ← Bluesky publieke searchPosts API
   fetch_rss.py         ← generieke RSS / Atom parser
   build_dashboard.py   ← aggregeert CSVs → dashboard/data.json
 config/
