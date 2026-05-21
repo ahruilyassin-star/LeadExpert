@@ -62,6 +62,13 @@ def main() -> int:
     print(f"Wrote {csv_path}", file=sys.stderr)
     print(f"Wrote {md_path}", file=sys.stderr)
 
+    # Rebuild dashboard data after the new CSV exists on disk
+    try:
+        import build_dashboard  # noqa: WPS433  (intentional late import)
+        build_dashboard.main()
+    except Exception as exc:  # don't fail the whole run if dashboard build breaks
+        print(f"  build_dashboard failed: {exc}", file=sys.stderr)
+
     if os.environ.get("GITHUB_OUTPUT"):
         with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
             fh.write(f"lead_count={len(qualified)}\n")

@@ -8,7 +8,35 @@ Doel: elke dag een verse lijst van mensen die **zelf** online vragen om een webd
 2. Action voert `scripts/daily.py` uit (orchestrator).
 3. Orchestrator roept elke bronmodule aan; mislukkingen in één bron stoppen de andere niet.
 4. Resultaten worden samengevoegd, gedupliceerd, gescoord en geschreven naar `leads/YYYY-MM-DD-intent.{csv,md}`.
-5. Action commit & pusht automatisch naar `claude/daily-webdesign-leads-Le4c5`.
+5. `scripts/build_dashboard.py` aggregeert alle historische CSVs in `dashboard/data.json`.
+6. Action commit & pusht naar `claude/daily-webdesign-leads-Le4c5` én publiceert het dashboard naar **GitHub Pages**.
+
+## 📊 Dashboard
+
+Het dashboard is een static HTML-bestand (`dashboard/index.html`) dat `dashboard/data.json` inlaadt. Het toont:
+
+- Stat-cards: vandaag · 7d · 30d · totaal
+- Lijn-chart: leads per dag (30d-venster)
+- Doughnut-charts: distributie per bron en per taal
+- Filterbalk: zoek, bron, taal, min-score, leeftijd
+- Sorteerbare lead-tabel met directe links naar de Reddit-/HN-/RSS-posts
+
+### Dashboard live zien — eenmalige GitHub Pages setup
+
+1. GitHub repo → **Settings** → **Pages**
+2. Source: kies **"GitHub Actions"** (niet "Deploy from branch")
+3. Sla op
+4. Na de eerstvolgende Action-run is het dashboard live op
+   `https://ahruilyassin-star.github.io/Little-Oummah-Webshop/`
+
+### Belangrijk: cron werkt enkel vanaf de default branch
+
+GitHub Actions cron-schedules vuren **alleen** als het workflow-bestand op de default branch (`main`) staat. Op deze feature-branch werkt:
+
+- ✅ **Handmatige trigger** via Actions tab → *Run workflow* → branch kiezen (werkt direct)
+- ❌ **Automatische dagelijkse cron** (vereist dat de workflow op `main` staat)
+
+**Voor volautomatische dagelijkse runs:** merge deze branch naar `main`, of cherry-pick alleen `.github/workflows/daily-leads.yml` naar `main`. Tot dan kan je elke ochtend de Action handmatig triggeren (1 klik).
 
 ## Bronnen
 
@@ -157,15 +185,19 @@ Vraag mij wanneer je een van deze wil aanzetten.
 ## Architectuur
 
 ```
-.github/workflows/daily-leads.yml   ← cron 07:00 Brussel
+.github/workflows/daily-leads.yml   ← cron 07:00 Brussel + Pages deploy
 scripts/
   common.py            ← Lead dataclass, scoring, output writers
-  daily.py             ← orchestrator (roept alle bronnen aan)
+  daily.py             ← orchestrator (roept alle bronnen + dashboard build)
   fetch_reddit.py      ← Reddit OAuth scraper
   fetch_hackernews.py  ← HN Algolia API
   fetch_rss.py         ← generieke RSS / Atom parser
+  build_dashboard.py   ← aggregeert CSVs → dashboard/data.json
 config/
   rss_feeds.json       ← user-editable RSS feed list
+dashboard/
+  index.html           ← static HTML dashboard (Chart.js, vanilla JS)
+  data.json            ← gegenereerd door build_dashboard.py
 leads/
   README.md            ← deze file
   YYYY-MM-DD-intent.csv
@@ -173,4 +205,4 @@ leads/
   fallback-cold-leads/ ← Plan B
 ```
 
-Nieuwe bron toevoegen? Maak `scripts/fetch_<name>.py` met een `fetch_leads() -> list[Lead]` functie, voeg toe aan `SOURCES` in `daily.py`. Klaar.
+Nieuwe bron toevoegen? Maak `scripts/fetch_<name>.py` met een `fetch_leads() -> list[Lead]` functie, voeg toe aan `SOURCES` in `daily.py`. Klaar — het dashboard pikt automatisch nieuwe bronnen op via `source`-veld in de CSV.

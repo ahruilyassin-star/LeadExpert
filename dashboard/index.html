@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Webdesign Intent-Leads — leadexpert.be</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2029;
+    --panel-2: #232b37;
+    --border: #2d3744;
+    --text: #e8ecf1;
+    --muted: #8b97a8;
+    --accent: #6cd4ff;
+    --accent-2: #ffb86c;
+    --good: #5fdc7d;
+    --warn: #ffb86c;
+    --bad: #ff6b6b;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f9fc; --panel: #ffffff; --panel-2: #f1f4f8; --border: #dde3eb;
+      --text: #1a2029; --muted: #5b6878; --accent: #0070d2; --accent-2: #c25500;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
+  }
+  header { max-width: 1400px; margin: 0 auto 24px; }
+  header h1 { margin: 0 0 4px; font-size: 24px; font-weight: 600; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  main { max-width: 1400px; margin: 0 auto; display: grid; gap: 24px; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
+  }
+  .stat-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+  }
+  .stat-card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card .value { font-size: 36px; font-weight: 600; margin-top: 6px; color: var(--text); }
+  .stat-card .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .charts-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px;
+  }
+  @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+  }
+  .chart-card h2 { margin: 0 0 16px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .chart-wrap { position: relative; height: 220px; }
+
+  .toolbar {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  }
+  .toolbar input, .toolbar select {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 8px; font-size: 14px; font-family: inherit;
+  }
+  .toolbar input[type=search] { min-width: 240px; flex: 1; }
+  .toolbar label { color: var(--muted); font-size: 13px; }
+  .toolbar .badge {
+    background: var(--panel-2); border: 1px solid var(--border); padding: 4px 10px;
+    border-radius: 999px; font-size: 12px; color: var(--muted);
+  }
+
+  .leads-table-wrap {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 12px 16px; background: var(--panel-2); border-bottom: 1px solid var(--border);
+       font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover { background: var(--panel-2); }
+  td.score { font-weight: 600; }
+  td.score[data-score="10"], td.score[data-score="11"], td.score[data-score="12"], td.score[data-score="13"] { color: var(--good); }
+  td.score[data-score="8"], td.score[data-score="9"] { color: var(--accent); }
+  td.score[data-score="6"], td.score[data-score="7"] { color: var(--accent-2); }
+  td .title { font-weight: 500; color: var(--text); display: block; margin-bottom: 4px; }
+  td .excerpt { color: var(--muted); font-size: 12px; line-height: 1.45;
+                display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  td a { color: var(--accent); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  .lang-tag { display: inline-block; padding: 2px 8px; border-radius: 4px;
+              font-size: 11px; font-weight: 600; background: var(--panel-2); color: var(--muted); }
+  .source-tag { color: var(--muted); font-size: 12px; }
+
+  .empty { padding: 60px 20px; text-align: center; color: var(--muted); }
+  .empty h3 { margin: 0 0 8px; color: var(--text); }
+
+  footer { max-width: 1400px; margin: 24px auto 0; color: var(--muted); font-size: 12px; text-align: center; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Webdesign Intent-Leads</h1>
+  <div class="meta">
+    <span id="meta-generated">…</span>
+    · <span id="meta-sources">…</span>
+    · <a href="https://webdesign.leadexpert.be" target="_blank" style="color: var(--accent); text-decoration: none;">webdesign.leadexpert.be</a>
+  </div>
+</header>
+
+<main>
+  <section class="stats-grid" id="stats-grid"></section>
+
+  <section class="charts-grid">
+    <div class="chart-card">
+      <h2>Leads per dag (30d)</h2>
+      <div class="chart-wrap"><canvas id="chart-timeline"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h2>Bron</h2>
+      <div class="chart-wrap"><canvas id="chart-sources"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h2>Taal</h2>
+      <div class="chart-wrap"><canvas id="chart-languages"></canvas></div>
+    </div>
+  </section>
+
+  <section class="toolbar">
+    <input type="search" id="filter-search" placeholder="Zoek in titel of excerpt…">
+    <select id="filter-source"><option value="">Alle bronnen</option></select>
+    <select id="filter-language">
+      <option value="">Alle talen</option>
+      <option value="NL">NL</option><option value="FR">FR</option><option value="EN">EN</option>
+    </select>
+    <label>Min score
+      <input type="number" id="filter-score" min="5" max="20" value="5" style="width: 60px; margin-left: 6px;">
+    </label>
+    <select id="filter-age">
+      <option value="">Alle</option>
+      <option value="1">Laatste 24u</option>
+      <option value="7">Laatste 7 dagen</option>
+      <option value="30">Laatste 30 dagen</option>
+    </select>
+    <span class="badge" id="filter-count">0 leads</span>
+  </section>
+
+  <section class="leads-table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width: 80px;">Score</th>
+        <th>Lead</th>
+        <th style="width: 140px;">Bron</th>
+        <th style="width: 60px;">Taal</th>
+        <th style="width: 140px;">Datum</th>
+      </tr></thead>
+      <tbody id="leads-body"></tbody>
+    </table>
+    <div class="empty" id="empty-state" style="display: none;">
+      <h3>Geen leads die aan de filters voldoen</h3>
+      <p>Pas de filters aan of wacht op de volgende Action-run.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Data: <code>dashboard/data.json</code> · Bouw-script: <code>scripts/build_dashboard.py</code> ·
+  Refresh: dagelijks om 07:00 Brussels-tijd via GitHub Action
+</footer>
+
+<script>
+const PALETTE = ['#6cd4ff', '#ffb86c', '#5fdc7d', '#ff6b6b', '#c490ff', '#ffd166', '#06d6a0', '#ef476f', '#118ab2', '#073b4c'];
+let RAW = null;
+
+async function load() {
+  try {
+    const resp = await fetch('data.json?cb=' + Date.now());
+    RAW = await resp.json();
+  } catch (e) {
+    document.body.innerHTML = '<div class="empty"><h3>Geen data gevonden</h3><p>De Action heeft nog niet gedraaid, of <code>dashboard/data.json</code> ontbreekt.</p></div>';
+    return;
+  }
+  renderMeta();
+  renderStats();
+  renderCharts();
+  populateSourceFilter();
+  hookFilters();
+  renderTable();
+}
+
+function renderMeta() {
+  document.getElementById('meta-generated').textContent =
+    'Bijgewerkt ' + new Date(RAW.generated_at).toLocaleString('nl-BE', { dateStyle: 'medium', timeStyle: 'short' });
+  const srcCount = Object.keys(RAW.stats.by_source).length;
+  document.getElementById('meta-sources').textContent = srcCount + ' bron' + (srcCount === 1 ? '' : 'nen') + ' actief';
+}
+
+function renderStats() {
+  const s = RAW.stats;
+  const cards = [
+    { label: 'Vandaag', value: s.today, sub: 'verse leads' },
+    { label: 'Laatste 7 dagen', value: s.last_7_days, sub: 'leads in week' },
+    { label: 'Laatste 30 dagen', value: s.last_30_days, sub: 'leads in maand' },
+    { label: 'Totaal', value: s.total, sub: 'sinds start' },
+  ];
+  document.getElementById('stats-grid').innerHTML = cards.map(c =>
+    `<div class="stat-card"><div class="label">${c.label}</div><div class="value">${c.value}</div><div class="sub">${c.sub}</div></div>`
+  ).join('');
+}
+
+function renderCharts() {
+  Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();
+  Chart.defaults.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim();
+  Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+  new Chart(document.getElementById('chart-timeline'), {
+    type: 'line',
+    data: {
+      labels: RAW.stats.timeline_30d.map(d => d.date.slice(5)),
+      datasets: [{
+        data: RAW.stats.timeline_30d.map(d => d.count),
+        borderColor: PALETTE[0], backgroundColor: PALETTE[0] + '33',
+        tension: 0.3, fill: true, pointRadius: 2,
+      }],
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+               scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } } },
+  });
+
+  const sourceLabels = Object.keys(RAW.stats.by_source);
+  new Chart(document.getElementById('chart-sources'), {
+    type: 'doughnut',
+    data: { labels: sourceLabels,
+            datasets: [{ data: Object.values(RAW.stats.by_source), backgroundColor: PALETTE, borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+               plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } } },
+  });
+
+  const langLabels = Object.keys(RAW.stats.by_language);
+  new Chart(document.getElementById('chart-languages'), {
+    type: 'doughnut',
+    data: { labels: langLabels,
+            datasets: [{ data: Object.values(RAW.stats.by_language), backgroundColor: PALETTE.slice(2), borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+               plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } } },
+  });
+}
+
+function populateSourceFilter() {
+  const select = document.getElementById('filter-source');
+  Object.keys(RAW.stats.by_source).forEach(src => {
+    const opt = document.createElement('option');
+    opt.value = src; opt.textContent = src + ' (' + RAW.stats.by_source[src] + ')';
+    select.appendChild(opt);
+  });
+}
+
+function hookFilters() {
+  ['filter-search', 'filter-source', 'filter-language', 'filter-score', 'filter-age']
+    .forEach(id => document.getElementById(id).addEventListener('input', renderTable));
+}
+
+function renderTable() {
+  const q = document.getElementById('filter-search').value.toLowerCase();
+  const src = document.getElementById('filter-source').value;
+  const lang = document.getElementById('filter-language').value;
+  const minScore = parseInt(document.getElementById('filter-score').value || '5', 10);
+  const ageDays = parseInt(document.getElementById('filter-age').value || '0', 10);
+  const cutoff = ageDays ? Date.now() - ageDays * 86400 * 1000 : 0;
+
+  const filtered = RAW.leads.filter(l => {
+    if (l.intent_score < minScore) return false;
+    if (src && l.source !== src) return false;
+    if (lang && l.language !== lang) return false;
+    if (q && !((l.title || '').toLowerCase().includes(q) || (l.excerpt || '').toLowerCase().includes(q))) return false;
+    if (ageDays) {
+      const fileTs = Date.parse(l.file_date + 'T00:00:00Z');
+      if (fileTs < cutoff) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('filter-count').textContent = filtered.length + ' lead' + (filtered.length === 1 ? '' : 's');
+  document.getElementById('empty-state').style.display = filtered.length ? 'none' : 'block';
+
+  const tbody = document.getElementById('leads-body');
+  if (!filtered.length) { tbody.innerHTML = ''; return; }
+
+  tbody.innerHTML = filtered.map(l => `
+    <tr>
+      <td class="score" data-score="${l.intent_score}">${l.intent_score}</td>
+      <td>
+        <a class="title" href="${escapeAttr(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.title)}</a>
+        <div class="excerpt">${escapeHtml(l.excerpt || '')}</div>
+        <div class="source-tag" style="margin-top:6px;">${escapeHtml(l.author || '')} · matched: <code>${escapeHtml(l.matched_keyword || '—')}</code></div>
+      </td>
+      <td class="source-tag">${escapeHtml(l.source)}</td>
+      <td><span class="lang-tag">${escapeHtml(l.language || '?')}</span></td>
+      <td class="source-tag">${escapeHtml(l.created_utc || l.file_date)}</td>
+    </tr>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+load();
+</script>
+</body>
+</html>
