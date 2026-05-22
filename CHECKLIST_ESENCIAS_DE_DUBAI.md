@@ -22,7 +22,22 @@
 
 ### Tema (white-label)
 - [x] **"Powered by Shopify" eliminado** del tema (`blocks/footer-copyright.liquid`) — incluso si alguien activa el ajuste, el código no lo renderiza
+- [x] **`show_powered_by: false`** confirmado también en el `sections/footer-group.json` del tema sin publicar
 - [x] Tema modificado: `Kopie van Esencias de Dubai – Luxury` (sin publicar — listo para revisar y publicar)
+
+### Textos en español (tema sin publicar listo)
+- [x] **Newsletter footer**: "Únete a nuestra lista de correo" + "Consigue ofertas exclusivas y acceso anticipado a nuevos productos."
+- [x] **Botón suscripción**: "Suscribirse" (antes: "Sign up")
+- [x] **Barra de anuncio**: "✨ Envío gratis a partir de 49€ · Perfumes árabes auténticos · Devolución gratuita 14 días"
+- [x] **Términos y políticas**: ya "Términos y políticas" en `locales/es.json` ✅
+
+### Homepage del tema sin publicar (SUPERIOR al tema publicado)
+El tema `Kopie van Esencias de Dubai – Luxury` tiene una homepage premium con:
+- [x] **Hero de lujo** (`ed-luxury-hero`) — fullscreen con partículas doradas, "Esencias de Dubai" en Playfair Display, botones CTA en español, estadísticas (300+ fragancias, 15+ marcas, 48h envío)
+- [x] **Ticker animado** (`ed-marquee-ticker`) — "Perfumes Árabes Originales de Dubai · Envío Gratis +49€ · LATTAFA · ARMAF · RASASI · AFNAN"
+- [x] **Mosaico de colecciones** (`ed-collection-tiles`) — grid de 4 tiles (Hombre, Mujer, Sets & Regalos, Oud & Orientales)
+- [x] **Brand story** (`ed-brand-story`) — "El Alma de Dubai, en Cada Frasco" con 3 pilares (Autenticidad, Exclusividad, Confianza)
+- [x] **5 secciones de productos** en español (Hombre, Mujer, Oud, LATTAFA, Sets de Regalo)
 
 ### Idiomas
 - [x] **Español habilitado y publicado** como idioma de tienda
@@ -108,8 +123,11 @@ Resultados de la búsqueda (22 de mayo de 2026):
 ### 4. Subir el Excel "LISTA PERFUMES ESENCIAS DE DUBAI_OK2"
 Para que pueda asignar los SKUs correctos a cada producto. Sin el Excel los SKUs quedan vacíos.
 
-### 5. Publicar el tema modificado
-- **Online Store → Themes** → `Kopie van Esencias de Dubai – Luxury` (renombrar a español primero) → **Actions → Publish**
+### 5. Publicar el tema modificado ⚠️ IMPORTANTE
+- **Online Store → Themes** → `Kopie van Esencias de Dubai – Luxury`
+  1. Primero renombrar: **Actions → Rename** → `Esencias de Dubai – Luxury`
+  2. Luego: **Actions → Publish**
+- **¿Por qué es urgente?** El tema publicado actual tiene la página de inicio vacía (solo 3 secciones básicas). El tema sin publicar tiene una homepage PREMIUM (hero fullscreen, ticker dorado, mosaico de colecciones, brand story, 5 secciones de productos en español). **Este paso es el cambio visual más importante de toda la tienda.**
 
 ### 6. Configurar métodos de pago para España
 - **Settings → Payments**
