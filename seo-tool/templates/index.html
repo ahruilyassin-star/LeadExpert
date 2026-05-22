@@ -1,1212 +1,1529 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SEO Dashboard — Little Oummah</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEO Monitor — Multi-site</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>
-tailwind.config = {
-  theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] } } }
-}
-</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
 <style>
-  :root { --bg: #0d0f14; --surface: #161920; --card: #1c1f2b; --border: #252836; --hover: #21253a; }
-  body { background:var(--bg); color:#e2e8f0; font-family:'Inter',sans-serif; overflow:hidden; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; }
-  .input { background:var(--surface); border:1px solid var(--border); border-radius:8px; color:#e2e8f0; padding:9px 14px; width:100%; outline:none; font-size:14px; transition:border-color .15s; }
-  .input:focus { border-color:#4f6ef7; }
-  .input::placeholder { color:#374151; }
-  .select { background:var(--surface); border:1px solid var(--border); border-radius:8px; color:#e2e8f0; padding:9px 12px; outline:none; font-size:13px; }
-  .btn { border-radius:8px; padding:9px 18px; font-weight:600; font-size:13px; cursor:pointer; transition:all .15s; border:none; display:inline-flex; align-items:center; gap:6px; }
-  .btn-primary { background:#4f6ef7; color:#fff; }
-  .btn-primary:hover { background:#3d5ce0; }
-  .btn-primary:disabled { background:#1e2a6e; opacity:.5; cursor:not-allowed; }
-  .btn-ghost { background:transparent; color:#94a3b8; border:1px solid var(--border); }
-  .btn-ghost:hover { background:var(--hover); color:#e2e8f0; }
-  .btn-ai { background:linear-gradient(135deg,#7c3aed,#4f6ef7); color:#fff; }
-  .btn-ai:hover { background:linear-gradient(135deg,#6d28d9,#3d5ce0); }
-  .btn-sm { padding:5px 12px; font-size:12px; }
-  .nav-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:8px; cursor:pointer; transition:all .15s; font-size:13px; font-weight:500; color:#64748b; }
-  .nav-item:hover { background:var(--hover); color:#e2e8f0; }
-  .nav-item.active { background:#1a2357; color:#818cf8; }
-  .metric { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; }
-  .badge { display:inline-block; padding:2px 7px; border-radius:4px; font-size:11px; font-weight:600; }
-  .bg-green { background:#052e16; color:#22c55e; }
-  .bg-red { background:#2d0a0a; color:#ef4444; }
-  .bg-yellow { background:#2d1a00; color:#f59e0b; }
-  .bg-blue { background:#0c1740; color:#818cf8; }
-  .bg-purple { background:#1a0a3d; color:#a78bfa; }
-  .spin { animation:spin 1s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg) } }
-  .tr:hover { background:var(--hover); }
-  .kd-bar { height:5px; border-radius:3px; background:var(--border); margin-top:6px; }
-  .kd-fill { height:100%; border-radius:3px; transition:width .5s; }
-  ::-webkit-scrollbar { width:5px; height:5px; }
-  ::-webkit-scrollbar-track { background:var(--bg); }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-  .fade { animation:fadeIn .25s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
-  .dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
-  .dot-green { background:#22c55e; box-shadow:0 0 5px #22c55e; }
-  .dot-red { background:#ef4444; box-shadow:0 0 5px #ef4444; }
-  .dot-gray { background:#374151; }
-  .prose { line-height:1.7; color:#cbd5e1; }
-  .prose h2 { color:#e2e8f0; font-weight:700; font-size:15px; margin:16px 0 6px; }
-  .prose h3 { color:#cbd5e1; font-weight:600; font-size:13px; margin:12px 0 4px; }
-  .prose ul, .prose ol { padding-left:18px; margin:6px 0; }
-  .prose li { margin:3px 0; font-size:13px; }
-  .prose p { margin:6px 0; font-size:13px; }
-  .prose code { background:var(--border); padding:1px 5px; border-radius:3px; font-size:12px; }
-  .toast { position:fixed; bottom:24px; right:24px; z-index:9999; background:#1c1f2b; border:1px solid var(--border); border-radius:10px; padding:12px 18px; font-size:13px; display:flex; align-items:center; gap:8px; box-shadow:0 8px 32px rgba(0,0,0,.5); animation:fadeIn .2s ease; }
-  .intent-T { background:#052e16; color:#22c55e; }
-  .intent-C { background:#1a1200; color:#f59e0b; }
-  .intent-I { background:#0c1740; color:#818cf8; }
-  .intent-N { background:#1a0a1a; color:#a78bfa; }
+:root{--bg:#0d0f14;--surface:#161920;--card:#1c1f2b;--border:#252836;--hover:#21253a;--blue:#4f6ef7;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--teal:#14b8a6;}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:#e2e8f0;font-family:'Inter',sans-serif;overflow:hidden;margin:0;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;}
+.surface{background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.input{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:#e2e8f0;padding:9px 14px;width:100%;outline:none;font-size:13px;transition:border-color .15s;}
+.input:focus{border-color:var(--blue);}
+.input::placeholder{color:#374151;}
+.select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:#e2e8f0;padding:8px 12px;outline:none;font-size:13px;}
+.btn{border-radius:8px;padding:8px 16px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:#3d5ce0;}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+.btn-ghost{background:transparent;color:#94a3b8;border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--hover);color:#e2e8f0;}
+.btn-danger{background:#7f1d1d;color:#fca5a5;border:1px solid #991b1b;}
+.btn-danger:hover{background:#991b1b;}
+.btn-ai{background:linear-gradient(135deg,#7c3aed,#4f6ef7);color:#fff;}
+.btn-ai:hover{background:linear-gradient(135deg,#6d28d9,#3d5ce0);}
+.btn-sm{padding:5px 11px;font-size:12px;}
+.btn-xs{padding:3px 8px;font-size:11px;}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;}
+.badge-green{background:#052e16;color:#22c55e;}
+.badge-red{background:#2d0a0a;color:#ef4444;}
+.badge-yellow{background:#2d1a00;color:#f59e0b;}
+.badge-blue{background:#0c1740;color:#818cf8;}
+.badge-gray{background:#1a1f2e;color:#64748b;}
+.badge-teal{background:#022c22;color:#14b8a6;}
+.spin{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fade{animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.tr:hover{background:var(--hover);}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:#1c1f2b;border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:fadeIn .2s ease;}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.dot-green{background:#22c55e;box-shadow:0 0 6px #22c55e;}
+.dot-red{background:#ef4444;box-shadow:0 0 6px #ef4444;}
+.dot-yellow{background:#f59e0b;box-shadow:0 0 6px #f59e0b;}
+.dot-gray{background:#374151;}
+.health-ring{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;color:#64748b;background:transparent;}
+.tab-btn.active{background:#1a2357;color:#818cf8;font-weight:600;}
+.tab-btn:hover:not(.active){color:#e2e8f0;background:var(--hover);}
+.sidebar-site{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px;color:#94a3b8;}
+.sidebar-site:hover{background:var(--hover);color:#e2e8f0;}
+.sidebar-site.active{background:#1a2357;color:#818cf8;}
+.prose{line-height:1.7;color:#cbd5e1;}
+.prose h2{color:#e2e8f0;font-weight:700;font-size:15px;margin:14px 0 5px;}
+.prose h3{color:#cbd5e1;font-weight:600;font-size:13px;margin:10px 0 4px;}
+.prose ul,.prose ol{padding-left:18px;margin:5px 0;}
+.prose li{margin:3px 0;font-size:13px;}
+.prose p{margin:5px 0;font-size:13px;}
+.prose code{background:var(--border);padding:1px 5px;border-radius:3px;font-size:12px;}
+.prose strong{color:#e2e8f0;font-weight:600;}
+.kd-bar{height:4px;border-radius:3px;background:var(--border);margin-top:5px;}
+.kd-fill{height:100%;border-radius:3px;transition:width .5s;}
 </style>
 </head>
 <body x-data="app()" x-init="init()">
 
+<!-- Toast -->
+<template x-if="toast.show">
+  <div class="toast">
+    <span x-text="toast.icon"></span>
+    <span x-text="toast.msg" class="text-sm"></span>
+  </div>
+</template>
+
 <div class="flex h-screen overflow-hidden">
 
-<!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════════════ -->
-<aside class="w-52 flex-shrink-0 flex flex-col border-r" style="background:#0a0c12;border-color:var(--border)">
-  <div class="px-4 py-4 border-b" style="border-color:var(--border)">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center text-lg" style="background:#1a2357">📊</div>
+<!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════════ -->
+<aside class="w-56 flex-shrink-0 flex flex-col border-r" style="background:#0a0c12;border-color:var(--border);">
+
+  <!-- Logo -->
+  <div class="px-4 py-4 border-b" style="border-color:var(--border);">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl" style="background:#1a2357;">📡</div>
       <div>
-        <p class="text-sm font-bold text-white leading-tight">SEO Pro</p>
-        <p class="text-xs" style="color:#4b5563">Little Oummah</p>
+        <p class="text-sm font-bold text-white leading-tight">SEO Monitor</p>
+        <p class="text-xs" style="color:#4b5563;">Little Oummah</p>
       </div>
     </div>
   </div>
 
-  <nav class="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-    <template x-for="item in nav" :key="item.id">
-      <div class="nav-item" :class="tab===item.id?'active':''" @click="tab=item.id">
-        <span x-text="item.icon" class="text-base w-5 text-center"></span>
-        <span x-text="item.label" class="text-xs"></span>
-        <template x-if="item.badge"><span class="ml-auto badge bg-purple text-xs" x-text="item.badge"></span></template>
+  <!-- Dashboard link -->
+  <div class="px-2 pt-3 pb-1">
+    <div class="sidebar-site" :class="!activeSiteId?'active':''" @click="selectSite(null)">
+      <span class="text-base">🏠</span>
+      <span class="text-xs font-semibold">Dashboard</span>
+    </div>
+  </div>
+
+  <!-- Sites list -->
+  <div class="px-2 pb-1 flex-1 overflow-y-auto">
+    <p class="text-xs font-semibold uppercase tracking-wider px-2 py-2" style="color:#374151;">Mijn Sites</p>
+    <template x-if="sites.length === 0">
+      <p class="text-xs px-2" style="color:#374151;">Nog geen sites. Voeg er een toe.</p>
+    </template>
+    <template x-for="site in sites" :key="site.id">
+      <div class="sidebar-site" :class="activeSiteId===site.id?'active':''" @click="selectSite(site.id)">
+        <span class="dot flex-shrink-0" :class="scoreColorDot(site.health_score)"></span>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-medium truncate" x-text="site.name"></p>
+          <p class="text-xs truncate" style="color:#4b5563;" x-text="site.domain"></p>
+        </div>
+        <span class="text-xs font-bold flex-shrink-0" :class="scoreTextColor(site.health_score)" x-text="site.health_score||'—'"></span>
       </div>
     </template>
-  </nav>
+  </div>
 
-  <div class="px-3 py-3 border-t space-y-2" style="border-color:var(--border)">
-    <p class="text-xs font-semibold uppercase tracking-wider" style="color:#374151">Status</p>
-    <div class="flex items-center gap-2 text-xs"><span class="dot" :class="config.dataforseo?'dot-green':'dot-red'"></span><span style="color:#64748b">DataForSEO</span></div>
-    <div class="flex items-center gap-2 text-xs"><span class="dot" :class="config.anthropic?'dot-green':'dot-red'"></span><span style="color:#64748b">Claude AI</span></div>
-    <div class="flex items-center gap-2 text-xs"><span class="dot" :class="config.google_api?'dot-green':'dot-gray'"></span><span style="color:#64748b">Google API</span></div>
-    <div class="mt-2 p-2 rounded-lg text-xs" style="background:#0f1219;border:1px solid var(--border)">
-      <p style="color:#374151">Vandaag: <span class="font-semibold" style="color:#818cf8">€<span x-text="costs.today||'0.00'"></span></span></p>
-      <p style="color:#374151">Maand: <span class="font-semibold text-white">€<span x-text="costs.month||'0.00'"></span></span></p>
+  <!-- Add site button -->
+  <div class="px-2 pb-2">
+    <button class="btn btn-ghost btn-sm w-full justify-center" @click="showAddSite=true">+ Site Toevoegen</button>
+  </div>
+
+  <!-- API Status -->
+  <div class="px-3 py-3 border-t space-y-1.5" style="border-color:var(--border);">
+    <p class="text-xs font-semibold uppercase tracking-wider mb-2" style="color:#374151;">API Status</p>
+    <div class="flex items-center gap-2 text-xs">
+      <span class="dot" :class="config.dataforseo?'dot-green':'dot-red'"></span>
+      <span style="color:#64748b;">DataForSEO</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs">
+      <span class="dot" :class="config.anthropic?'dot-green':'dot-red'"></span>
+      <span style="color:#64748b;">Claude AI</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs">
+      <span class="dot" :class="config.google_api?'dot-green':'dot-gray'"></span>
+      <span style="color:#64748b;">Google API</span>
+    </div>
+    <div class="mt-2 p-2 rounded-lg text-xs" style="background:#0f1219;border:1px solid var(--border);">
+      <div class="flex justify-between">
+        <span style="color:#374151;">Vandaag</span>
+        <span class="font-semibold" style="color:#818cf8;">€<span x-text="(config.costs?.today||0).toFixed(4)"></span></span>
+      </div>
+      <div class="flex justify-between mt-0.5">
+        <span style="color:#374151;">Maand</span>
+        <span class="font-semibold text-white">€<span x-text="(config.costs?.month||0).toFixed(4)"></span></span>
+      </div>
     </div>
   </div>
 </aside>
 
-<!-- ═══ MAIN ═══════════════════════════════════════════════════════════════════ -->
+<!-- ═══ MAIN ═══════════════════════════════════════════════════════════════ -->
 <main class="flex-1 flex flex-col overflow-hidden">
 
   <!-- Header -->
-  <header class="flex-shrink-0 flex items-center justify-between px-6 py-3 border-b" style="background:var(--bg);border-color:var(--border)">
-    <h1 class="text-sm font-semibold text-white" x-text="nav.find(n=>n.id===tab)?.label"></h1>
+  <header class="flex-shrink-0 flex items-center justify-between px-6 py-3 border-b" style="background:var(--bg);border-color:var(--border);">
+    <div class="flex items-center gap-3">
+      <h1 class="text-sm font-semibold text-white" x-text="activeSite ? activeSite.name : 'Dashboard'"></h1>
+      <template x-if="activeSite">
+        <span class="badge badge-gray text-xs" x-text="activeSite.domain"></span>
+      </template>
+    </div>
     <div class="flex items-center gap-2">
       <select class="select py-1.5 text-xs" x-model="lang">
-        <option value="nl">🇳🇱 NL</option>
-        <option value="en">🇬🇧 EN</option>
-        <option value="fr">🇫🇷 FR</option>
-        <option value="de">🇩🇪 DE</option>
+        <option value="nl">NL</option>
+        <option value="en">EN</option>
+        <option value="fr">FR</option>
+        <option value="de">DE</option>
       </select>
       <select class="select py-1.5 text-xs" x-model="loc">
-        <option value="2528">🇳🇱 Nederland</option>
-        <option value="2056">🇧🇪 België</option>
-        <option value="2250">🇫🇷 Frankrijk</option>
-        <option value="2276">🇩🇪 Duitsland</option>
-        <option value="2826">🇬🇧 UK</option>
-        <option value="2840">🇺🇸 USA</option>
+        <option value="2528">Nederland</option>
+        <option value="2056">Belgie</option>
+        <option value="2250">Frankrijk</option>
+        <option value="2276">Duitsland</option>
+        <option value="2826">UK</option>
+        <option value="2840">USA</option>
       </select>
     </div>
   </header>
 
-  <!-- Content -->
-  <div class="flex-1 overflow-y-auto p-5">
+  <!-- Content area -->
+  <div class="flex-1 overflow-y-auto">
 
-    <!-- Setup banner -->
-    <template x-if="!config.dataforseo">
-      <div class="card p-4 mb-5" style="border-color:#7c2d12;background:#1a0e06">
-        <p class="font-semibold text-sm" style="color:#fb923c">⚠️ API keys niet ingesteld</p>
-        <p class="text-xs mt-1" style="color:#9ca3af">Maak <code style="background:var(--border);padding:1px 4px;border-radius:3px">seo-tool/.env</code> aan. Zie de <strong @click="tab='settings'" class="cursor-pointer" style="color:#818cf8">Instellingen tab</strong> voor instructies.</p>
-      </div>
-    </template>
+    <!-- ══ DASHBOARD (geen site geselecteerd) ══════════════════════════════ -->
+    <div x-show="!activeSiteId" class="p-6 fade">
 
-
-    <!-- ══════════════════════════════════════════════════════════
-         1. KEYWORD EXPLORER
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='kw'" class="fade">
-      <!-- Tabs: enkel / bulk -->
-      <div class="flex gap-1 mb-4">
-        <button class="btn btn-sm" :class="kw.mode==='single'?'btn-primary':'btn-ghost'" @click="kw.mode='single'">🔍 Enkel keyword</button>
-        <button class="btn btn-sm" :class="kw.mode==='bulk'?'btn-primary':'btn-ghost'" @click="kw.mode='bulk'">📋 Bulk analyse</button>
-      </div>
-
-      <!-- Single -->
-      <template x-if="kw.mode==='single'">
-        <div>
-          <div class="card p-4 mb-4 flex gap-2">
-            <input class="input flex-1" placeholder="Bijv: arabisch alfabet speelgoed" x-model="kw.q" @keydown.enter="doKW()">
-            <button class="btn btn-primary" @click="doKW()" :disabled="kw.loading">
-              <span x-show="kw.loading" class="spin">⟳</span> Analyseer
-            </button>
-          </div>
-          <div x-show="kw.err" class="card p-3 mb-4 text-sm" style="border-color:#7f1d1d;color:#f87171" x-text="kw.err"></div>
-
-          <template x-if="kw.r">
-            <div class="space-y-4 fade">
-              <!-- Metrics row -->
-              <div class="grid grid-cols-4 gap-3">
-                <div class="metric">
-                  <p class="text-xs mb-1" style="color:#64748b">Zoekvolume</p>
-                  <p class="text-2xl font-bold text-white" x-text="fmt(kw.r.vol)"></p>
-                  <p class="text-xs mt-1" style="color:#374151">per maand</p>
-                </div>
-                <div class="metric">
-                  <p class="text-xs mb-1" style="color:#64748b">Moeilijkheid</p>
-                  <p class="text-2xl font-bold" :class="kdClr(kw.r.kd)" x-text="kw.r.kd??'—'"></p>
-                  <div class="kd-bar"><div class="kd-fill" :style="`width:${kw.r.kd||0}%;background:${kdHex(kw.r.kd)}`"></div></div>
-                </div>
-                <div class="metric">
-                  <p class="text-xs mb-1" style="color:#64748b">CPC</p>
-                  <p class="text-2xl font-bold text-white" x-text="kw.r.cpc?'€'+kw.r.cpc.toFixed(2):'—'"></p>
-                  <p class="text-xs mt-1" style="color:#374151">gemiddeld</p>
-                </div>
-                <div class="metric">
-                  <p class="text-xs mb-1" style="color:#64748b">Concurrentie</p>
-                  <p class="text-2xl font-bold text-white" x-text="kw.r.comp??'—'"></p>
-                  <p class="text-xs mt-1" style="color:#374151">Google Ads</p>
-                </div>
-              </div>
-
-              <!-- SERP + Ideas -->
-              <div class="grid grid-cols-2 gap-4">
-                <div class="card p-4">
-                  <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-sm text-white">🏆 SERP Top 10</h3>
-                    <button class="btn btn-ghost btn-sm btn-ai" @click="doSnippet()" x-show="config.anthropic">🤖 Snippet kans</button>
-                  </div>
-                  <table class="w-full text-xs">
-                    <thead><tr style="color:#374151;border-bottom:1px solid var(--border)">
-                      <th class="pb-2 text-left w-5">#</th><th class="pb-2 text-left">Domein</th><th class="pb-2 text-right">DR</th><th class="pb-2 text-right">BL</th>
-                    </tr></thead>
-                    <tbody>
-                      <template x-for="(r,i) in kw.r.serp" :key="i">
-                        <tr class="tr border-b" style="border-color:var(--border)">
-                          <td class="py-2" style="color:#374151" x-text="i+1"></td>
-                          <td class="py-2 max-w-xs">
-                            <a :href="r.url" target="_blank" class="hover:underline" style="color:#818cf8" x-text="r.domain"></a>
-                            <p class="text-xs truncate" style="color:#374151" x-text="r.title"></p>
-                          </td>
-                          <td class="py-2 text-right font-semibold text-white" x-text="r.dr??'—'"></td>
-                          <td class="py-2 text-right" style="color:#64748b" x-text="fmt(r.bl)"></td>
-                        </tr>
-                      </template>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div class="card p-4">
-                  <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-sm text-white">💡 Keyword Ideeën</h3>
-                    <div class="flex gap-1">
-                      <button class="btn btn-ghost btn-sm btn-ai" @click="doIntent(kw.r.ideas)" x-show="config.anthropic">🤖 Intent</button>
-                      <button class="btn btn-ghost btn-sm" @click="exportCSV(kw.r.ideas,'keyword-ideas')">⬇ CSV</button>
-                    </div>
-                  </div>
-                  <table class="w-full text-xs">
-                    <thead><tr style="color:#374151;border-bottom:1px solid var(--border)">
-                      <th class="pb-2 text-left">Keyword</th><th class="pb-2 text-right">Vol</th><th class="pb-2 text-right">KD</th><th class="pb-2 text-right">CPC</th><th class="pb-2 text-center">+</th>
-                    </tr></thead>
-                    <tbody>
-                      <template x-for="(r,i) in kw.r.ideas" :key="i">
-                        <tr class="tr border-b" style="border-color:var(--border)">
-                          <td class="py-1.5 cursor-pointer hover:underline" style="color:#818cf8" @click="kw.q=r.keyword;doKW()" x-text="r.keyword"></td>
-                          <td class="py-1.5 text-right text-white" x-text="fmt(r.volume)"></td>
-                          <td class="py-1.5 text-right" :class="kdClr(r.kd)" x-text="r.kd??'—'"></td>
-                          <td class="py-1.5 text-right" style="color:#64748b" x-text="r.cpc?'€'+r.cpc.toFixed(2):'—'"></td>
-                          <td class="py-1.5 text-center"><button class="text-xs" style="color:#64748b" @click="saveKW(r)" title="Opslaan">🔖</button></td>
-                        </tr>
-                      </template>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <!-- AI Buttons row -->
-              <div class="flex gap-2" x-show="config.anthropic">
-                <button class="btn btn-ai" @click="doBrief()">
-                  <span x-show="ai.briefLoading" class="spin">⟳</span>
-                  📝 AI Content Brief genereren
-                </button>
-                <button class="btn btn-ghost" @click="addToTracker(kw.q)">📈 Rank Tracker</button>
-                <button class="btn btn-ghost" @click="saveKW({keyword:kw.q,volume:kw.r.vol,kd:kw.r.kd,cpc:kw.r.cpc})">🔖 Opslaan</button>
-              </div>
-
-              <!-- Content Brief result -->
-              <template x-if="ai.brief">
-                <div class="card p-5">
-                  <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-white">📝 AI Content Brief — <span x-text="ai.briefKW" style="color:#818cf8"></span></h3>
-                    <span class="badge bg-purple">Claude AI</span>
-                  </div>
-                  <div class="prose text-sm overflow-y-auto" style="max-height:400px" x-html="mdToHtml(ai.brief)"></div>
-                </div>
-              </template>
-
-              <!-- Snippet result -->
-              <template x-if="ai.snippet">
-                <div class="card p-4 fade">
-                  <h3 class="font-semibold text-white text-sm mb-3">⭐ Featured Snippet Kans</h3>
-                  <div class="grid grid-cols-3 gap-3 text-xs mb-3">
-                    <div class="p-3 rounded-lg" style="background:var(--surface)">
-                      <p style="color:#64748b">Type</p>
-                      <p class="font-semibold text-white" x-text="ai.snippet.snippet_type||'—'"></p>
-                    </div>
-                    <div class="p-3 rounded-lg" style="background:var(--surface)">
-                      <p style="color:#64748b">Kans score</p>
-                      <p class="font-bold text-2xl" :class="ai.snippet.kans_score>=7?'text-green-400':'text-yellow-400'" x-text="(ai.snippet.kans_score||'?')+'/10'"></p>
-                    </div>
-                    <div class="p-3 rounded-lg" style="background:var(--surface)">
-                      <p style="color:#64748b">Position Zero</p>
-                      <p class="font-semibold" :class="ai.snippet.positie_zero_kans?'text-green-400':'text-red-400'" x-text="ai.snippet.positie_zero_kans?'✓ Mogelijk':'✗ Moeilijk'"></p>
-                    </div>
-                  </div>
-                  <div class="p-3 rounded-lg text-xs" style="background:var(--surface)">
-                    <p style="color:#64748b" class="mb-1">Optimale tekst om te plaatsen:</p>
-                    <p class="text-white" x-text="ai.snippet.optimale_tekst||ai.snippet.optimal_text||'—'"></p>
-                  </div>
-                </div>
-              </template>
-
-              <!-- Related tags -->
-              <template x-if="kw.r.related?.length">
-                <div class="card p-4">
-                  <h3 class="font-semibold text-sm text-white mb-3">🔗 Gerelateerde Keywords</h3>
-                  <div class="flex flex-wrap gap-1.5">
-                    <template x-for="r in kw.r.related" :key="r.keyword">
-                      <button class="px-2.5 py-1 rounded-full text-xs border hover:border-blue-500 transition-colors" style="border-color:var(--border);color:#94a3b8" @click="kw.q=r.keyword;doKW()" x-text="`${r.keyword} (${fmt(r.volume)})`"></button>
-                    </template>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </template>
-
-          <template x-if="kw.loading"><div class="flex flex-col items-center justify-center py-16" style="color:#374151"><div class="spin text-3xl mb-3">⟳</div><p>Echte data ophalen...</p></div></template>
+      <!-- Stats row -->
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="card p-4">
+          <p class="text-xs mb-1" style="color:#64748b;">Totaal Sites</p>
+          <p class="text-3xl font-bold text-white" x-text="sites.length"></p>
+          <p class="text-xs mt-1" style="color:#374151;">actief gemonitord</p>
         </div>
-      </template>
-
-      <!-- Bulk -->
-      <template x-if="kw.mode==='bulk'">
-        <div>
-          <div class="card p-4 mb-4">
-            <p class="text-xs mb-2" style="color:#64748b">Plak keywords (één per regel of kommagescheiden, max 200)</p>
-            <textarea class="input" rows="6" placeholder="arabisch alfabet speelgoed&#10;islamitisch speelgoed&#10;arabische letters kinderen&#10;..." x-model="bulk.q"></textarea>
-            <div class="flex gap-2 mt-3">
-              <button class="btn btn-primary" @click="doBulk()" :disabled="bulk.loading">
-                <span x-show="bulk.loading" class="spin">⟳</span> Analyseer bulk
-              </button>
-              <button class="btn btn-ai" @click="doBulkCluster()" :disabled="bulk.loading||!bulk.r?.length" x-show="config.anthropic">
-                <span x-show="ai.clusterLoading" class="spin">⟳</span> 🤖 AI Cluster analyse
-              </button>
-              <button class="btn btn-ghost" @click="doBulkIntent()" :disabled="bulk.loading||!bulk.r?.length" x-show="config.anthropic">🤖 Intent classificeren</button>
-              <button class="btn btn-ghost" @click="exportCSV(bulk.r,'bulk-keywords')" x-show="bulk.r?.length">⬇ CSV</button>
-            </div>
-          </div>
-
-          <template x-if="bulk.r?.length">
-            <div class="card overflow-hidden fade">
-              <div class="px-4 py-3 flex items-center gap-3" style="border-bottom:1px solid var(--border)">
-                <span class="text-sm text-white font-semibold"><span x-text="bulk.r.length"></span> keywords geanalyseerd</span>
-                <span class="text-xs" style="color:#64748b">Totaal volume: <span class="text-white" x-text="fmt(bulk.r.reduce((s,r)=>s+(r.search_volume||0),0))"></span></span>
-              </div>
-              <div class="overflow-x-auto" style="max-height:420px;overflow-y:auto">
-                <table class="w-full text-xs">
-                  <thead style="position:sticky;top:0;background:var(--card)">
-                    <tr style="color:#374151;border-bottom:1px solid var(--border)">
-                      <th class="px-4 py-2.5 text-left">Keyword</th>
-                      <th class="px-4 py-2.5 text-right">Volume</th>
-                      <th class="px-4 py-2.5 text-right">CPC</th>
-                      <th class="px-4 py-2.5 text-center">Concurrentie</th>
-                      <th class="px-4 py-2.5 text-center">Intent</th>
-                      <th class="px-4 py-2.5 text-center">+</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <template x-for="(r,i) in bulk.r" :key="i">
-                      <tr class="tr border-b" style="border-color:var(--border)">
-                        <td class="px-4 py-2 cursor-pointer hover:underline" style="color:#818cf8" @click="kw.mode='single';kw.q=r.keyword;tab='kw';doKW()" x-text="r.keyword"></td>
-                        <td class="px-4 py-2 text-right text-white font-medium" x-text="fmt(r.search_volume)"></td>
-                        <td class="px-4 py-2 text-right" style="color:#64748b" x-text="r.cpc?'€'+r.cpc.toFixed(2):'—'"></td>
-                        <td class="px-4 py-2 text-center"><span class="badge" :class="r.competition_level==='HIGH'?'bg-red':r.competition_level==='MEDIUM'?'bg-yellow':'bg-green'" x-text="r.competition_level||'—'"></span></td>
-                        <td class="px-4 py-2 text-center">
-                          <template x-if="bulk.intent[r.keyword]">
-                            <span class="badge text-xs" :class="intentClass(bulk.intent[r.keyword]?.intent)" x-text="bulk.intent[r.keyword]?.intent?.charAt(0)||'?'"></span>
-                          </template>
-                        </td>
-                        <td class="px-4 py-2 text-center"><button style="color:#64748b" @click="saveKW(r)">🔖</button></td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </template>
-
-          <!-- Clusters -->
-          <template x-if="ai.clusters?.length">
-            <div class="mt-4 fade">
-              <h3 class="font-semibold text-white mb-3">🗂️ AI Keyword Clusters</h3>
-              <div class="grid grid-cols-2 gap-3">
-                <template x-for="(c,i) in ai.clusters" :key="i">
-                  <div class="card p-4">
-                    <div class="flex items-start justify-between mb-2">
-                      <div class="flex items-center gap-2">
-                        <span x-text="c.cluster_icon" class="text-lg"></span>
-                        <div>
-                          <p class="font-semibold text-sm text-white" x-text="c.cluster_name"></p>
-                          <p class="text-xs" style="color:#64748b" x-text="c.page_type"></p>
-                        </div>
-                      </div>
-                      <div class="text-right">
-                        <span class="badge" :class="c.intent==='TRANSACTIONEEL'?'bg-green':c.intent==='COMMERCIEEL'?'bg-yellow':'bg-blue'" x-text="c.intent"></span>
-                        <p class="text-xs mt-1" style="color:#818cf8">~<span x-text="fmt(c.monthly_traffic_potential)"></span>/mnd</p>
-                      </div>
-                    </div>
-                    <p class="text-xs mb-2" style="color:#64748b" x-text="c.recommended_action"></p>
-                    <div class="flex flex-wrap gap-1">
-                      <template x-for="kw in (c.keywords||[]).slice(0,5)" :key="kw">
-                        <span class="text-xs px-2 py-0.5 rounded" style="background:var(--border);color:#94a3b8" x-text="kw"></span>
-                      </template>
-                    </div>
-                    <p class="text-xs mt-2 italic" style="color:#4b5563" x-text="`💡 ${c.content_angle||''}`"></p>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </template>
+        <div class="card p-4">
+          <p class="text-xs mb-1" style="color:#64748b;">Kritieke Issues</p>
+          <p class="text-3xl font-bold" style="color:#ef4444;" x-text="sites.reduce((a,s)=>a+(s.critical_issues||0),0)"></p>
+          <p class="text-xs mt-1" style="color:#374151;">vereisen aandacht</p>
         </div>
-      </template>
-    </div>
-
-
-    <!-- ══════════════════════════════════════════════════════════
-         2. SITE EXPLORER
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='site'" class="fade">
-      <div class="card p-4 mb-4 flex gap-2">
-        <input class="input flex-1" placeholder="domein.com of concurrent.nl" x-model="site.q" @keydown.enter="doSite()">
-        <button class="btn btn-primary" @click="doSite()" :disabled="site.loading">
-          <span x-show="site.loading" class="spin">⟳</span> Analyseer
-        </button>
+        <div class="card p-4">
+          <p class="text-xs mb-1" style="color:#64748b;">Sites OK</p>
+          <p class="text-3xl font-bold" style="color:#22c55e;" x-text="sites.filter(s=>s.health_score>=70).length"></p>
+          <p class="text-xs mt-1" style="color:#374151;">health score &ge;70</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs mb-1" style="color:#64748b;">Gem. Health Score</p>
+          <p class="text-3xl font-bold text-white" x-text="sites.length ? Math.round(sites.reduce((a,s)=>a+(s.health_score||0),0)/sites.length) : '—'"></p>
+          <p class="text-xs mt-1" style="color:#374151;">over alle sites</p>
+        </div>
       </div>
 
-      <template x-if="site.r">
-        <div class="space-y-4 fade">
-          <div class="card p-4 flex items-center gap-4">
-            <img :src="`https://www.google.com/s2/favicons?sz=48&domain=${site.r.domain}`" class="w-10 h-10 rounded-lg">
-            <div class="flex-1">
-              <h2 class="text-lg font-bold text-white" x-text="site.r.domain"></h2>
-              <a :href="`https://${site.r.domain}`" target="_blank" class="text-xs hover:underline" style="color:#818cf8">↗ Bezoek website</a>
+      <!-- Site cards grid -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <template x-for="site in sites" :key="site.id">
+          <div class="card p-5 cursor-pointer hover:border-blue-500 transition-colors" style="transition:border-color .15s;" @click="selectSite(site.id)">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <p class="font-semibold text-white text-sm" x-text="site.name"></p>
+                <p class="text-xs mt-0.5" style="color:#64748b;" x-text="site.domain"></p>
+              </div>
+              <!-- Health score circle -->
+              <div class="text-center">
+                <div class="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg border-2"
+                     :style="`border-color:${scoreHex(site.health_score)};color:${scoreHex(site.health_score)};background:${scoreHex(site.health_score)}18`"
+                     x-text="site.health_score||'—'"></div>
+              </div>
             </div>
-            <button class="btn btn-ai" @click="doCompetitorAI()" x-show="config.anthropic">
-              <span x-show="ai.compLoading" class="spin">⟳</span> 🤖 AI Strategie Rapport
-            </button>
-          </div>
-
-          <div class="grid grid-cols-5 gap-3">
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Domain Rating</p><p class="text-3xl font-bold" :class="site.r.dr>=50?'text-green-400':site.r.dr>=20?'text-yellow-400':'text-red-400'" x-text="site.r.dr??'—'"></p><p class="text-xs" style="color:#374151">/100</p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Backlinks</p><p class="text-3xl font-bold text-white" x-text="fmt(site.r.bl)"></p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Ref. Domeinen</p><p class="text-3xl font-bold text-white" x-text="fmt(site.r.rd)"></p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Org. Keywords</p><p class="text-3xl font-bold text-white" x-text="fmt(site.r.kws)"></p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Est. Traffic</p><p class="text-3xl font-bold text-white" x-text="fmt(site.r.traffic)"></p><p class="text-xs" style="color:#374151">/maand</p></div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div class="card p-4">
-              <div class="flex justify-between mb-3"><h3 class="font-semibold text-sm text-white">🎯 Top Keywords</h3><button class="btn btn-ghost btn-sm" @click="exportCSV(site.r.kwRows,'domain-keywords')">⬇ CSV</button></div>
-              <table class="w-full text-xs">
-                <thead><tr style="color:#374151;border-bottom:1px solid var(--border)"><th class="pb-2 text-left">Keyword</th><th class="pb-2 text-right">Pos.</th><th class="pb-2 text-right">Vol.</th><th class="pb-2 text-right">Traffic</th></tr></thead>
-                <tbody>
-                  <template x-for="(r,i) in site.r.kwRows" :key="i">
-                    <tr class="tr border-b" style="border-color:var(--border)">
-                      <td class="py-1.5 cursor-pointer hover:underline" style="color:#818cf8" @click="kw.q=r.keyword;tab='kw';kw.mode='single';doKW()" x-text="r.keyword"></td>
-                      <td class="py-1.5 text-right"><span class="badge" :class="r.pos<=3?'bg-green':r.pos<=10?'bg-blue':'bg-yellow'" x-text="r.pos"></span></td>
-                      <td class="py-1.5 text-right" style="color:#64748b" x-text="fmt(r.volume)"></td>
-                      <td class="py-1.5 text-right" style="color:#64748b" x-text="fmt(r.traffic)"></td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
+            <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+              <div class="surface p-2 rounded-lg">
+                <p class="text-xs font-bold text-white" x-text="site.keyword_count||0"></p>
+                <p class="text-xs" style="color:#374151;">keywords</p>
+              </div>
+              <div class="surface p-2 rounded-lg">
+                <p class="text-xs font-bold" :class="(site.critical_issues||0)>0?'text-red-400':'text-white'" x-text="site.critical_issues||0"></p>
+                <p class="text-xs" style="color:#374151;">kritiek</p>
+              </div>
+              <div class="surface p-2 rounded-lg">
+                <p class="text-xs font-bold text-white" x-text="site.open_issues||0"></p>
+                <p class="text-xs" style="color:#374151;">issues</p>
+              </div>
             </div>
-            <div class="card p-4">
-              <h3 class="font-semibold text-sm text-white mb-3">⚔️ Concurrenten</h3>
-              <table class="w-full text-xs">
-                <thead><tr style="color:#374151;border-bottom:1px solid var(--border)"><th class="pb-2 text-left">Domein</th><th class="pb-2 text-right">Gelijke KW</th><th class="pb-2 text-right">Traffic</th></tr></thead>
-                <tbody>
-                  <template x-for="(r,i) in site.r.compRows" :key="i">
-                    <tr class="tr border-b cursor-pointer" style="border-color:var(--border)" @click="site.q=r.domain;doSite()">
-                      <td class="py-1.5 flex items-center gap-1.5"><img :src="`https://www.google.com/s2/favicons?sz=14&domain=${r.domain}`" class="w-3.5 h-3.5"><span style="color:#818cf8" x-text="r.domain"></span></td>
-                      <td class="py-1.5 text-right" style="color:#64748b" x-text="fmt(r.shared)"></td>
-                      <td class="py-1.5 text-right" style="color:#64748b" x-text="fmt(r.traffic)"></td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
+            <div class="flex items-center justify-between">
+              <p class="text-xs" style="color:#374151;" x-text="site.last_checked ? 'Gecheck: '+fmtDate(site.last_checked) : 'Nog niet gecheckt'"></p>
+              <button class="btn btn-primary btn-xs" @click.stop="triggerCheck(site.id,$event)">Check Nu</button>
             </div>
           </div>
-
-          <!-- AI Strategie Rapport -->
-          <template x-if="ai.comp">
-            <div class="card p-5 fade">
-              <div class="flex items-center gap-2 mb-3"><span class="badge bg-purple">Claude AI</span><h3 class="font-semibold text-white">Strategisch Rapport — <span x-text="site.r.domain" style="color:#818cf8"></span></h3></div>
-              <div class="prose text-sm" x-html="mdToHtml(ai.comp)"></div>
-            </div>
-          </template>
-        </div>
-      </template>
-      <template x-if="site.loading"><div class="flex flex-col items-center justify-center py-16" style="color:#374151"><div class="spin text-3xl mb-3">⟳</div><p>Domein analyseren...</p></div></template>
-    </div>
-
-
-    <!-- ══════════════════════════════════════════════════════════
-         3. BACKLINKS
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='bl'" class="fade">
-      <div class="card p-4 mb-4 flex gap-2">
-        <input class="input flex-1" placeholder="domein.com" x-model="bl.q" @keydown.enter="doBL()">
-        <select class="select" x-model="bl.limit"><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="200">200</option></select>
-        <button class="btn btn-primary" @click="doBL()" :disabled="bl.loading"><span x-show="bl.loading" class="spin">⟳</span> Ophalen</button>
-      </div>
-      <template x-if="bl.r?.length">
-        <div class="fade">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="text-sm text-white font-semibold"><span x-text="bl.r.length"></span> backlinks</span>
-            <button class="btn btn-ghost btn-sm" @click="exportCSV(bl.r,'backlinks')">⬇ CSV</button>
-          </div>
-          <div class="card overflow-hidden">
-            <div class="overflow-x-auto" style="max-height:500px;overflow-y:auto">
-              <table class="w-full text-xs">
-                <thead style="position:sticky;top:0;background:var(--card)">
-                  <tr style="color:#374151;border-bottom:1px solid var(--border)">
-                    <th class="px-4 py-2.5 text-left">Bron URL</th><th class="px-4 py-2.5 text-left">Ankertekst</th><th class="px-4 py-2.5 text-right">DR</th><th class="px-4 py-2.5 text-center">Type</th><th class="px-4 py-2.5 text-right">Spam</th><th class="px-4 py-2.5 text-right">Gezien</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template x-for="(r,i) in bl.r" :key="i">
-                    <tr class="tr border-b" style="border-color:var(--border)">
-                      <td class="px-4 py-2 max-w-xs"><a :href="r.url_from" target="_blank" class="hover:underline" style="color:#818cf8" x-text="r.domain_from||r.url_from"></a></td>
-                      <td class="px-4 py-2" style="color:#94a3b8" x-text="r.anchor||'—'"></td>
-                      <td class="px-4 py-2 text-right font-bold" :class="r.rank>=50?'text-green-400':r.rank>=20?'text-yellow-400':'text-white'" x-text="r.rank??'—'"></td>
-                      <td class="px-4 py-2 text-center"><span class="badge" :class="r.dofollow?'bg-green':'bg-red'" x-text="r.dofollow?'do':'no'"></span></td>
-                      <td class="px-4 py-2 text-right" :class="r.spam_score>60?'text-red-400':r.spam_score>30?'text-yellow-400':'text-green-400'" x-text="r.spam_score??'—'"></td>
-                      <td class="px-4 py-2 text-right" style="color:#374151" x-text="r.first_seen?r.first_seen.slice(0,10):'—'"></td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </template>
-      <template x-if="bl.loading"><div class="flex flex-col items-center justify-center py-16" style="color:#374151"><div class="spin text-3xl mb-3">⟳</div><p>Backlinks ophalen...</p></div></template>
-    </div>
-
-
-    <!-- ══════════════════════════════════════════════════════════
-         4. SITE AUDIT
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='audit'" class="fade">
-      <div class="flex gap-1 mb-4">
-        <button class="btn btn-sm" :class="audit.mode==='speed'?'btn-primary':'btn-ghost'" @click="audit.mode='speed'">⚡ PageSpeed</button>
-        <button class="btn btn-sm" :class="audit.mode==='crawl'?'btn-primary':'btn-ghost'" @click="audit.mode='crawl'">🕷️ Site Crawl</button>
-      </div>
-
-      <div class="card p-4 mb-4 flex gap-2">
-        <input class="input flex-1" :placeholder="audit.mode==='speed'?'https://littleoummah.com':'https://littleoummah.com'" x-model="audit.q" @keydown.enter="audit.mode==='speed'?doSpeed():doCrawl()">
-        <template x-if="audit.mode==='crawl'">
-          <select class="select" x-model="audit.maxPages">
-            <option value="10">10 pagina's</option><option value="20">20 pagina's</option><option value="50">50 pagina's</option>
-          </select>
         </template>
-        <button class="btn btn-primary" @click="audit.mode==='speed'?doSpeed():doCrawl()" :disabled="audit.loading">
-          <span x-show="audit.loading" class="spin">⟳</span>
-          <span x-text="audit.mode==='speed'?'Analyseer':'Crawl starten'"></span>
-        </button>
-      </div>
-      <template x-if="audit.mode==='speed'&&audit.loading"><p class="text-xs text-center pb-3" style="color:#374151">Dit duurt 10-30 seconden (Google API)...</p></template>
 
-      <!-- PageSpeed results -->
-      <template x-if="audit.mode==='speed'&&audit.r">
-        <div class="space-y-4 fade">
-          <div class="grid grid-cols-4 gap-3">
-            <template x-for="s in audit.r.scores" :key="s.label">
-              <div class="metric text-center">
-                <div class="relative inline-flex items-center justify-center mb-2" style="width:72px;height:72px">
-                  <svg width="72" height="72" style="transform:rotate(-90deg)">
-                    <circle cx="36" cy="36" r="29" fill="none" stroke="var(--border)" stroke-width="5"/>
-                    <circle cx="36" cy="36" r="29" fill="none" :stroke="s.score>=90?'#22c55e':s.score>=50?'#f59e0b':'#ef4444'" stroke-width="5" :stroke-dasharray="`${s.score*1.82} 182`" stroke-linecap="round"/>
-                  </svg>
-                  <span class="absolute text-lg font-bold" :class="s.score>=90?'text-green-400':s.score>=50?'text-yellow-400':'text-red-400'" x-text="s.score"></span>
-                </div>
-                <p class="text-xs font-semibold text-white" x-text="s.label"></p>
-              </div>
-            </template>
+        <!-- Add site card -->
+        <div class="card p-5 cursor-pointer border-dashed flex items-center justify-center" style="min-height:180px;border-color:#252836;" @click="showAddSite=true">
+          <div class="text-center">
+            <p class="text-3xl mb-2" style="color:#252836;">+</p>
+            <p class="text-sm font-medium" style="color:#374151;">Site Toevoegen</p>
           </div>
-          <div class="grid grid-cols-2 gap-4">
-            <template x-for="strat in ['mobile','desktop']">
-              <div class="card p-4" x-show="audit.r[strat]">
-                <h3 class="font-semibold text-sm text-white mb-3" x-text="(strat==='mobile'?'📱 Mobile':'💻 Desktop')"></h3>
-                <div class="space-y-2">
-                  <template x-for="v in audit.r[strat]?.vitals||[]" :key="v.name">
-                    <div class="flex justify-between text-xs"><span style="color:#94a3b8" x-text="v.name"></span><span :class="v.good?'text-green-400':v.warn?'text-yellow-400':'text-red-400'" x-text="v.value"></span></div>
-                  </template>
-                </div>
+        </div>
+      </div>
+
+      <!-- Action Queue -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-white">Action Queue — Alle Sites</h2>
+          <button class="btn btn-ghost btn-sm" @click="loadActions()">Vernieuwen</button>
+        </div>
+        <template x-if="actions.length === 0">
+          <p class="text-sm" style="color:#374151;">Geen open acties. Alles is in orde!</p>
+        </template>
+        <template x-if="actions.length > 0">
+          <table class="w-full text-xs">
+            <thead>
+              <tr style="color:#374151;border-bottom:1px solid var(--border);">
+                <th class="pb-2 text-left">Site</th>
+                <th class="pb-2 text-left">Issue</th>
+                <th class="pb-2 text-left">Detail</th>
+                <th class="pb-2 text-center">Ernst</th>
+                <th class="pb-2 text-center">Gevonden</th>
+                <th class="pb-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="action in actions.slice(0,15)" :key="action.id">
+                <tr class="tr border-b" style="border-color:var(--border);">
+                  <td class="py-2 font-medium text-white" x-text="action.site_name"></td>
+                  <td class="py-2" style="color:#818cf8;" x-text="action.issue_type"></td>
+                  <td class="py-2" style="color:#94a3b8;" x-text="(action.detail||'').slice(0,60)"></td>
+                  <td class="py-2 text-center">
+                    <span class="badge" :class="action.severity==='kritiek'?'badge-red':'badge-yellow'" x-text="action.severity"></span>
+                  </td>
+                  <td class="py-2 text-center" style="color:#374151;" x-text="fmtDate(action.found_at)"></td>
+                  <td class="py-2 text-right">
+                    <button class="btn btn-ghost btn-xs" @click="resolveAction(action.id)" style="color:#22c55e;border-color:#052e16;">Opgelost</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
+
+    <!-- ══ SITE VIEW (site geselecteerd) ══════════════════════════════════ -->
+    <div x-show="activeSiteId" class="flex flex-col h-full">
+
+      <!-- Site tabs -->
+      <div class="flex-shrink-0 flex items-center gap-1 px-6 py-2 border-b" style="border-color:var(--border);background:var(--bg);">
+        <button class="tab-btn" :class="siteTab==='rapport'?'active':''" @click="siteTab='rapport'">Dagelijks Rapport</button>
+        <button class="tab-btn" :class="siteTab==='rankings'?'active':''" @click="siteTab='rankings'">Rankings</button>
+        <button class="tab-btn" :class="siteTab==='issues'?'active':''" @click="siteTab='issues';loadIssues()">Issues</button>
+        <button class="tab-btn" :class="siteTab==='audit'?'active':''" @click="siteTab='audit';loadAudit()">Audit</button>
+        <button class="tab-btn" :class="siteTab==='tools'?'active':''" @click="siteTab='tools'">Tools</button>
+        <button class="tab-btn" :class="siteTab==='instellingen'?'active':''" @click="siteTab='instellingen'">Instellingen</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6">
+
+        <!-- ── TAB: DAGELIJKS RAPPORT ──────────────────────────────────── -->
+        <div x-show="siteTab==='rapport'" class="fade">
+          <div class="flex items-start gap-6 mb-6">
+
+            <!-- Health score circle -->
+            <div class="card p-6 text-center flex-shrink-0" style="min-width:160px;">
+              <p class="text-xs mb-3" style="color:#64748b;">Health Score</p>
+              <div class="w-24 h-24 rounded-full flex items-center justify-center font-black text-3xl border-4 mx-auto"
+                   :style="`border-color:${scoreHex(report?.health_score)};color:${scoreHex(report?.health_score)};background:${scoreHex(report?.health_score)}15`"
+                   x-text="report?.health_score||'—'">
               </div>
-            </template>
+              <p class="text-xs mt-3" style="color:#374151;" x-text="report ? fmtDate(report.checked_at) : 'Nog niet gecheckt'"></p>
+            </div>
+
+            <!-- Summary + check button -->
+            <div class="flex-1">
+              <div class="card p-5 mb-4">
+                <div class="flex items-center justify-between mb-2">
+                  <h2 class="font-semibold text-white">AI Samenvatting</h2>
+                  <span class="badge badge-blue" x-show="report">Claude AI</span>
+                </div>
+                <p class="text-sm" style="color:#94a3b8;line-height:1.6;" x-text="report?.report?.summary || report?.summary || 'Voer een check uit om een rapport te genereren.'"></p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="btn btn-primary" @click="triggerCheck(activeSiteId,$event)" :disabled="checkLoading">
+                  <span x-show="checkLoading" class="spin">&#x21BB;</span>
+                  <span x-show="!checkLoading">&#x25B6;</span>
+                  Check Nu Uitvoeren
+                </button>
+                <p class="text-xs" style="color:#374151;" x-show="report">Laatste check: <span x-text="fmtDate(report?.checked_at)"></span></p>
+              </div>
+            </div>
           </div>
-          <template x-if="audit.r.opps?.length">
-            <div class="card p-4">
-              <h3 class="font-semibold text-sm text-white mb-3">💡 Verbetermogelijkheden</h3>
+
+          <!-- Issues 3 columns -->
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Kritiek -->
+            <div>
+              <h3 class="font-semibold text-sm mb-3 flex items-center gap-2" style="color:#ef4444;">
+                <span>&#9888;</span> Kritiek (<span x-text="(report?.report?.critical_issues||[]).length"></span>)
+              </h3>
               <div class="space-y-2">
-                <template x-for="o in audit.r.opps" :key="o.title">
-                  <div class="flex gap-3 p-2.5 rounded-lg text-xs" style="background:var(--surface)">
-                    <span class="text-yellow-400 mt-0.5">⚠</span>
-                    <div><p class="font-medium text-white" x-text="o.title"></p><p style="color:#64748b" x-text="o.desc"></p><p class="text-green-400 mt-1" x-show="o.savings" x-text="'⚡ Tijdwinst: '+o.savings"></p></div>
+                <template x-if="!(report?.report?.critical_issues||[]).length">
+                  <div class="card p-3 text-xs" style="color:#374151;border-color:#052e16;">Geen kritieke issues</div>
+                </template>
+                <template x-for="(issue,i) in (report?.report?.critical_issues||[])" :key="i">
+                  <div class="card p-4" style="border-color:#7f1d1d;">
+                    <div class="flex items-start justify-between mb-2">
+                      <span class="badge badge-red" x-text="issue.type||'issue'"></span>
+                      <span class="text-xs font-bold" style="color:#f59e0b;" x-show="issue.priority">P<span x-text="issue.priority"></span></span>
+                    </div>
+                    <p class="text-xs font-medium text-white mb-1" x-text="issue.detail"></p>
+                    <p class="text-xs mb-2" style="color:#94a3b8;" x-text="issue.action"></p>
+                    <div class="flex gap-1 flex-wrap">
+                      <span class="badge badge-gray text-xs" x-show="issue.effort">Inspanning: <span x-text="issue.effort"></span></span>
+                      <span class="badge badge-teal text-xs" x-show="issue.impact">Impact: <span x-text="issue.impact"></span></span>
+                    </div>
                   </div>
                 </template>
               </div>
             </div>
-          </template>
-        </div>
-      </template>
 
-      <!-- Crawl results -->
-      <template x-if="audit.mode==='crawl'&&audit.crawl">
-        <div class="space-y-4 fade">
-          <div class="grid grid-cols-4 gap-3">
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Gecrawld</p><p class="text-2xl font-bold text-white" x-text="audit.crawl.total"></p><p class="text-xs" style="color:#374151">pagina's</p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Pagina's met issues</p><p class="text-2xl font-bold text-red-400" x-text="audit.crawl.pages.filter(p=>p.issues_count>0).length"></p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Gem. laadtijd</p><p class="text-2xl font-bold text-white" x-text="(audit.crawl.pages.reduce((s,p)=>s+(p.load_time||0),0)/audit.crawl.total).toFixed(2)+'s'"></p></div>
-            <div class="metric text-center"><p class="text-xs mb-1" style="color:#64748b">Afb. zonder alt</p><p class="text-2xl font-bold text-yellow-400" x-text="audit.crawl.pages.reduce((s,p)=>s+(p.images_no_alt||0),0)"></p></div>
-          </div>
+            <!-- Aandacht -->
+            <div>
+              <h3 class="font-semibold text-sm mb-3 flex items-center gap-2" style="color:#f59e0b;">
+                <span>&#9650;</span> Aandacht (<span x-text="(report?.report?.warnings||[]).length"></span>)
+              </h3>
+              <div class="space-y-2">
+                <template x-if="!(report?.report?.warnings||[]).length">
+                  <div class="card p-3 text-xs" style="color:#374151;border-color:#2d1a00;">Geen aandachtspunten</div>
+                </template>
+                <template x-for="(warn,i) in (report?.report?.warnings||[])" :key="i">
+                  <div class="card p-4" style="border-color:#92400e;">
+                    <div class="flex items-start justify-between mb-2">
+                      <span class="badge badge-yellow" x-text="warn.type||'waarschuwing'"></span>
+                      <span class="text-xs font-bold" style="color:#f59e0b;" x-show="warn.priority">P<span x-text="warn.priority"></span></span>
+                    </div>
+                    <p class="text-xs font-medium text-white mb-1" x-text="warn.detail"></p>
+                    <p class="text-xs mb-2" style="color:#94a3b8;" x-text="warn.action"></p>
+                    <div class="flex gap-1 flex-wrap">
+                      <span class="badge badge-gray text-xs" x-show="warn.effort">Inspanning: <span x-text="warn.effort"></span></span>
+                      <span class="badge badge-teal text-xs" x-show="warn.impact">Impact: <span x-text="warn.impact"></span></span>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
 
-          <div class="card p-4">
-            <div class="flex justify-between mb-3"><h3 class="font-semibold text-sm text-white">🔍 Issues per type</h3></div>
-            <div class="flex flex-wrap gap-2">
-              <template x-for="(cnt, issue) in audit.crawl.issues_summary" :key="issue">
-                <span class="badge bg-red px-3 py-1" x-text="`${issue} (${cnt}x)`"></span>
+            <!-- Goed -->
+            <div>
+              <h3 class="font-semibold text-sm mb-3 flex items-center gap-2" style="color:#22c55e;">
+                <span>&#10003;</span> Goed (<span x-text="(report?.report?.wins||[]).length"></span>)
+              </h3>
+              <div class="space-y-2">
+                <template x-if="!(report?.report?.wins||[]).length">
+                  <div class="card p-3 text-xs" style="color:#374151;border-color:#052e16;">Nog geen positieve bevindingen</div>
+                </template>
+                <template x-for="(win,i) in (report?.report?.wins||[])" :key="i">
+                  <div class="card p-4" style="border-color:#14532d;">
+                    <p class="text-xs text-white" x-text="win.detail"></p>
+                  </div>
+                </template>
+              </div>
+
+              <!-- Today actions -->
+              <template x-if="(report?.report?.today_actions||[]).length">
+                <div class="mt-4">
+                  <h3 class="font-semibold text-sm mb-3" style="color:#818cf8;">Acties voor Vandaag</h3>
+                  <div class="space-y-2">
+                    <template x-for="(action,i) in (report?.report?.today_actions||[])" :key="i">
+                      <div class="card p-3" style="border-color:#1a2357;">
+                        <div class="flex items-center gap-2 mb-1">
+                          <span class="badge badge-blue" x-text="action.category||'actie'"></span>
+                          <span class="text-xs font-bold" style="color:#818cf8;">P<span x-text="action.priority"></span></span>
+                        </div>
+                        <p class="text-xs text-white" x-text="action.action"></p>
+                        <div class="flex gap-1 mt-1.5 flex-wrap">
+                          <span class="badge badge-gray text-xs" x-show="action.effort">Inspanning: <span x-text="action.effort"></span></span>
+                          <span class="badge badge-teal text-xs" x-show="action.impact">Impact: <span x-text="action.impact"></span></span>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
               </template>
             </div>
           </div>
+        </div>
 
-          <div class="card overflow-hidden">
-            <div class="flex justify-between px-4 py-3" style="border-bottom:1px solid var(--border)">
-              <h3 class="font-semibold text-sm text-white">Gecrawlde pagina's</h3>
-              <button class="btn btn-ghost btn-sm" @click="exportCSV(audit.crawl.pages,'site-crawl')">⬇ CSV</button>
+        <!-- ── TAB: RANKINGS ──────────────────────────────────────────── -->
+        <div x-show="siteTab==='rankings'" class="fade">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-white">Keyword Rankings</h2>
+            <button class="btn btn-primary btn-sm" @click="showAddKeyword=true">+ Keyword Toevoegen</button>
+          </div>
+
+          <template x-if="rankings.length === 0">
+            <div class="card p-8 text-center">
+              <p class="text-3xl mb-3">&#128270;</p>
+              <p class="font-medium text-white mb-1">Geen keywords geconfigureerd</p>
+              <p class="text-sm mb-4" style="color:#64748b;">Voeg keywords toe om posities te monitoren</p>
+              <button class="btn btn-primary btn-sm" @click="showAddKeyword=true">Keyword Toevoegen</button>
             </div>
-            <div class="overflow-x-auto" style="max-height:400px;overflow-y:auto">
+          </template>
+
+          <template x-if="rankings.length > 0">
+            <div class="card overflow-hidden mb-4">
               <table class="w-full text-xs">
-                <thead style="position:sticky;top:0;background:var(--card)">
-                  <tr style="color:#374151;border-bottom:1px solid var(--border)">
-                    <th class="px-3 py-2 text-left">URL</th><th class="px-3 py-2 text-center">Status</th><th class="px-3 py-2 text-right">Title len.</th><th class="px-3 py-2 text-right">Words</th><th class="px-3 py-2 text-right">Load</th><th class="px-3 py-2 text-left">Issues</th>
+                <thead>
+                  <tr style="color:#374151;border-bottom:1px solid var(--border);background:var(--surface);">
+                    <th class="px-4 py-3 text-left">Keyword</th>
+                    <th class="px-3 py-3 text-center">Vandaag</th>
+                    <th class="px-3 py-3 text-center">Verandering</th>
+                    <th class="px-3 py-3 text-center">Doel</th>
+                    <th class="px-3 py-3 text-center">Afstand #1</th>
+                    <th class="px-3 py-3 text-left">URL</th>
+                    <th class="px-3 py-3"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <template x-for="(p,i) in audit.crawl.pages" :key="i">
-                    <tr class="tr border-b" style="border-color:var(--border)">
-                      <td class="px-3 py-2 max-w-xs"><a :href="p.url" target="_blank" class="hover:underline" style="color:#818cf8" x-text="p.url.replace(/https?:\/\//,'')"></a></td>
-                      <td class="px-3 py-2 text-center"><span class="badge" :class="p.status===200?'bg-green':p.status>=400?'bg-red':'bg-yellow'" x-text="p.status||'err'"></span></td>
-                      <td class="px-3 py-2 text-right" :class="p.title_len>60||p.title_len<20?'text-red-400':'text-green-400'" x-text="p.title_len||0"></td>
-                      <td class="px-3 py-2 text-right" style="color:#64748b" x-text="fmt(p.word_count)"></td>
-                      <td class="px-3 py-2 text-right" :class="p.load_time>3?'text-red-400':p.load_time>1?'text-yellow-400':'text-green-400'" x-text="p.load_time?p.load_time+'s':'—'"></td>
-                      <td class="px-3 py-2">
-                        <div class="flex flex-wrap gap-1">
-                          <template x-for="issue in (p.issues||[])" :key="issue">
-                            <span class="badge bg-red" x-text="issue"></span>
-                          </template>
-                        </div>
+                  <template x-for="kw in rankings" :key="kw.keyword_id">
+                    <tr class="tr border-b" style="border-color:var(--border);" @click="selectKeywordChart(kw)" style="cursor:pointer;">
+                      <td class="px-4 py-3 font-medium text-white" x-text="kw.keyword"></td>
+                      <td class="px-3 py-3 text-center">
+                        <span class="font-bold text-sm" :class="posColor(kw.position)" x-text="kw.position||'—'"></span>
+                      </td>
+                      <td class="px-3 py-3 text-center">
+                        <span x-show="kw.change_vs_yesterday===null||kw.change_vs_yesterday===undefined" style="color:#374151;">—</span>
+                        <span x-show="kw.change_vs_yesterday===0" style="color:#64748b;">&#61;</span>
+                        <span x-show="kw.change_vs_yesterday>0" class="font-semibold" style="color:#22c55e;">&#9650;<span x-text="kw.change_vs_yesterday"></span></span>
+                        <span x-show="kw.change_vs_yesterday<0" class="font-semibold" style="color:#ef4444;">&#9660;<span x-text="Math.abs(kw.change_vs_yesterday)"></span></span>
+                      </td>
+                      <td class="px-3 py-3 text-center" style="color:#64748b;" x-text="'top '+kw.target_position"></td>
+                      <td class="px-3 py-3 text-center" style="color:#64748b;" x-text="kw.position ? (kw.position-1||'#1!') : '—'"></td>
+                      <td class="px-3 py-3 max-w-xs">
+                        <a :href="kw.url" target="_blank" class="text-xs hover:underline truncate block" style="color:#818cf8;max-width:200px;" x-text="kw.url||'—'"></a>
+                      </td>
+                      <td class="px-3 py-3">
+                        <button class="btn btn-xs" style="color:#ef4444;border:1px solid #7f1d1d;background:transparent;" @click.stop="deleteKeyword(activeSiteId, kw.keyword_id)">&#x2715;</button>
                       </td>
                     </tr>
                   </template>
                 </tbody>
               </table>
             </div>
-          </div>
+          </template>
+
+          <!-- Chart for selected keyword -->
+          <template x-if="selectedKwChart">
+            <div class="card p-5 fade">
+              <h3 class="font-semibold text-white mb-4">Positie Verloop — <span x-text="selectedKwChart.keyword" style="color:#818cf8;"></span></h3>
+              <div style="height:200px;position:relative;">
+                <canvas id="rankChart" style="height:200px;"></canvas>
+              </div>
+            </div>
+          </template>
         </div>
-      </template>
-    </div>
 
-
-    <!-- ══════════════════════════════════════════════════════════
-         5. RANK TRACKER
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='rank'" class="fade">
-      <div class="card p-4 mb-4">
-        <p class="text-xs mb-2" style="color:#64748b">Voeg keywords toe om dagelijks te tracken. Posities worden elke nacht automatisch gecheckt.</p>
-        <div class="flex gap-2">
-          <input class="input" placeholder="domein.com" x-model="rank.domain" style="flex:1.2">
-          <input class="input" placeholder="keyword om te tracken" x-model="rank.kw" style="flex:2" @keydown.enter="addRankKW()">
-          <button class="btn btn-primary" @click="addRankKW()" :disabled="rank.adding"><span x-show="rank.adding" class="spin">⟳</span> Toevoegen</button>
-        </div>
-      </div>
-
-      <template x-if="rank.domain">
-        <div class="fade">
-          <div class="flex items-center gap-3 mb-3">
-            <h3 class="font-semibold text-white">Tracked keywords voor <span x-text="rank.domain" style="color:#818cf8"></span></h3>
-            <button class="btn btn-ghost btn-sm" @click="loadRankList()">↺ Vernieuwen</button>
-            <button class="btn btn-ghost btn-sm" @click="checkAllNow()" :disabled="rank.checking"><span x-show="rank.checking" class="spin">⟳</span> Nu alles checken</button>
+        <!-- ── TAB: ISSUES ─────────────────────────────────────────────── -->
+        <div x-show="siteTab==='issues'" class="fade">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-white">Technische Issues</h2>
+            <div class="flex gap-1">
+              <button class="tab-btn btn-sm" :class="issueFilter==='alle'?'active':''" @click="issueFilter='alle'">Alle</button>
+              <button class="tab-btn btn-sm" :class="issueFilter==='kritiek'?'active':''" @click="issueFilter='kritiek'">Kritiek</button>
+              <button class="tab-btn btn-sm" :class="issueFilter==='warning'?'active':''" @click="issueFilter='warning'">Waarschuwing</button>
+              <button class="tab-btn btn-sm" :class="issueFilter==='opgelost'?'active':''" @click="issueFilter='opgelost';loadIssues(true)">Opgelost</button>
+            </div>
           </div>
 
-          <div class="card overflow-hidden">
-            <table class="w-full text-sm">
-              <thead><tr style="color:#374151;border-bottom:1px solid var(--border)">
-                <th class="px-4 py-3 text-left">Keyword</th>
-                <th class="px-4 py-3 text-center">Huidige positie</th>
-                <th class="px-4 py-3 text-left">URL</th>
-                <th class="px-4 py-3 text-right">Laatste check</th>
-                <th class="px-4 py-3 text-center">Grafiek</th>
-                <th class="px-4 py-3 text-center">—</th>
-              </tr></thead>
+          <template x-if="filteredIssues.length === 0">
+            <div class="card p-8 text-center">
+              <p class="text-3xl mb-2">&#10003;</p>
+              <p class="font-medium text-white">Geen issues gevonden</p>
+              <p class="text-sm mt-1" style="color:#64748b;">Voer een check uit om issues te detecteren</p>
+            </div>
+          </template>
+
+          <div class="card overflow-hidden" x-show="filteredIssues.length > 0">
+            <table class="w-full text-xs">
+              <thead>
+                <tr style="color:#374151;border-bottom:1px solid var(--border);background:var(--surface);">
+                  <th class="px-4 py-3 text-left">Pagina URL</th>
+                  <th class="px-3 py-3 text-left">Type</th>
+                  <th class="px-3 py-3 text-left">Detail</th>
+                  <th class="px-3 py-3 text-center">Ernst</th>
+                  <th class="px-3 py-3 text-center">Gevonden</th>
+                  <th class="px-3 py-3"></th>
+                </tr>
+              </thead>
               <tbody>
-                <template x-for="(r,i) in rank.list" :key="i">
-                  <tr class="tr border-b" style="border-color:var(--border)">
-                    <td class="px-4 py-3 text-white font-medium" x-text="r.keyword"></td>
-                    <td class="px-4 py-3 text-center">
-                      <span class="badge text-sm font-bold" :class="r.position?r.position<=3?'bg-green':r.position<=10?'bg-blue':'bg-yellow':'bg-red'" x-text="r.position?'#'+r.position:'Niet gevonden'"></span>
+                <template x-for="issue in filteredIssues" :key="issue.id">
+                  <tr class="tr border-b" style="border-color:var(--border);">
+                    <td class="px-4 py-2.5 max-w-xs">
+                      <a :href="issue.url" target="_blank" class="hover:underline truncate block" style="color:#818cf8;max-width:220px;" x-text="issue.url||'—'"></a>
                     </td>
-                    <td class="px-4 py-3 max-w-xs"><a :href="r.url" target="_blank" class="text-xs hover:underline truncate block" style="color:#818cf8" x-text="r.url||'—'"></a></td>
-                    <td class="px-4 py-3 text-right text-xs" style="color:#374151" x-text="r.checked_at?r.checked_at.slice(0,16):'—'"></td>
-                    <td class="px-4 py-3 text-center">
-                      <button class="btn btn-ghost btn-sm" @click="showRankChart(r.keyword)">📈</button>
+                    <td class="px-3 py-2.5 font-medium" style="color:#94a3b8;" x-text="issue.issue_type"></td>
+                    <td class="px-3 py-2.5" style="color:#64748b;" x-text="(issue.detail||'').slice(0,70)"></td>
+                    <td class="px-3 py-2.5 text-center">
+                      <span class="badge" :class="issue.severity==='kritiek'?'badge-red':'badge-yellow'" x-text="issue.severity"></span>
                     </td>
-                    <td class="px-4 py-3 text-center">
-                      <button class="text-xs hover:text-red-400 transition-colors" style="color:#374151" @click="removeRankKW(r)">✕</button>
+                    <td class="px-3 py-2.5 text-center" style="color:#374151;" x-text="fmtDate(issue.found_at)"></td>
+                    <td class="px-3 py-2.5 text-right">
+                      <button x-show="!issue.resolved" class="btn btn-xs" style="color:#22c55e;border:1px solid #052e16;background:transparent;" @click="resolveIssue(activeSiteId,issue.id)">Opgelost</button>
+                      <span x-show="issue.resolved" class="badge badge-gray">Opgelost</span>
                     </td>
                   </tr>
-                </template>
-                <template x-if="!rank.list?.length">
-                  <tr><td colspan="6" class="px-4 py-8 text-center text-xs" style="color:#374151">Nog geen keywords toegevoegd</td></tr>
                 </template>
               </tbody>
             </table>
           </div>
+        </div>
 
-          <!-- Rank Chart -->
-          <template x-if="rank.chartKW">
-            <div class="card p-5 mt-4 fade">
-              <h3 class="font-semibold text-white mb-4">📈 Positie geschiedenis: <span x-text="rank.chartKW" style="color:#818cf8"></span></h3>
-              <canvas id="rankChart" style="max-height:250px"></canvas>
+        <!-- ── TAB: AUDIT ─────────────────────────────────────────────── -->
+        <div x-show="siteTab==='audit'" class="fade">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-semibold text-white">PageSpeed Audit</h2>
+            <button class="btn btn-primary btn-sm" @click="runAudit()" :disabled="auditLoading">
+              <span x-show="auditLoading" class="spin">&#x21BB;</span>
+              Audit Uitvoeren
+            </button>
+          </div>
+
+          <template x-if="!latestAudit && !auditLoading">
+            <div class="card p-8 text-center">
+              <p class="text-3xl mb-2">&#128200;</p>
+              <p class="font-medium text-white mb-2">Nog geen audit data</p>
+              <button class="btn btn-primary btn-sm" @click="runAudit()">Audit Uitvoeren</button>
+            </div>
+          </template>
+
+          <template x-if="latestAudit">
+            <div class="fade">
+              <!-- Score circles -->
+              <div class="grid grid-cols-4 gap-4 mb-5">
+                <template x-for="(metric,i) in auditMetrics" :key="i">
+                  <div class="card p-5 text-center">
+                    <p class="text-xs mb-3" style="color:#64748b;" x-text="metric.label"></p>
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl border-4 mx-auto"
+                         :style="`border-color:${psColor(metric.value)};color:${psColor(metric.value)};background:${psColor(metric.value)}15`"
+                         x-text="metric.value!==null?metric.value:'—'">
+                    </div>
+                    <p class="text-xs mt-2" style="color:#374151;" x-text="metric.sub||''"></p>
+                  </div>
+                </template>
+              </div>
+
+              <!-- Core Web Vitals -->
+              <div class="card p-5 mb-5">
+                <h3 class="font-semibold text-white mb-4">Core Web Vitals</h3>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="surface p-4 rounded-lg">
+                    <p class="text-xs mb-1" style="color:#64748b;">LCP (Largest Contentful Paint)</p>
+                    <p class="text-xl font-bold" :class="(latestAudit.lcp||99)<=2.5?'text-green-400':(latestAudit.lcp||99)<=4?'text-yellow-400':'text-red-400'" x-text="latestAudit.lcp ? latestAudit.lcp+'s' : '—'"></p>
+                    <p class="text-xs mt-1" style="color:#374151;">Doel: &lt;2.5s</p>
+                  </div>
+                  <div class="surface p-4 rounded-lg">
+                    <p class="text-xs mb-1" style="color:#64748b;">CLS (Cumulative Layout Shift)</p>
+                    <p class="text-xl font-bold" :class="(latestAudit.cls||99)<=0.1?'text-green-400':(latestAudit.cls||99)<=0.25?'text-yellow-400':'text-red-400'" x-text="latestAudit.cls!==null?latestAudit.cls:'—'"></p>
+                    <p class="text-xs mt-1" style="color:#374151;">Doel: &lt;0.1</p>
+                  </div>
+                  <div class="surface p-4 rounded-lg">
+                    <p class="text-xs mb-1" style="color:#64748b;">FCP (First Contentful Paint)</p>
+                    <p class="text-xl font-bold" :class="(latestAudit.fcp||99)<=1.8?'text-green-400':(latestAudit.fcp||99)<=3?'text-yellow-400':'text-red-400'" x-text="latestAudit.fcp ? latestAudit.fcp+'s' : '—'"></p>
+                    <p class="text-xs mt-1" style="color:#374151;">Doel: &lt;1.8s</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Historical chart -->
+              <div class="card p-5">
+                <h3 class="font-semibold text-white mb-4">Historische Scores (30 dagen)</h3>
+                <div style="height:200px;position:relative;">
+                  <canvas id="auditChart"></canvas>
+                </div>
+              </div>
             </div>
           </template>
         </div>
-      </template>
-    </div>
 
-
-    <!-- ══════════════════════════════════════════════════════════
-         6. KEYWORD GAP
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='gap'" class="fade">
-      <div class="card p-4 mb-4">
-        <p class="text-xs mb-3" style="color:#64748b">Ontdek keywords waar concurrenten voor ranken maar jij niet — pure kansen!</p>
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div><label class="text-xs mb-1 block" style="color:#64748b">Jouw domein</label><input class="input" placeholder="jouwdomein.com" x-model="gap.mine"></div>
-          <div><label class="text-xs mb-1 block" style="color:#64748b">Concurrent</label><input class="input" placeholder="concurrent.nl" x-model="gap.comp"></div>
-        </div>
-        <button class="btn btn-primary" @click="doGap()" :disabled="gap.loading"><span x-show="gap.loading" class="spin">⟳</span> Vergelijk</button>
-      </div>
-      <template x-if="gap.r?.length">
-        <div class="fade">
-          <div class="flex gap-3 items-center mb-3">
-            <p class="text-sm text-white"><span class="font-bold" x-text="gap.r.length"></span> keywords gevonden</p>
-            <button class="btn btn-ghost btn-sm" @click="exportCSV(gap.r,'keyword-gap')">⬇ CSV</button>
+        <!-- ── TAB: TOOLS ─────────────────────────────────────────────── -->
+        <div x-show="siteTab==='tools'" class="fade">
+          <!-- Tool tabs -->
+          <div class="flex gap-1 mb-5">
+            <button class="tab-btn btn-sm" :class="toolTab==='keyword'?'active':''" @click="toolTab='keyword'">Keyword Explorer</button>
+            <button class="tab-btn btn-sm" :class="toolTab==='backlinks'?'active':''" @click="toolTab='backlinks'">Backlinks</button>
+            <button class="tab-btn btn-sm" :class="toolTab==='gap'?'active':''" @click="toolTab='gap'">Gap Analyse</button>
+            <button class="tab-btn btn-sm" :class="toolTab==='brief'?'active':''" @click="toolTab='brief'">AI Content Brief</button>
           </div>
-          <div class="card overflow-hidden">
-            <div class="overflow-x-auto" style="max-height:500px;overflow-y:auto">
-              <table class="w-full text-xs">
-                <thead style="position:sticky;top:0;background:var(--card)"><tr style="color:#374151;border-bottom:1px solid var(--border)">
-                  <th class="px-4 py-2.5 text-left">Keyword</th><th class="px-4 py-2.5 text-right">Volume</th><th class="px-4 py-2.5 text-right">KD</th><th class="px-4 py-2.5 text-right">Positie conc.</th><th class="px-4 py-2.5 text-right">CPC</th><th class="px-4 py-2.5 text-center">Actie</th>
-                </tr></thead>
-                <tbody>
-                  <template x-for="(r,i) in gap.r" :key="i">
-                    <tr class="tr border-b" style="border-color:var(--border)">
-                      <td class="px-4 py-2" style="color:#94a3b8" x-text="r.keyword"></td>
-                      <td class="px-4 py-2 text-right text-white font-medium" x-text="fmt(r.volume)"></td>
-                      <td class="px-4 py-2 text-right" :class="kdClr(r.kd)" x-text="r.kd??'—'"></td>
-                      <td class="px-4 py-2 text-right"><span class="badge bg-blue" x-text="r.pos?'#'+r.pos:'?'"></span></td>
-                      <td class="px-4 py-2 text-right" style="color:#64748b" x-text="r.cpc?'€'+r.cpc.toFixed(2):'—'"></td>
-                      <td class="px-4 py-2 text-center"><button class="text-xs hover:underline" style="color:#818cf8" @click="kw.q=r.keyword;tab='kw';kw.mode='single';doKW()">Analyseer →</button></td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
+
+          <!-- Keyword Explorer -->
+          <div x-show="toolTab==='keyword'" class="fade">
+            <div class="card p-4 mb-4 flex gap-2">
+              <input class="input flex-1" placeholder="Bijv: islamitisch speelgoed" x-model="kw.q" @keydown.enter="doKW()">
+              <button class="btn btn-primary" @click="doKW()" :disabled="kw.loading">
+                <span x-show="kw.loading" class="spin">&#x21BB;</span>
+                Analyseer
+              </button>
             </div>
-          </div>
-        </div>
-      </template>
-      <template x-if="gap.loading"><div class="flex flex-col items-center justify-center py-16" style="color:#374151"><div class="spin text-3xl mb-3">⟳</div><p>Gap analyseren...</p></div></template>
-    </div>
-
-
-    <!-- ══════════════════════════════════════════════════════════
-         7. OPGESLAGEN
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='saved'" class="fade">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-semibold text-white">Opgeslagen keywords (<span x-text="saved.length"></span>)</h3>
-        <div class="flex gap-2">
-          <button class="btn btn-ai btn-sm" @click="doSavedCluster()" x-show="config.anthropic&&saved.length>=5"><span x-show="ai.clusterLoading" class="spin">⟳</span> 🤖 Cluster analyse</button>
-          <button class="btn btn-ghost btn-sm" @click="exportCSV(saved,'saved-keywords')">⬇ CSV</button>
-        </div>
-      </div>
-      <template x-if="saved.length">
-        <div class="card overflow-hidden fade">
-          <table class="w-full text-sm">
-            <thead><tr style="color:#374151;border-bottom:1px solid var(--border)">
-              <th class="px-4 py-3 text-left">Keyword</th><th class="px-4 py-3 text-right">Volume</th><th class="px-4 py-3 text-right">KD</th><th class="px-4 py-3 text-right">CPC</th><th class="px-4 py-3 text-center">Intent</th><th class="px-4 py-3 text-right">Opgeslagen</th><th class="px-4 py-3 text-center">Actie</th>
-            </tr></thead>
-            <tbody>
-              <template x-for="(r,i) in saved" :key="i">
-                <tr class="tr border-b" style="border-color:var(--border)">
-                  <td class="px-4 py-3 cursor-pointer hover:underline" style="color:#818cf8" @click="kw.q=r.keyword;tab='kw';kw.mode='single';doKW()" x-text="r.keyword"></td>
-                  <td class="px-4 py-3 text-right text-white" x-text="fmt(r.search_volume)"></td>
-                  <td class="px-4 py-3 text-right" :class="kdClr(r.kd)" x-text="r.kd??'—'"></td>
-                  <td class="px-4 py-3 text-right" style="color:#64748b" x-text="r.cpc?'€'+r.cpc.toFixed(2):'—'"></td>
-                  <td class="px-4 py-3 text-center"><span x-show="r.intent" class="badge" :class="intentClass(r.intent)" x-text="r.intent"></span></td>
-                  <td class="px-4 py-3 text-right text-xs" style="color:#374151" x-text="r.added_at?r.added_at.slice(0,10):'—'"></td>
-                  <td class="px-4 py-3 text-center"><button class="text-xs hover:text-red-400 transition-colors" style="color:#374151" @click="deleteSaved(r.id)">✕</button></td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-      </template>
-      <template x-if="!saved.length"><p class="text-center py-12 text-sm" style="color:#374151">Nog geen opgeslagen keywords. Klik op 🔖 in de keyword tabellen.</p></template>
-
-      <template x-if="ai.clusters?.length">
-        <div class="mt-4 fade">
-          <h3 class="font-semibold text-white mb-3">🗂️ Clusters</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <template x-for="c in ai.clusters" :key="c.cluster_name">
-              <div class="card p-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <span x-text="c.cluster_icon" class="text-xl"></span>
-                  <div>
-                    <p class="font-semibold text-sm text-white" x-text="c.cluster_name"></p>
-                    <p class="text-xs" style="color:#64748b" x-text="c.page_type+' · '+c.intent"></p>
+            <div x-show="kw.err" class="card p-3 mb-4 text-sm" style="border-color:#7f1d1d;color:#f87171;" x-text="kw.err"></div>
+            <template x-if="kw.r">
+              <div class="space-y-4 fade">
+                <div class="grid grid-cols-4 gap-3">
+                  <div class="card p-4 text-center">
+                    <p class="text-xs mb-1" style="color:#64748b;">Zoekvolume</p>
+                    <p class="text-2xl font-bold text-white" x-text="fmt(kw.r.vol)"></p>
                   </div>
-                  <span class="ml-auto text-xs font-bold" style="color:#818cf8">~<span x-text="fmt(c.monthly_traffic_potential)"></span></span>
+                  <div class="card p-4 text-center">
+                    <p class="text-xs mb-1" style="color:#64748b;">Moeilijkheid</p>
+                    <p class="text-2xl font-bold" :class="kdClr(kw.r.kd)" x-text="kw.r.kd??'—'"></p>
+                  </div>
+                  <div class="card p-4 text-center">
+                    <p class="text-xs mb-1" style="color:#64748b;">CPC</p>
+                    <p class="text-2xl font-bold text-white" x-text="kw.r.cpc?'€'+kw.r.cpc.toFixed(2):'—'"></p>
+                  </div>
+                  <div class="card p-4 text-center">
+                    <p class="text-xs mb-1" style="color:#64748b;">Concurrentie</p>
+                    <p class="text-2xl font-bold text-white" x-text="kw.r.comp??'—'"></p>
+                  </div>
                 </div>
-                <p class="text-xs mb-2" style="color:#f59e0b" x-text="c.recommended_action"></p>
-                <p class="text-xs italic" style="color:#4b5563" x-text="c.content_angle"></p>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="card p-4">
+                    <h3 class="font-semibold text-sm text-white mb-3">SERP Top 10</h3>
+                    <table class="w-full text-xs">
+                      <thead><tr style="color:#374151;border-bottom:1px solid var(--border);">
+                        <th class="pb-2 text-left w-5">#</th><th class="pb-2 text-left">Domein</th><th class="pb-2 text-left">Titel</th>
+                      </tr></thead>
+                      <tbody>
+                        <template x-for="(r,i) in (kw.r.serp||[])" :key="i">
+                          <tr class="tr border-b" style="border-color:var(--border);">
+                            <td class="py-2" style="color:#374151;" x-text="i+1"></td>
+                            <td class="py-2"><a :href="r.url" target="_blank" class="hover:underline" style="color:#818cf8;" x-text="r.domain"></a></td>
+                            <td class="py-2 truncate max-w-xs" style="color:#64748b;" x-text="r.title"></td>
+                          </tr>
+                        </template>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="card p-4">
+                    <h3 class="font-semibold text-sm text-white mb-3">Keyword Ideeen</h3>
+                    <table class="w-full text-xs">
+                      <thead><tr style="color:#374151;border-bottom:1px solid var(--border);">
+                        <th class="pb-2 text-left">Keyword</th><th class="pb-2 text-right">Vol</th><th class="pb-2 text-right">KD</th>
+                      </tr></thead>
+                      <tbody>
+                        <template x-for="(r,i) in (kw.r.ideas||[]).slice(0,12)" :key="i">
+                          <tr class="tr border-b" style="border-color:var(--border);">
+                            <td class="py-1.5 cursor-pointer hover:underline" style="color:#818cf8;" @click="kw.q=r.keyword;doKW()" x-text="r.keyword"></td>
+                            <td class="py-1.5 text-right text-white" x-text="fmt(r.volume)"></td>
+                            <td class="py-1.5 text-right" :class="kdClr(r.kd)" x-text="r.kd??'—'"></td>
+                          </tr>
+                        </template>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Backlinks -->
+          <div x-show="toolTab==='backlinks'" class="fade">
+            <div class="card p-4 mb-4 flex gap-2">
+              <input class="input flex-1" placeholder="domein.nl" x-model="bl.domain" @keydown.enter="doBacklinks()">
+              <button class="btn btn-primary" @click="doBacklinks()" :disabled="bl.loading">
+                <span x-show="bl.loading" class="spin">&#x21BB;</span>
+                Zoeken
+              </button>
+            </div>
+            <template x-if="bl.r">
+              <div class="card overflow-hidden fade">
+                <table class="w-full text-xs">
+                  <thead><tr style="color:#374151;border-bottom:1px solid var(--border);background:var(--surface);">
+                    <th class="px-4 py-3 text-left">Van URL</th><th class="px-3 py-3 text-left">Naar</th><th class="px-3 py-3 text-center">Rank</th><th class="px-3 py-3 text-center">Datum</th>
+                  </tr></thead>
+                  <tbody>
+                    <template x-for="(r,i) in (bl.r.tasks||[{}])[0]?.result?.[0]?.items||[]" :key="i">
+                      <tr class="tr border-b" style="border-color:var(--border);">
+                        <td class="px-4 py-2.5"><a :href="r.url_from" target="_blank" class="hover:underline truncate block" style="color:#818cf8;max-width:250px;" x-text="r.domain_from||r.url_from||'—'"></a></td>
+                        <td class="px-3 py-2.5 truncate" style="color:#64748b;max-width:200px;" x-text="r.url_to||'—'"></td>
+                        <td class="px-3 py-2.5 text-center font-semibold text-white" x-text="r.rank||'—'"></td>
+                        <td class="px-3 py-2.5 text-center" style="color:#374151;" x-text="r.first_seen ? r.first_seen.slice(0,10) : '—'"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+          </div>
+
+          <!-- Gap Analyse -->
+          <div x-show="toolTab==='gap'" class="fade">
+            <div class="card p-4 mb-4">
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="text-xs mb-1 block" style="color:#64748b;">Mijn domein</label>
+                  <input class="input" placeholder="littleoummah.com" x-model="gap.mine">
+                </div>
+                <div>
+                  <label class="text-xs mb-1 block" style="color:#64748b;">Concurrent</label>
+                  <input class="input" placeholder="concurrent.nl" x-model="gap.comp">
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" @click="doGap()" :disabled="gap.loading">
+                <span x-show="gap.loading" class="spin">&#x21BB;</span>
+                Gap Analyse Starten
+              </button>
+            </div>
+            <template x-if="gap.r">
+              <div class="card overflow-hidden fade">
+                <div class="px-4 py-3 border-b" style="border-color:var(--border);">
+                  <h3 class="font-semibold text-white text-sm">Keywords die concurrent heeft maar jij niet</h3>
+                </div>
+                <table class="w-full text-xs">
+                  <thead><tr style="color:#374151;border-bottom:1px solid var(--border);background:var(--surface);">
+                    <th class="px-4 py-3 text-left">Keyword</th><th class="px-3 py-3 text-right">Volume</th><th class="px-3 py-3 text-right">Concurrent Pos</th>
+                  </tr></thead>
+                  <tbody>
+                    <template x-for="(r,i) in (gap.r.tasks||[{}])[0]?.result?.[0]?.items||[]" :key="i">
+                      <tr class="tr border-b" style="border-color:var(--border);">
+                        <td class="px-4 py-2" style="color:#818cf8;" x-text="r.keyword"></td>
+                        <td class="px-3 py-2 text-right text-white" x-text="fmt(r.keyword_data?.keyword_info?.search_volume)"></td>
+                        <td class="px-3 py-2 text-right" style="color:#64748b;" x-text="r.ranked_elements?.[1]?.ranked_serp_element?.serp_item?.rank_absolute||'—'"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+          </div>
+
+          <!-- AI Content Brief -->
+          <div x-show="toolTab==='brief'" class="fade">
+            <div class="card p-4 mb-4">
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="text-xs mb-1 block" style="color:#64748b;">Keyword</label>
+                  <input class="input" placeholder="islamitisch speelgoed" x-model="brief.kw">
+                </div>
+                <div>
+                  <label class="text-xs mb-1 block" style="color:#64748b;">Taal</label>
+                  <select class="select w-full" x-model="brief.lang">
+                    <option value="nl">Nederlands</option>
+                    <option value="en">Engels</option>
+                    <option value="fr">Frans</option>
+                    <option value="de">Duits</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-ai btn-sm" @click="doBrief()" :disabled="brief.loading">
+                <span x-show="brief.loading" class="spin">&#x21BB;</span>
+                AI Content Brief Genereren
+              </button>
+            </div>
+            <template x-if="brief.r">
+              <div class="card p-5 fade">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-semibold text-white">Content Brief — <span x-text="brief.kw" style="color:#818cf8;"></span></h3>
+                  <span class="badge badge-blue">Claude AI</span>
+                </div>
+                <div class="prose text-sm overflow-y-auto" style="max-height:500px;" x-html="mdToHtml(brief.r.brief||brief.r)"></div>
               </div>
             </template>
           </div>
         </div>
-      </template>
-    </div>
 
+        <!-- ── TAB: INSTELLINGEN ──────────────────────────────────────── -->
+        <div x-show="siteTab==='instellingen'" class="fade">
+          <template x-if="activeSite">
+            <div class="space-y-5">
+              <!-- Site details -->
+              <div class="card p-5">
+                <h2 class="font-semibold text-white mb-4">Site Details</h2>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="text-xs mb-1 block" style="color:#64748b;">Naam</label>
+                    <input class="input" x-model="editSite.name" placeholder="Little Oummah">
+                  </div>
+                  <div>
+                    <label class="text-xs mb-1 block" style="color:#64748b;">Domein</label>
+                    <input class="input" x-model="editSite.domain" placeholder="littleoummah.com">
+                  </div>
+                  <div class="col-span-2">
+                    <label class="text-xs mb-1 block" style="color:#64748b;">URL</label>
+                    <input class="input" x-model="editSite.url" placeholder="https://littleoummah.com">
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-sm" @click="saveSiteSettings()">Opslaan</button>
+              </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-         8. INSTELLINGEN
-    ══════════════════════════════════════════════════════════ -->
-    <div x-show="tab==='settings'" class="fade max-w-2xl">
-      <div class="space-y-4">
-        <div class="card p-5">
-          <h3 class="font-semibold text-white mb-3">🔑 .env Configuratie</h3>
-          <pre class="text-xs p-4 rounded-lg overflow-x-auto" style="background:#090b10;color:#7dd3fc;line-height:2">DATAFORSEO_LOGIN=jouw@email.com
-DATAFORSEO_PASSWORD=jouw_wachtwoord
+              <!-- Keywords -->
+              <div class="card p-5">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="font-semibold text-white">Keywords & Doelposities</h2>
+                  <button class="btn btn-primary btn-sm" @click="showAddKeyword=true">+ Toevoegen</button>
+                </div>
+                <template x-if="siteKeywords.length === 0">
+                  <p class="text-sm" style="color:#64748b;">Nog geen keywords. Voeg er een toe.</p>
+                </template>
+                <div class="space-y-2">
+                  <template x-for="kw in siteKeywords" :key="kw.id">
+                    <div class="surface p-3 rounded-lg flex items-center gap-3">
+                      <div class="flex-1">
+                        <p class="text-sm font-medium text-white" x-text="kw.keyword"></p>
+                        <p class="text-xs" style="color:#64748b;">Taal: <span x-text="kw.language"></span> | Locatie: <span x-text="kw.location"></span> | Doel: top <span x-text="kw.target_position"></span></p>
+                      </div>
+                      <button class="btn btn-xs" style="color:#ef4444;border:1px solid #7f1d1d;background:transparent;" @click="deleteKeyword(activeSiteId, kw.id)">&#x2715; Verwijderen</button>
+                    </div>
+                  </template>
+                </div>
+              </div>
 
-ANTHROPIC_API_KEY=sk-ant-...
-
-GOOGLE_API_KEY=AIza...
-
-SECRET_KEY=willekeurige-string</pre>
-          <div class="grid grid-cols-3 gap-3 mt-4">
-            <a href="https://dataforseo.com" target="_blank" class="card p-3 text-center text-xs hover:border-blue-600 transition-colors"><p class="font-semibold text-white mb-1">DataForSEO</p><p style="color:#64748b">Gratis proefperiode</p><p style="color:#374151">~€5-15/maand</p></a>
-            <a href="https://console.anthropic.com" target="_blank" class="card p-3 text-center text-xs hover:border-purple-600 transition-colors"><p class="font-semibold text-white mb-1">Anthropic (Claude AI)</p><p style="color:#64748b">Voor AI features</p><p style="color:#374151">~€2-8/maand</p></a>
-            <a href="https://console.cloud.google.com" target="_blank" class="card p-3 text-center text-xs hover:border-blue-600 transition-colors"><p class="font-semibold text-white mb-1">Google Cloud</p><p style="color:#64748b">PageSpeed API</p><p style="color:#374151">Gratis tier</p></a>
-          </div>
+              <!-- Danger zone -->
+              <div class="card p-5" style="border-color:#7f1d1d;">
+                <h2 class="font-semibold mb-3" style="color:#ef4444;">Danger Zone</h2>
+                <p class="text-sm mb-3" style="color:#64748b;">Hiermee verwijder je de site en alle bijbehorende data permanent.</p>
+                <button class="btn btn-danger btn-sm" @click="deleteSite(activeSiteId)">Site Verwijderen</button>
+              </div>
+            </div>
+          </template>
         </div>
-        <div class="card p-5">
-          <h3 class="font-semibold text-white mb-3">💰 Kosten vs. Ahrefs</h3>
-          <table class="w-full text-xs">
-            <thead><tr style="color:#374151;border-bottom:1px solid var(--border)"><th class="pb-2 text-left">Tool</th><th class="pb-2 text-right">Normaal gebruik/mnd</th></tr></thead>
-            <tbody class="divide-y" style="border-color:var(--border)">
-              <tr><td class="py-2" style="color:#94a3b8">DataForSEO (keywords + backlinks)</td><td class="py-2 text-right text-green-400">€5–15</td></tr>
-              <tr><td class="py-2" style="color:#94a3b8">Claude AI (content briefs + clustering)</td><td class="py-2 text-right text-green-400">€2–8</td></tr>
-              <tr><td class="py-2" style="color:#94a3b8">Google PageSpeed (gratis)</td><td class="py-2 text-right text-green-400">€0</td></tr>
-              <tr class="font-bold"><td class="py-3 text-white">SEO Dashboard totaal</td><td class="py-3 text-right text-green-400">~€10–25/mnd</td></tr>
-              <tr class="font-bold"><td class="py-3" style="color:#64748b">Ahrefs Lite</td><td class="py-3 text-right text-red-400">€99/mnd</td></tr>
-              <tr class="font-bold"><td class="py-3" style="color:#64748b">Ahrefs Standard</td><td class="py-3 text-right text-red-400">€199/mnd</td></tr>
-            </tbody>
-          </table>
+
+      </div><!-- /overflow-y-auto -->
+    </div><!-- /site view -->
+
+  </div><!-- /flex-1 content -->
+</main>
+
+<!-- ═══ MODAL: Site Toevoegen ══════════════════════════════════════════════ -->
+<template x-if="showAddSite">
+  <div class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7);" @click.self="showAddSite=false">
+    <div class="card p-6 w-full max-w-md fade">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold text-white">Site Toevoegen</h2>
+        <button @click="showAddSite=false" style="color:#64748b;">&#x2715;</button>
+      </div>
+      <div class="space-y-3 mb-4">
+        <div>
+          <label class="text-xs mb-1 block" style="color:#64748b;">Naam *</label>
+          <input class="input" placeholder="Little Oummah" x-model="newSite.name">
         </div>
-        <div class="card p-5">
-          <h3 class="font-semibold text-white mb-3">🚀 Opstarten</h3>
-          <pre class="text-xs p-4 rounded-lg" style="background:#090b10;color:#7dd3fc;line-height:2">cd seo-tool
-pip install -r requirements.txt
-cp .env.example .env
-<span style="color:#374151"># Vul API keys in in .env</span>
-python app.py</pre>
+        <div>
+          <label class="text-xs mb-1 block" style="color:#64748b;">Domein *</label>
+          <input class="input" placeholder="littleoummah.com" x-model="newSite.domain">
+        </div>
+        <div>
+          <label class="text-xs mb-1 block" style="color:#64748b;">URL (optioneel)</label>
+          <input class="input" placeholder="https://littleoummah.com" x-model="newSite.url">
         </div>
       </div>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" @click="addSite()" :disabled="!newSite.name||!newSite.domain">Site Toevoegen</button>
+        <button class="btn btn-ghost" @click="showAddSite=false">Annuleren</button>
+      </div>
     </div>
+  </div>
+</template>
 
-  </div><!-- /content -->
-</main>
-</div><!-- /layout -->
+<!-- ═══ MODAL: Keyword Toevoegen ══════════════════════════════════════════ -->
+<template x-if="showAddKeyword">
+  <div class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.7);" @click.self="showAddKeyword=false">
+    <div class="card p-6 w-full max-w-md fade">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold text-white">Keyword Toevoegen</h2>
+        <button @click="showAddKeyword=false" style="color:#64748b;">&#x2715;</button>
+      </div>
+      <div class="space-y-3 mb-4">
+        <div>
+          <label class="text-xs mb-1 block" style="color:#64748b;">Keyword *</label>
+          <input class="input" placeholder="islamitisch speelgoed" x-model="newKw.keyword">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs mb-1 block" style="color:#64748b;">Taal</label>
+            <select class="select w-full" x-model="newKw.language">
+              <option value="nl">Nederlands</option>
+              <option value="en">Engels</option>
+              <option value="fr">Frans</option>
+              <option value="de">Duits</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs mb-1 block" style="color:#64748b;">Doelpositie</label>
+            <input class="input" type="number" min="1" max="100" x-model="newKw.target_position" placeholder="10">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs mb-1 block" style="color:#64748b;">Locatie</label>
+          <select class="select w-full" x-model="newKw.location">
+            <option value="2528">Nederland</option>
+            <option value="2056">Belgie</option>
+            <option value="2250">Frankrijk</option>
+            <option value="2276">Duitsland</option>
+            <option value="2826">UK</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" @click="addKeyword()" :disabled="!newKw.keyword">Keyword Toevoegen</button>
+        <button class="btn btn-ghost" @click="showAddKeyword=false">Annuleren</button>
+      </div>
+    </div>
+  </div>
+</template>
 
-<!-- Toast -->
-<div x-show="toast.show" x-transition class="toast"><span x-text="toast.icon"></span><span x-text="toast.msg"></span></div>
+</div><!-- /flex h-screen -->
 
-<!-- ═══ ALPINE SCRIPT ═══════════════════════════════════════════════════════ -->
 <script>
-function app() { return {
-  tab: 'kw',
-  lang: 'nl', loc: '2528',
-  config: {{ config|tojson }},
-  costs: {},
-  toast: { show: false, msg: '', icon: '✓' },
+function app() {
+  return {
+    // ── State ──────────────────────────────────────────────────────────────
+    sites: [],
+    activeSiteId: null,
+    activeSite: null,
+    siteTab: 'rapport',
+    toolTab: 'keyword',
+    issueFilter: 'alle',
+    lang: 'nl',
+    loc: '2528',
+    config: { dataforseo: false, anthropic: false, google_api: false, costs: {} },
 
-  nav: [
-    { id:'kw',       icon:'🔍', label:'Keyword Explorer' },
-    { id:'site',     icon:'🌐', label:'Site Explorer' },
-    { id:'bl',       icon:'🔗', label:'Backlinks' },
-    { id:'audit',    icon:'🔧', label:'Site Audit' },
-    { id:'rank',     icon:'📈', label:'Rank Tracker' },
-    { id:'gap',      icon:'📊', label:'Keyword Gap' },
-    { id:'saved',    icon:'🔖', label:'Opgeslagen' },
-    { id:'settings', icon:'⚙️', label:'Instellingen' },
-  ],
+    // Modals
+    showAddSite: false,
+    showAddKeyword: false,
+    newSite: { name: '', domain: '', url: '' },
+    newKw: { keyword: '', language: 'nl', location: '2528', target_position: 10 },
 
-  kw:   { q:'', r:null, loading:false, err:null, mode:'single' },
-  bulk: { q:'', r:[], intent:{}, loading:false },
-  site: { q:'littleoummah.com', r:null, loading:false },
-  bl:   { q:'littleoummah.com', r:[], loading:false, limit:'50' },
-  audit:{ q:'https://littleoummah.com', r:null, crawl:null, loading:false, mode:'speed', maxPages:'20' },
-  rank: { domain:'littleoummah.com', kw:'', list:[], adding:false, checking:false, chartKW:null },
-  gap:  { mine:'littleoummah.com', comp:'', r:[], loading:false },
-  saved: [],
-  ai:   { brief:null, briefKW:null, briefLoading:false, snippet:null, comp:null, compLoading:false, clusters:[], clusterLoading:false },
+    // Site data
+    report: null,
+    rankings: [],
+    issues: [],
+    latestAudit: null,
+    siteKeywords: [],
+    auditHistory: [],
+    healthHistory: [],
+    editSite: {},
+    actions: [],
 
-  async init() {
-    const r = await fetch('/api/config').then(r=>r.json());
-    this.config = r;
-    this.costs = r.costs || {};
-    const s = await fetch('/api/keywords/saved').then(r=>r.json());
-    this.saved = Array.isArray(s) ? s : [];
-    if (this.rank.domain) this.loadRankList();
-  },
+    // Loading states
+    checkLoading: false,
+    auditLoading: false,
 
-  // ── Utils ──────────────────────────────────────────────────
-  fmt(n) {
-    if (n==null||n==='') return '—';
-    if (n>=1e6) return (n/1e6).toFixed(1)+'M';
-    if (n>=1e3) return (n/1e3).toFixed(1)+'K';
-    return String(n);
-  },
-  kdClr(kd) { if(kd==null)return''; return kd<=30?'text-green-400':kd<=60?'text-yellow-400':'text-red-400'; },
-  kdHex(kd) { if(kd==null)return'#374151'; return kd<=30?'#22c55e':kd<=60?'#f59e0b':'#ef4444'; },
-  intentClass(i) { const m={TRANSACTIONEEL:'intent-T',COMMERCIEEL:'intent-C',INFORMATIEF:'intent-I',NAVIGATIE:'intent-N'}; return m[i]||'bg-blue'; },
+    // Charts
+    rankChartInst: null,
+    auditChartInst: null,
+    selectedKwChart: null,
 
-  showToast(msg, icon='✓') {
-    this.toast = { show:true, msg, icon };
-    setTimeout(()=>this.toast.show=false, 3000);
-  },
+    // Research tools
+    kw: { q: '', r: null, err: '', loading: false },
+    bl: { domain: '', r: null, loading: false },
+    gap: { mine: '', comp: '', r: null, loading: false },
+    brief: { kw: '', lang: 'nl', r: null, loading: false },
 
-  async post(url, body) {
-    const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-    return r.json();
-  },
+    // Toast
+    toast: { show: false, msg: '', icon: '' },
 
-  mdToHtml(text) {
-    if (!text) return '';
-    return text
-      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-      .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e2e8f0">$1</strong>')
-      .replace(/^- (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
-      .replace(/^(\d+\.) (.+)$/gm, '<li>$2</li>')
-      .replace(/`(.+?)`/g, '<code>$1</code>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/^(?!<[hup])(.+)$/gm, '$1<br>');
-  },
+    // ── Init ──────────────────────────────────────────────────────────────
+    async init() {
+      await this.loadConfig();
+      await this.loadSites();
+      await this.loadActions();
+    },
 
-  exportCSV(rows, name) {
-    if (!rows?.length) return;
-    this.post('/api/export/csv', { rows, filename: name })
-      .then(()=>{})
-      .catch(()=>{});
-    fetch('/api/export/csv', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({rows, filename:name}) })
-      .then(r=>r.blob()).then(blob=>{
-        const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${name}.csv`; a.click();
-      });
-  },
+    // ── Config ────────────────────────────────────────────────────────────
+    async loadConfig() {
+      const r = await fetch('/api/config');
+      this.config = await r.json();
+    },
 
-  // ── Keyword Research ───────────────────────────────────────
-  async doKW() {
-    if (!this.kw.q.trim()) return;
-    this.kw.loading=true; this.kw.err=null; this.kw.r=null; this.ai.brief=null; this.ai.snippet=null;
-    const d = await this.post('/api/keywords', { keyword:this.kw.q.trim(), language:this.lang, location:this.loc });
-    this.kw.loading=false;
-    if (d.error) { this.kw.err=d.error; return; }
-    this.kw.r = this.parseKW(d);
-  },
+    // ── Sites ─────────────────────────────────────────────────────────────
+    async loadSites() {
+      const r = await fetch('/api/sites');
+      this.sites = await r.json();
+    },
 
-  parseKW(d) {
-    let vol=null, cpc=null, comp=null, kd=null;
-    try { const i=d.volume?.tasks?.[0]?.result?.[0]?.items?.[0]; if(i){vol=i.search_volume;cpc=i.cpc;comp=i.competition_level;} } catch(e){}
-    try { kd=d.difficulty?.tasks?.[0]?.result?.[0]?.items?.[0]?.keyword_difficulty; } catch(e){}
-    let serp=[];
-    try { serp=(d.serp?.tasks?.[0]?.result?.[0]?.items||[]).filter(i=>i.type==='organic').slice(0,10).map(i=>({url:i.url,domain:i.domain||i.url?.split('/')[2],title:i.title,dr:i.domain_rank,bl:i.backlinks_data?.referring_domains})); } catch(e){}
-    let ideas=[];
-    try { ideas=(d.ideas?.tasks?.[0]?.result?.[0]?.items||[]).slice(0,40).map(i=>({keyword:i.keyword,volume:i.search_volume,kd:i.keyword_difficulty,cpc:i.cpc})); } catch(e){}
-    let related=[];
-    try { related=(d.related?.tasks?.[0]?.result?.[0]?.items||[]).slice(0,25).map(i=>({keyword:i.keyword_data?.keyword||i.keyword,volume:i.keyword_data?.search_volume})).filter(r=>r.keyword); } catch(e){}
-    return { vol, cpc, comp, kd, serp, ideas, related };
-  },
-
-  async doBulk() {
-    if (!this.bulk.q.trim()) return;
-    this.bulk.loading=true;
-    const d = await this.post('/api/keywords/bulk', { keywords:this.bulk.q, language:this.lang, location:this.loc });
-    this.bulk.loading=false;
-    this.bulk.r = d.items||[];
-  },
-
-  async doBulkIntent() {
-    if (!this.bulk.r?.length) return;
-    const kws = this.bulk.r.map(r=>({keyword:r.keyword,volume:r.search_volume}));
-    const result = await this.post('/api/ai/intent', {keywords:kws});
-    if (Array.isArray(result)) {
-      result.forEach(r => { this.bulk.intent[r.keyword] = r; });
-    }
-    this.showToast('Intent analyse klaar', '🤖');
-  },
-
-  async doBulkCluster() {
-    if (!this.bulk.r?.length) return;
-    this.ai.clusterLoading=true;
-    const result = await this.post('/api/ai/cluster', { keywords: this.bulk.r.map(r=>({keyword:r.keyword,volume:r.search_volume})) });
-    this.ai.clusterLoading=false;
-    this.ai.clusters = Array.isArray(result)?result:[];
-    this.showToast('Clusters gegenereerd!', '🤖');
-  },
-
-  async doIntent(ideas) {
-    const kws = ideas.map(r=>({keyword:r.keyword,volume:r.volume}));
-    const result = await this.post('/api/ai/intent', {keywords:kws});
-    if (Array.isArray(result)) {
-      result.forEach(r=>{ this.bulk.intent[r.keyword]=r; });
-      this.showToast('Intent classificatie klaar', '🤖');
-    }
-  },
-
-  async doBrief() {
-    if (!this.kw.r||!this.kw.q) return;
-    this.ai.briefLoading=true;
-    const result = await this.post('/api/ai/brief', {
-      keyword:this.kw.q, serp_rows:this.kw.r.serp, volume:this.kw.r.vol,
-      difficulty:this.kw.r.kd, language:this.lang
-    });
-    this.ai.briefLoading=false;
-    if (result.brief) { this.ai.brief=result.brief; this.ai.briefKW=this.kw.q; }
-    else this.showToast(result.error||'Fout bij genereren', '⚠️');
-  },
-
-  async doSnippet() {
-    if (!this.kw.r) return;
-    const result = await this.post('/api/ai/snippet', { keyword:this.kw.q, serp_rows:this.kw.r.serp, volume:this.kw.r.vol });
-    if (result.snippet_type||result.raw) this.ai.snippet=result;
-    else this.showToast(result.error||'Fout', '⚠️');
-  },
-
-  async saveKW(r) {
-    await this.post('/api/keywords/save', { keyword:r.keyword, volume:r.search_volume||r.volume, kd:r.kd, cpc:r.cpc });
-    this.saved = await fetch('/api/keywords/saved').then(r=>r.json());
-    this.showToast(`'${r.keyword}' opgeslagen`, '🔖');
-  },
-
-  async deleteSaved(id) {
-    await fetch(`/api/keywords/saved/${id}`, {method:'DELETE'});
-    this.saved = this.saved.filter(r=>r.id!==id);
-  },
-
-  async doSavedCluster() {
-    if (this.saved.length<5) return;
-    this.ai.clusterLoading=true;
-    const result = await this.post('/api/ai/cluster', { keywords:this.saved.map(r=>({keyword:r.keyword,volume:r.search_volume})) });
-    this.ai.clusterLoading=false;
-    this.ai.clusters = Array.isArray(result)?result:[];
-    this.showToast('Clusters gegenereerd!', '🤖');
-  },
-
-  // ── Site Explorer ──────────────────────────────────────────
-  async doSite() {
-    if (!this.site.q.trim()) return;
-    this.site.loading=true; this.site.r=null; this.ai.comp=null;
-    const d = await this.post('/api/domain', { domain:this.site.q.trim(), language:this.lang, location:this.loc });
-    this.site.loading=false;
-    if (d.error) { this.showToast(d.error,'⚠️'); return; }
-    this.site.r = this.parseSite(d);
-  },
-
-  parseSite(d) {
-    let dr=null, bl=null, rd=null, kws=null, traffic=null;
-    const domain = d.domain;
-    try { const b=d.backlinks?.tasks?.[0]?.result?.[0]; if(b){bl=b.backlinks;rd=b.referring_domains;dr=b.rank;} } catch(e){}
-    try { const o=d.overview?.tasks?.[0]?.result?.[0]; if(o){kws=o.metrics?.organic?.count;traffic=o.metrics?.organic?.etv;} } catch(e){}
-    let kwRows=[];
-    try { kwRows=(d.keywords?.tasks?.[0]?.result?.[0]?.items||[]).slice(0,20).map(i=>({ keyword:i.keyword_data?.keyword, pos:i.ranked_serp_element?.serp_item?.rank_absolute, volume:i.keyword_data?.search_volume, traffic:i.ranked_serp_element?.serp_item?.etv })); } catch(e){}
-    let compRows=[];
-    try { compRows=(d.competitors?.tasks?.[0]?.result?.[0]?.items||[]).slice(0,15).map(i=>({domain:i.domain,shared:i.intersections,traffic:i.metrics?.organic?.etv})); } catch(e){}
-    return { domain, dr, bl, rd, kws, traffic, kwRows, compRows };
-  },
-
-  async doCompetitorAI() {
-    if (!this.site.r) return;
-    this.ai.compLoading=true;
-    const result = await this.post('/api/ai/competitor', {
-      domain: this.site.r.domain,
-      competitors: this.site.r.compRows,
-      keywords: this.site.r.kwRows
-    });
-    this.ai.compLoading=false;
-    if (result.analysis) this.ai.comp=result.analysis;
-    else this.showToast(result.error||'Fout', '⚠️');
-  },
-
-  // ── Backlinks ──────────────────────────────────────────────
-  async doBL() {
-    if (!this.bl.q.trim()) return;
-    this.bl.loading=true; this.bl.r=[];
-    const d = await this.post('/api/backlinks', { domain:this.bl.q.trim(), limit:parseInt(this.bl.limit) });
-    this.bl.loading=false;
-    const items = d?.tasks?.[0]?.result?.[0]?.items||[];
-    this.bl.r = items.map(i=>({url_from:i.url_from,domain_from:i.domain_from,anchor:i.anchor,rank:i.rank,dofollow:i.dofollow,spam_score:i.spam_score,first_seen:i.first_seen}));
-  },
-
-  // ── Audit ──────────────────────────────────────────────────
-  async doSpeed() {
-    if (!this.audit.q.trim()) return;
-    this.audit.loading=true; this.audit.r=null;
-    const d = await this.post('/api/audit', { url:this.audit.q.trim() });
-    this.audit.loading=false;
-    this.audit.r = this.parseSpeed(d);
-  },
-
-  parseSpeed(d) {
-    const r = { scores:[], mobile:null, desktop:null, opps:[] };
-    const labels = {performance:'Performance',seo:'SEO',accessibility:'Toegankelijkheid','best-practices':'Best Practices'};
-    const descs = {performance:'Laadsnelheid',seo:'Zoekoptimalisatie',accessibility:'Gebruikers','best-practices':'Web standaarden'};
-    const mob = d.mobile?.lighthouseResult;
-    if (mob) Object.entries(mob.categories||{}).forEach(([k,c])=>r.scores.push({label:labels[k]||k,desc:descs[k]||'',score:Math.round((c.score||0)*100)}));
-    ['mobile','desktop'].forEach(strat=>{
-      const lhr=d[strat]?.lighthouseResult; if(!lhr)return;
-      const vitals=[['first-contentful-paint','FCP',[1800,3000]],['largest-contentful-paint','LCP',[2500,4000]],['total-blocking-time','TBT',[200,600]],['cumulative-layout-shift','CLS',[0.1,0.25]],['speed-index','Speed Index',[3400,5800]],['interactive','TTI',[3800,7300]]];
-      r[strat] = { vitals: vitals.map(([k,name,[g,w]])=>{ const a=lhr.audits?.[k]; if(!a)return null; const v=a.numericValue??0; return {name,value:a.displayValue||'—',good:v<=g,warn:v<=w&&v>g}; }).filter(Boolean) };
-    });
-    if (mob) r.opps = Object.values(mob.audits||{}).filter(a=>a.score!=null&&a.score<0.9&&a.details?.type==='opportunity'&&a.title).slice(0,8).map(a=>({title:a.title,desc:a.description?.split('.')[0]+'.', savings:a.details?.overallSavingsMs>100?(a.details.overallSavingsMs/1000).toFixed(1)+'s':null}));
-    return r;
-  },
-
-  async doCrawl() {
-    if (!this.audit.q.trim()) return;
-    this.audit.loading=true; this.audit.crawl=null;
-    const d = await this.post('/api/crawl', { url:this.audit.q.trim(), max_pages:parseInt(this.audit.maxPages) });
-    this.audit.loading=false;
-    this.audit.crawl=d;
-  },
-
-  // ── Rank Tracker ───────────────────────────────────────────
-  async loadRankList() {
-    if (!this.rank.domain) return;
-    const rows = await this.post('/api/rank/list', { domain:this.rank.domain });
-    this.rank.list = Array.isArray(rows)?rows:[];
-  },
-
-  async addRankKW() {
-    if (!this.rank.domain||!this.rank.kw) return;
-    this.rank.adding=true;
-    const d = await this.post('/api/rank/track', { domain:this.rank.domain, keyword:this.rank.kw, language:this.lang, location:this.loc });
-    this.rank.adding=false;
-    this.rank.kw='';
-    this.showToast(`Positie: ${d.position?'#'+d.position:'Niet gevonden'}`, d.position?'✓':'ℹ️');
-    await this.loadRankList();
-  },
-
-  async removeRankKW(r) {
-    await this.post('/api/rank/delete', {id:r.id});
-    await this.loadRankList();
-  },
-
-  async checkAllNow() {
-    this.rank.checking=true;
-    await this.post('/api/rank/check_all', {});
-    this.rank.checking=false;
-    await this.loadRankList();
-    this.showToast('Alle rankings gecheckt', '✓');
-  },
-
-  async showRankChart(keyword) {
-    this.rank.chartKW=keyword;
-    const history = await this.post('/api/rank/history', { domain:this.rank.domain, keyword, language:this.lang, location:this.loc });
-    await this.$nextTick();
-    const canvas = document.getElementById('rankChart');
-    if (!canvas||!history?.length) return;
-    if (canvas._chart) canvas._chart.destroy();
-    canvas._chart = new Chart(canvas, {
-      type:'line',
-      data:{
-        labels: history.map(h=>h.checked_at?.slice(5,10)||''),
-        datasets:[{
-          label:'Positie (lager=beter)',
-          data: history.map(h=>h.position||null),
-          borderColor:'#4f6ef7', backgroundColor:'rgba(79,110,247,0.1)',
-          tension:0.4, pointRadius:5, pointBackgroundColor:'#4f6ef7', spanGaps:false
-        }]
-      },
-      options:{
-        responsive:true,
-        scales:{
-          y:{ reverse:true, min:1, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#64748b',stepSize:1} },
-          x:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#64748b'} }
-        },
-        plugins:{ legend:{labels:{color:'#94a3b8'}} }
+    async selectSite(id) {
+      this.activeSiteId = id;
+      if (!id) {
+        this.activeSite = null;
+        await this.loadSites();
+        await this.loadActions();
+        return;
       }
-    });
-  },
+      this.activeSite = this.sites.find(s => s.id === id) || null;
+      this.siteTab = 'rapport';
+      this.report = null;
+      this.rankings = [];
+      this.issues = [];
+      this.latestAudit = null;
+      this.selectedKwChart = null;
+      this.editSite = this.activeSite ? { ...this.activeSite } : {};
+      await this.loadReport();
+      await this.loadRankings();
+      await this.loadSiteKeywords();
+    },
 
-  addToTracker(keyword) {
-    this.tab='rank';
-    this.rank.kw=keyword;
-    this.showToast('Ga naar Rank Tracker tab', 'ℹ️');
-  },
+    async addSite() {
+      const r = await fetch('/api/sites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.newSite),
+      });
+      const d = await r.json();
+      if (d.error) { this.showToast(d.error, '❌'); return; }
+      this.showToast('Site toegevoegd!', '✅');
+      this.showAddSite = false;
+      this.newSite = { name: '', domain: '', url: '' };
+      await this.loadSites();
+      this.selectSite(d.id);
+    },
 
-  // ── Gap ────────────────────────────────────────────────────
-  async doGap() {
-    if (!this.gap.mine||!this.gap.comp) return;
-    this.gap.loading=true; this.gap.r=[];
-    const d = await this.post('/api/gap', { my_domain:this.gap.mine, competitor:this.gap.comp, language:this.lang, location:this.loc });
-    this.gap.loading=false;
-    const items=d?.tasks?.[0]?.result?.[0]?.items||[];
-    this.gap.r=items.slice(0,50).map(i=>({keyword:i.keyword_data?.keyword||i.keyword,volume:i.keyword_data?.search_volume,kd:i.keyword_data?.keyword_difficulty,pos:i.ranked_serp_element?.serp_item?.rank_absolute,cpc:i.keyword_data?.cpc}));
-  },
-}}
+    async deleteSite(id) {
+      if (!confirm('Weet je zeker dat je deze site wilt verwijderen? Alle data gaat verloren.')) return;
+      await fetch(`/api/sites/${id}`, { method: 'DELETE' });
+      this.showToast('Site verwijderd', '🗑️');
+      this.activeSiteId = null;
+      this.activeSite = null;
+      await this.loadSites();
+    },
+
+    async saveSiteSettings() {
+      const r = await fetch(`/api/sites/${this.activeSiteId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.editSite),
+      });
+      const d = await r.json();
+      if (d.error) { this.showToast(d.error, '❌'); return; }
+      this.showToast('Instellingen opgeslagen!', '✅');
+      await this.loadSites();
+      this.activeSite = this.sites.find(s => s.id === this.activeSiteId);
+    },
+
+    // ── Trigger check ─────────────────────────────────────────────────────
+    async triggerCheck(siteId, evt) {
+      if (evt) evt.stopPropagation();
+      this.checkLoading = true;
+      this.showToast('Check gestart, even geduld...', '🔄');
+      try {
+        const r = await fetch(`/api/sites/${siteId}/check`, { method: 'POST' });
+        const d = await r.json();
+        if (d.error) { this.showToast(d.error, '❌'); return; }
+        // Poll for results after delay
+        setTimeout(async () => {
+          await this.loadReport();
+          await this.loadRankings();
+          await this.loadIssues();
+          await this.loadSites();
+          this.checkLoading = false;
+          this.showToast('Check klaar!', '✅');
+        }, 12000);
+      } catch (e) {
+        this.showToast('Check mislukt: ' + e.message, '❌');
+        this.checkLoading = false;
+      }
+    },
+
+    // ── Report ────────────────────────────────────────────────────────────
+    async loadReport() {
+      if (!this.activeSiteId) return;
+      const r = await fetch(`/api/sites/${this.activeSiteId}/report`);
+      if (!r.ok) { this.report = null; return; }
+      this.report = await r.json();
+      if (this.report && this.report.report_json && !this.report.report) {
+        try { this.report.report = JSON.parse(this.report.report_json); } catch(e) {}
+      }
+    },
+
+    // ── Rankings ──────────────────────────────────────────────────────────
+    async loadRankings() {
+      if (!this.activeSiteId) return;
+      const r = await fetch(`/api/sites/${this.activeSiteId}/rankings`);
+      this.rankings = await r.json();
+    },
+
+    selectKeywordChart(kw) {
+      this.selectedKwChart = kw;
+      this.$nextTick(() => { this.drawRankChart(kw); });
+    },
+
+    drawRankChart(kw) {
+      const canvas = document.getElementById('rankChart');
+      if (!canvas) return;
+      if (this.rankChartInst) this.rankChartInst.destroy();
+      const history = (kw.history || []).slice(-30);
+      const labels = history.map(h => h.checked_at ? h.checked_at.slice(5,10) : '');
+      const data = history.map(h => h.position);
+      this.rankChartInst = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: kw.keyword,
+            data,
+            borderColor: '#4f6ef7',
+            backgroundColor: '#4f6ef720',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 3,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              reverse: true,
+              min: 1,
+              grid: { color: '#252836' },
+              ticks: { color: '#64748b', stepSize: 5 },
+            },
+            x: { grid: { color: '#252836' }, ticks: { color: '#64748b' } },
+          },
+        },
+      });
+    },
+
+    // ── Issues ────────────────────────────────────────────────────────────
+    async loadIssues(showResolved = false) {
+      if (!this.activeSiteId) return;
+      const url = showResolved
+        ? `/api/sites/${this.activeSiteId}/issues?resolved=true`
+        : `/api/sites/${this.activeSiteId}/issues`;
+      const r = await fetch(url);
+      this.issues = await r.json();
+    },
+
+    get filteredIssues() {
+      if (this.issueFilter === 'alle') return this.issues.filter(i => !i.resolved);
+      if (this.issueFilter === 'kritiek') return this.issues.filter(i => i.severity === 'kritiek' && !i.resolved);
+      if (this.issueFilter === 'warning') return this.issues.filter(i => i.severity === 'warning' && !i.resolved);
+      if (this.issueFilter === 'opgelost') return this.issues.filter(i => i.resolved);
+      return this.issues;
+    },
+
+    async resolveIssue(siteId, issueId) {
+      await fetch(`/api/sites/${siteId}/issues/${issueId}/resolve`, { method: 'POST' });
+      this.showToast('Issue gemarkeerd als opgelost', '✅');
+      await this.loadIssues();
+    },
+
+    async resolveAction(issueId) {
+      // Find which site this action belongs to
+      const action = this.actions.find(a => a.id === issueId);
+      if (!action) return;
+      await fetch(`/api/sites/${action.site_id}/issues/${issueId}/resolve`, { method: 'POST' });
+      this.showToast('Actie opgelost', '✅');
+      await this.loadActions();
+    },
+
+    // ── Audit ─────────────────────────────────────────────────────────────
+    async loadAudit() {
+      if (!this.activeSiteId) return;
+      const r = await fetch(`/api/sites/${this.activeSiteId}/audit`);
+      const d = await r.json();
+      this.latestAudit = Object.keys(d).length ? d : null;
+      if (this.latestAudit) {
+        const histR = await fetch(`/api/sites/${this.activeSiteId}/history`);
+        const hist = await histR.json();
+        this.auditHistory = hist.audits || [];
+        this.$nextTick(() => { this.drawAuditChart(); });
+      }
+    },
+
+    async runAudit() {
+      if (!this.activeSite) return;
+      this.auditLoading = true;
+      this.showToast('Audit uitvoeren...', '⏳');
+      try {
+        const r = await fetch('/api/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: this.activeSite.url }),
+        });
+        const d = await r.json();
+        if (d.error) { this.showToast(d.error, '❌'); return; }
+        this.showToast('Audit klaar!', '✅');
+        await this.loadAudit();
+      } catch(e) {
+        this.showToast('Audit mislukt', '❌');
+      } finally {
+        this.auditLoading = false;
+      }
+    },
+
+    get auditMetrics() {
+      if (!this.latestAudit) return [];
+      return [
+        { label: 'Mobiel Performance', value: this.latestAudit.mobile_score, sub: 'performance' },
+        { label: 'Desktop Performance', value: this.latestAudit.desktop_score, sub: 'performance' },
+        { label: 'SEO Score', value: this.latestAudit.seo_score, sub: 'seo' },
+        { label: 'Gecheckt', value: null, sub: this.fmtDate(this.latestAudit.checked_at) },
+      ];
+    },
+
+    drawAuditChart() {
+      const canvas = document.getElementById('auditChart');
+      if (!canvas || !this.auditHistory.length) return;
+      if (this.auditChartInst) this.auditChartInst.destroy();
+      const labels = this.auditHistory.map(h => h.checked_at ? h.checked_at.slice(5,10) : '');
+      this.auditChartInst = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Mobiel',
+              data: this.auditHistory.map(h => h.mobile_score),
+              borderColor: '#4f6ef7',
+              backgroundColor: '#4f6ef710',
+              tension: 0.3,
+              fill: false,
+            },
+            {
+              label: 'Desktop',
+              data: this.auditHistory.map(h => h.desktop_score),
+              borderColor: '#22c55e',
+              backgroundColor: '#22c55e10',
+              tension: 0.3,
+              fill: false,
+            },
+            {
+              label: 'SEO',
+              data: this.auditHistory.map(h => h.seo_score),
+              borderColor: '#f59e0b',
+              backgroundColor: '#f59e0b10',
+              tension: 0.3,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: '#94a3b8', usePointStyle: true, pointStyleWidth: 8 },
+            },
+          },
+          scales: {
+            y: {
+              min: 0, max: 100,
+              grid: { color: '#252836' },
+              ticks: { color: '#64748b' },
+            },
+            x: { grid: { color: '#252836' }, ticks: { color: '#64748b' } },
+          },
+        },
+      });
+    },
+
+    // ── Keywords (site) ───────────────────────────────────────────────────
+    async loadSiteKeywords() {
+      if (!this.activeSiteId) return;
+      // Reuse rankings data
+      this.siteKeywords = this.rankings.length
+        ? this.rankings.map(r => ({
+            id: r.keyword_id,
+            keyword: r.keyword,
+            language: r.language || 'nl',
+            location: r.location || 2528,
+            target_position: r.target_position,
+          }))
+        : [];
+      // Also try to get from settings endpoint
+      const r = await fetch(`/api/sites/${this.activeSiteId}/rankings`);
+      const data = await r.json();
+      this.siteKeywords = data.map(kw => ({
+        id: kw.keyword_id,
+        keyword: kw.keyword,
+        language: 'nl',
+        location: 2528,
+        target_position: kw.target_position,
+      }));
+    },
+
+    async addKeyword() {
+      if (!this.activeSiteId) return;
+      const r = await fetch(`/api/sites/${this.activeSiteId}/keywords`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.newKw),
+      });
+      const d = await r.json();
+      if (d.error) { this.showToast(d.error, '❌'); return; }
+      this.showToast('Keyword toegevoegd!', '✅');
+      this.showAddKeyword = false;
+      this.newKw = { keyword: '', language: 'nl', location: '2528', target_position: 10 };
+      await this.loadRankings();
+      await this.loadSiteKeywords();
+    },
+
+    async deleteKeyword(siteId, kwId) {
+      if (!confirm('Keyword verwijderen?')) return;
+      await fetch(`/api/sites/${siteId}/keywords/${kwId}`, { method: 'DELETE' });
+      this.showToast('Keyword verwijderd', '🗑️');
+      await this.loadRankings();
+      await this.loadSiteKeywords();
+    },
+
+    // ── Actions (global) ─────────────────────────────────────────────────
+    async loadActions() {
+      const r = await fetch('/api/actions');
+      this.actions = await r.json();
+    },
+
+    // ── Research Tools ────────────────────────────────────────────────────
+    async doKW() {
+      if (!this.kw.q.trim()) return;
+      this.kw.loading = true;
+      this.kw.err = '';
+      this.kw.r = null;
+      try {
+        const r = await fetch('/api/keywords', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword: this.kw.q, language: this.lang, location: parseInt(this.loc) }),
+        });
+        const d = await r.json();
+        if (d.error) { this.kw.err = d.error; return; }
+        this.kw.r = d;
+      } catch (e) {
+        this.kw.err = e.message;
+      } finally {
+        this.kw.loading = false;
+      }
+    },
+
+    async doBacklinks() {
+      if (!this.bl.domain.trim()) return;
+      this.bl.loading = true;
+      try {
+        const r = await fetch('/api/backlinks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain: this.bl.domain }),
+        });
+        this.bl.r = await r.json();
+      } catch (e) {
+        this.showToast(e.message, '❌');
+      } finally {
+        this.bl.loading = false;
+      }
+    },
+
+    async doGap() {
+      if (!this.gap.mine.trim() || !this.gap.comp.trim()) return;
+      this.gap.loading = true;
+      try {
+        const r = await fetch('/api/gap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ my_domain: this.gap.mine, competitor: this.gap.comp, language: this.lang, location: parseInt(this.loc) }),
+        });
+        this.gap.r = await r.json();
+      } catch (e) {
+        this.showToast(e.message, '❌');
+      } finally {
+        this.gap.loading = false;
+      }
+    },
+
+    async doBrief() {
+      if (!this.brief.kw.trim()) return;
+      this.brief.loading = true;
+      try {
+        const r = await fetch('/api/ai/brief', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword: this.brief.kw, language: this.brief.lang }),
+        });
+        this.brief.r = await r.json();
+      } catch (e) {
+        this.showToast(e.message, '❌');
+      } finally {
+        this.brief.loading = false;
+      }
+    },
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    fmt(n) {
+      if (n === null || n === undefined) return '—';
+      if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+      return n.toString();
+    },
+
+    fmtDate(dt) {
+      if (!dt) return '—';
+      const d = new Date(dt);
+      if (isNaN(d)) return dt;
+      const now = new Date();
+      const diff = Math.floor((now - d) / 60000);
+      if (diff < 60) return diff + ' min geleden';
+      if (diff < 1440) return Math.floor(diff/60) + ' uur geleden';
+      return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    },
+
+    scoreHex(score) {
+      if (!score && score !== 0) return '#374151';
+      if (score >= 70) return '#22c55e';
+      if (score >= 50) return '#f59e0b';
+      return '#ef4444';
+    },
+
+    scoreColorDot(score) {
+      if (!score && score !== 0) return 'dot-gray';
+      if (score >= 70) return 'dot-green';
+      if (score >= 50) return 'dot-yellow';
+      return 'dot-red';
+    },
+
+    scoreTextColor(score) {
+      if (!score && score !== 0) return 'text-gray-500';
+      if (score >= 70) return 'text-green-400';
+      if (score >= 50) return 'text-yellow-400';
+      return 'text-red-400';
+    },
+
+    psColor(score) {
+      if (score === null || score === undefined) return '#374151';
+      if (score >= 90) return '#22c55e';
+      if (score >= 50) return '#f59e0b';
+      return '#ef4444';
+    },
+
+    posColor(pos) {
+      if (!pos) return 'text-gray-500';
+      if (pos === 1) return 'text-green-400';
+      if (pos <= 3) return 'text-teal-400';
+      if (pos <= 10) return 'text-blue-400';
+      if (pos <= 20) return 'text-yellow-400';
+      return 'text-red-400';
+    },
+
+    kdClr(kd) {
+      if (kd === null || kd === undefined) return 'text-gray-500';
+      if (kd < 30) return 'text-green-400';
+      if (kd < 60) return 'text-yellow-400';
+      return 'text-red-400';
+    },
+
+    mdToHtml(text) {
+      if (!text) return '';
+      return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`(.+?)`/g, '<code>$1</code>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+    },
+
+    showToast(msg, icon = 'ℹ️') {
+      this.toast = { show: true, msg, icon };
+      setTimeout(() => { this.toast.show = false; }, 4000);
+    },
+  };
+}
 </script>
+
 </body>
 </html>

@@ -1,7 +1,12 @@
+"""
+SEO Monitor — Multi-site Flask app
+Beheer meerdere sites, dagelijkse checks, AI rapporten, research tools.
+"""
 import os
 import csv
 import io
 import json
+import threading
 import requests
 from base64 import b64encode
 from urllib.parse import urljoin, urlparse
@@ -11,14 +16,24 @@ from bs4 import BeautifulSoup
 
 import db
 import ai
+import scheduler as sched_module
 
 load_dotenv()
 db.init_db()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'seo-dashboard-secret')
+app.secret_key = os.getenv('SECRET_KEY', 'seo-monitor-multi-secret')
 
-# ── DataForSEO Client ──────────────────────────────────────────────────────────
+# Start de scheduler
+try:
+    sched_module.start_scheduler()
+except Exception as e:
+    app.logger.warning(f"Scheduler kon niet starten: {e}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DataForSEO Client
+# ══════════════════════════════════════════════════════════════════════════════
 
 class DFS:
     BASE = "https://api.dataforseo.com/v3"
@@ -101,7 +116,6 @@ class DFS:
             [{"keyword": keyword, "language_code": lang, "location_code": loc, "limit": 30, "depth": 2}])
 
     def bulk_volume(self, keywords, lang, loc):
-        # DataForSEO accepts max 700 keywords per request
         batches = [keywords[i:i+100] for i in range(0, len(keywords), 100)]
         all_items = []
         for batch in batches:
@@ -111,6 +125,10 @@ class DFS:
             all_items.extend(items)
         return all_items
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Helpers
+# ══════════════════════════════════════════════════════════════════════════════
 
 def clean_domain(raw):
     return raw.replace("https://", "").replace("http://", "").rstrip("/").split("/")[0]
@@ -134,13 +152,13 @@ def pagespeed(url):
 
 
 def crawl_site(base_url, max_pages=30):
-    """Technische SEO crawl — volledig zoals Screaming Frog"""
+    """Technische SEO crawl."""
     visited = set()
     queue = [base_url]
     pages = []
     base_domain = urlparse(base_url).netloc
     session = requests.Session()
-    session.headers['User-Agent'] = 'SEODashboard/1.0 (compatible)'
+    session.headers['User-Agent'] = 'SEOMonitor/2.0 (compatible)'
 
     while queue and len(visited) < max_pages:
         url = queue.pop(0)
@@ -153,19 +171,11 @@ def crawl_site(base_url, max_pages=30):
             if 'html' not in content_type:
                 continue
             soup = BeautifulSoup(r.text, 'html.parser')
-
-            # Title
             title_tag = soup.find('title')
             title = title_tag.text.strip() if title_tag else ''
-
-            # Meta desc
             meta = soup.find('meta', attrs={'name': 'description'})
             meta_desc = meta.get('content', '').strip() if meta else ''
-
-            # H1
             h1s = [h.get_text(strip=True) for h in soup.find_all('h1')]
-
-            # Images without alt
             imgs_no_alt = [img.get('src', '') for img in soup.find_all('img')
                           if not img.get('alt', '').strip()]
 
@@ -207,7 +217,6 @@ def crawl_site(base_url, max_pages=30):
                 'final_url': r.url
             })
 
-            # Collect internal links
             for a in soup.find_all('a', href=True):
                 href = urljoin(url, a['href']).split('#')[0].split('?')[0]
                 if urlparse(href).netloc == base_domain and href not in visited:
@@ -219,49 +228,6 @@ def crawl_site(base_url, max_pages=30):
     return pages
 
 
-# ── Background Rank Checker ────────────────────────────────────────────────────
-
-def check_rankings_job():
-    """Dagelijkse rank check — draait automatisch om 3:00"""
-    dfs = DFS()
-    all_domains = {}
-    # Group by domain
-    import sqlite3
-    with db.get_db() as conn:
-        rows = conn.execute("SELECT DISTINCT domain FROM tracked_keywords").fetchall()
-        domains = [r[0] for r in rows]
-    for domain in domains:
-        tracked = db.get_tracked_keywords(domain)
-        for kw in tracked:
-            serp_data = dfs.serp(kw['keyword'], kw['language'], kw['location'])
-            position, url = _find_position(domain, serp_data)
-            db.save_rank(domain, kw['keyword'], position, url, kw['language'], kw['location'])
-
-
-def _find_position(domain, serp_data):
-    try:
-        items = serp_data['tasks'][0]['result'][0]['items']
-        for item in items:
-            if item.get('type') == 'organic' and domain in item.get('url', ''):
-                return item.get('rank_absolute'), item.get('url')
-    except Exception:
-        pass
-    return None, None
-
-
-try:
-    from apscheduler.schedulers.background import BackgroundScheduler
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_rankings_job, 'cron', hour=3, minute=0)
-    scheduler.start()
-except Exception:
-    pass
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# ROUTES
-# ══════════════════════════════════════════════════════════════════════════════
-
 def cfg():
     return {
         'dataforseo': bool(os.getenv('DATAFORSEO_LOGIN') and os.getenv('DATAFORSEO_PASSWORD')),
@@ -269,6 +235,10 @@ def cfg():
         'anthropic': bool(os.getenv('ANTHROPIC_API_KEY')),
     }
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROUTES — Algemeen
+# ══════════════════════════════════════════════════════════════════════════════
 
 @app.route('/')
 def index():
@@ -279,10 +249,169 @@ def index():
 def api_config():
     c = cfg()
     c['costs'] = db.get_cost_stats()
+    c['scheduler'] = sched_module.get_scheduler_status()
     return jsonify(c)
 
 
-# ── Keywords ──────────────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# ROUTES — Site Management
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.route('/api/sites', methods=['GET'])
+def api_list_sites():
+    sites = db.get_sites_with_stats()
+    return jsonify(sites)
+
+
+@app.route('/api/sites', methods=['POST'])
+def api_add_site():
+    b = request.json or {}
+    name = b.get('name', '').strip()
+    domain = b.get('domain', '').strip()
+    url = b.get('url', '').strip()
+    if not name or not domain:
+        return jsonify({"error": "Naam en domein zijn verplicht"}), 400
+    if not url:
+        url = f"https://{domain}"
+    if not url.startswith('http'):
+        url = f"https://{url}"
+    domain = clean_domain(domain)
+    try:
+        site_id = db.add_site(name, domain, url)
+        return jsonify({"ok": True, "id": site_id})
+    except Exception as e:
+        if 'UNIQUE' in str(e):
+            return jsonify({"error": f"Domein '{domain}' bestaat al"}), 409
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/sites/<int:site_id>', methods=['DELETE'])
+def api_delete_site(site_id):
+    db.delete_site(site_id)
+    return jsonify({"ok": True})
+
+
+@app.route('/api/sites/<int:site_id>/keywords', methods=['POST'])
+def api_add_keyword(site_id):
+    b = request.json or {}
+    keyword = b.get('keyword', '').strip()
+    language = b.get('language', 'nl')
+    location = int(b.get('location', 2528))
+    target_position = int(b.get('target_position', 10))
+    if not keyword:
+        return jsonify({"error": "Keyword is verplicht"}), 400
+    kw_id = db.add_site_keyword(site_id, keyword, language, location, target_position)
+    return jsonify({"ok": True, "id": kw_id})
+
+
+@app.route('/api/sites/<int:site_id>/keywords/<int:kw_id>', methods=['DELETE'])
+def api_delete_keyword(site_id, kw_id):
+    db.delete_site_keyword(site_id, kw_id)
+    return jsonify({"ok": True})
+
+
+@app.route('/api/sites/<int:site_id>/check', methods=['POST'])
+def api_trigger_check(site_id):
+    """Start een on-demand volledige check voor een site (in achtergrond thread)."""
+    site = db.get_site(site_id)
+    if not site:
+        return jsonify({"error": "Site niet gevonden"}), 404
+
+    def _run():
+        try:
+            sched_module.run_full_check_for_site(site_id)
+        except Exception as e:
+            app.logger.error(f"Check mislukt voor site {site_id}: {e}")
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    return jsonify({"ok": True, "message": f"Check gestart voor {site['domain']}"})
+
+
+@app.route('/api/sites/<int:site_id>/report', methods=['GET'])
+def api_get_report(site_id):
+    report = db.get_latest_report(site_id)
+    if not report:
+        return jsonify({"error": "Geen rapport beschikbaar. Voer eerst een check uit."}), 404
+    return jsonify(report)
+
+
+@app.route('/api/sites/<int:site_id>/rankings', methods=['GET'])
+def api_get_rankings(site_id):
+    days = int(request.args.get('days', 30))
+    rankings = db.get_rank_history_for_site(site_id, days)
+    return jsonify(rankings)
+
+
+@app.route('/api/sites/<int:site_id>/issues', methods=['GET'])
+def api_get_issues(site_id):
+    show_resolved = request.args.get('resolved', 'false').lower() == 'true'
+    if show_resolved:
+        issues = db.get_all_issues(site_id)
+    else:
+        issues = db.get_open_issues(site_id)
+    return jsonify(issues)
+
+
+@app.route('/api/sites/<int:site_id>/issues/<int:issue_id>/resolve', methods=['POST'])
+def api_resolve_issue(site_id, issue_id):
+    db.resolve_issue(issue_id)
+    return jsonify({"ok": True})
+
+
+@app.route('/api/sites/<int:site_id>/history', methods=['GET'])
+def api_get_history(site_id):
+    days = int(request.args.get('days', 30))
+    history = db.get_health_score_history(site_id, days)
+    audit_history = db.get_audit_history(site_id, days)
+    return jsonify({"health_scores": history, "audits": audit_history})
+
+
+@app.route('/api/sites/<int:site_id>/audit', methods=['GET'])
+def api_get_audit(site_id):
+    audit = db.get_latest_audit(site_id)
+    return jsonify(audit or {})
+
+
+@app.route('/api/sites/<int:site_id>', methods=['PUT'])
+def api_update_site(site_id):
+    b = request.json or {}
+    name = b.get('name', '').strip()
+    domain = b.get('domain', '').strip()
+    url = b.get('url', '').strip()
+    if not name or not domain:
+        return jsonify({"error": "Naam en domein zijn verplicht"}), 400
+    db.update_site(site_id, name, clean_domain(domain), url)
+    return jsonify({"ok": True})
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROUTES — Dashboard & Global
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.route('/api/dashboard', methods=['GET'])
+def api_dashboard():
+    sites = db.get_sites_with_stats()
+    total_critical = sum(s.get('critical_issues', 0) for s in sites)
+    needs_attention = [s for s in sites if s.get('health_score', 100) < 60 or s.get('critical_issues', 0) > 0]
+    return jsonify({
+        "sites": sites,
+        "total_sites": len(sites),
+        "total_critical_issues": total_critical,
+        "sites_needing_attention": len(needs_attention),
+        "attention_sites": needs_attention,
+    })
+
+
+@app.route('/api/actions', methods=['GET'])
+def api_all_actions():
+    actions = db.get_all_open_actions()
+    return jsonify(actions)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROUTES — Research Tools
+# ══════════════════════════════════════════════════════════════════════════════
 
 @app.route('/api/keywords', methods=['POST'])
 def api_keywords():
@@ -293,13 +422,76 @@ def api_keywords():
     if not kw:
         return jsonify({"error": "Vul een keyword in"}), 400
     dfs = DFS()
+    vol_data = dfs.search_volume([kw], lang, loc)
+    diff_data = dfs.keyword_difficulty([kw], lang, loc)
+    serp_data = dfs.serp(kw, lang, loc)
+    ideas_data = dfs.keyword_ideas(kw, lang, loc)
+    related_data = dfs.related(kw, lang, loc)
+
+    # Extracteer volume, KD, CPC
+    vol, kd, cpc, comp = None, None, None, None
+    try:
+        vol_item = vol_data['tasks'][0]['result'][0]['items'][0]
+        vol = vol_item.get('search_volume')
+        cpc = vol_item.get('cpc')
+        comp = vol_item.get('competition_level')
+    except Exception:
+        pass
+    try:
+        kd = diff_data['tasks'][0]['result'][0]['items'][0].get('keyword_difficulty')
+    except Exception:
+        pass
+
+    # SERP items
+    serp_items = []
+    try:
+        for item in serp_data['tasks'][0]['result'][0]['items']:
+            if item.get('type') == 'organic':
+                serp_items.append({
+                    'url': item.get('url', ''),
+                    'domain': item.get('domain', ''),
+                    'title': item.get('title', ''),
+                    'dr': item.get('rank_group'),
+                    'bl': item.get('backlinks_info', {}).get('backlinks'),
+                })
+    except Exception:
+        pass
+
+    # Keyword ideas
+    ideas = []
+    try:
+        for item in ideas_data['tasks'][0]['result'][0]['items']:
+            ideas.append({
+                'keyword': item.get('keyword'),
+                'volume': item.get('search_volume'),
+                'kd': item.get('keyword_difficulty'),
+                'cpc': item.get('cpc'),
+            })
+    except Exception:
+        pass
+
+    # Related keywords
+    related = []
+    try:
+        for item in related_data['tasks'][0]['result'][0]['items']:
+            kw_data = item.get('keyword_data', {})
+            related.append({
+                'keyword': kw_data.get('keyword'),
+                'volume': kw_data.get('keyword_info', {}).get('search_volume'),
+            })
+    except Exception:
+        pass
+
     return jsonify({
         "keyword": kw,
-        "volume": dfs.search_volume([kw], lang, loc),
-        "difficulty": dfs.keyword_difficulty([kw], lang, loc),
-        "serp": dfs.serp(kw, lang, loc),
-        "ideas": dfs.keyword_ideas(kw, lang, loc),
-        "related": dfs.related(kw, lang, loc),
+        "vol": vol,
+        "kd": kd,
+        "cpc": cpc,
+        "comp": comp,
+        "serp": serp_items,
+        "ideas": ideas,
+        "related": related,
+        "_raw": {"volume": vol_data, "difficulty": diff_data, "serp": serp_data},
     })
 
 
@@ -316,26 +508,6 @@ def api_bulk_keywords():
     items = dfs.bulk_volume(keywords, lang, loc)
     return jsonify({"count": len(items), "items": items})
 
-
-@app.route('/api/keywords/save', methods=['POST'])
-def api_save_keyword():
-    b = request.json or {}
-    db.save_keyword(b.get('keyword'), b.get('volume'), b.get('kd'), b.get('cpc'), b.get('intent'))
-    return jsonify({"ok": True})
-
-
-@app.route('/api/keywords/saved')
-def api_saved_keywords():
-    return jsonify(db.get_saved_keywords())
-
-
-@app.route('/api/keywords/saved/<int:kw_id>', methods=['DELETE'])
-def api_delete_saved(kw_id):
-    db.delete_saved_keyword(kw_id)
-    return jsonify({"ok": True})
-
-
-# ── Domain ────────────────────────────────────────────────────────────────────
 
 @app.route('/api/domain', methods=['POST'])
 def api_domain():
@@ -355,8 +527,6 @@ def api_domain():
     })
 
 
-# ── Backlinks ─────────────────────────────────────────────────────────────────
-
 @app.route('/api/backlinks', methods=['POST'])
 def api_backlinks():
     b = request.json or {}
@@ -367,8 +537,6 @@ def api_backlinks():
     dfs = DFS()
     return jsonify(dfs.backlinks_list(domain, limit))
 
-
-# ── Audit ─────────────────────────────────────────────────────────────────────
 
 @app.route('/api/audit', methods=['POST'])
 def api_audit():
@@ -398,8 +566,6 @@ def api_crawl():
     return jsonify({"pages": pages, "total": len(pages), "issues_summary": issues_summary})
 
 
-# ── Gap ───────────────────────────────────────────────────────────────────────
-
 @app.route('/api/gap', methods=['POST'])
 def api_gap():
     b = request.json or {}
@@ -411,72 +577,6 @@ def api_gap():
         return jsonify({"error": "Beide domeinen zijn verplicht"}), 400
     dfs = DFS()
     return jsonify(dfs.keyword_gap(mine, comp, lang, loc))
-
-
-# ── Rank Tracker ──────────────────────────────────────────────────────────────
-
-@app.route('/api/rank/track', methods=['POST'])
-def api_rank_track():
-    b = request.json or {}
-    domain = clean_domain(b.get('domain', '').strip())
-    keyword = b.get('keyword', '').strip()
-    lang = b.get('language', 'nl')
-    loc = int(b.get('location', 2528))
-    if not domain or not keyword:
-        return jsonify({"error": "Domein en keyword zijn verplicht"}), 400
-    db.add_tracked_keyword(domain, keyword, lang, loc)
-    # Check position immediately
-    dfs = DFS()
-    serp_data = dfs.serp(keyword, lang, loc)
-    position, url = _find_position(domain, serp_data)
-    db.save_rank(domain, keyword, position, url, lang, loc)
-    return jsonify({"ok": True, "position": position, "url": url})
-
-
-@app.route('/api/rank/history', methods=['POST'])
-def api_rank_history():
-    b = request.json or {}
-    domain = clean_domain(b.get('domain', '').strip())
-    keyword = b.get('keyword', '').strip()
-    lang = b.get('language', 'nl')
-    loc = int(b.get('location', 2528))
-    history = db.get_rank_history(domain, keyword, lang, loc)
-    return jsonify(history)
-
-
-@app.route('/api/rank/list', methods=['POST'])
-def api_rank_list():
-    b = request.json or {}
-    domain = clean_domain(b.get('domain', '').strip())
-    if not domain:
-        return jsonify([])
-    rows = db.get_latest_ranks(domain)
-    return jsonify(rows)
-
-
-@app.route('/api/rank/delete', methods=['POST'])
-def api_rank_delete():
-    b = request.json or {}
-    db.remove_tracked_keyword(b.get('id'))
-    return jsonify({"ok": True})
-
-
-@app.route('/api/rank/check_all', methods=['POST'])
-def api_rank_check_all():
-    check_rankings_job()
-    return jsonify({"ok": True})
-
-
-# ── AI Features ───────────────────────────────────────────────────────────────
-
-@app.route('/api/ai/intent', methods=['POST'])
-def api_ai_intent():
-    b = request.json or {}
-    keywords = b.get('keywords', [])
-    if not keywords:
-        return jsonify({"error": "Geen keywords"}), 400
-    result = ai.analyze_intent(keywords)
-    return jsonify(result)
 
 
 @app.route('/api/ai/brief', methods=['POST'])
@@ -503,29 +603,15 @@ def api_ai_cluster():
     return jsonify(result)
 
 
-@app.route('/api/ai/competitor', methods=['POST'])
-def api_ai_competitor():
+@app.route('/api/ai/intent', methods=['POST'])
+def api_ai_intent():
     b = request.json or {}
-    domain = b.get('domain', '')
-    competitors = b.get('competitors', [])
     keywords = b.get('keywords', [])
-    result = ai.competitor_analysis(domain, competitors, keywords)
+    if not keywords:
+        return jsonify({"error": "Geen keywords"}), 400
+    result = ai.analyze_intent(keywords)
     return jsonify(result)
 
-
-@app.route('/api/ai/snippet', methods=['POST'])
-def api_ai_snippet():
-    b = request.json or {}
-    keyword = b.get('keyword', '').strip()
-    serp_rows = b.get('serp_rows', [])
-    volume = b.get('volume', 0)
-    if not keyword:
-        return jsonify({"error": "Keyword verplicht"}), 400
-    result = ai.find_snippet_opportunities(keyword, serp_rows, volume)
-    return jsonify(result)
-
-
-# ── Export CSV ────────────────────────────────────────────────────────────────
 
 @app.route('/api/export/csv', methods=['POST'])
 def api_export_csv():
@@ -545,6 +631,61 @@ def api_export_csv():
     )
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Legacy rank tracker routes (kept for backwards compatibility)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.route('/api/rank/track', methods=['POST'])
+def api_rank_track():
+    b = request.json or {}
+    domain = clean_domain(b.get('domain', '').strip())
+    keyword = b.get('keyword', '').strip()
+    lang = b.get('language', 'nl')
+    loc = int(b.get('location', 2528))
+    if not domain or not keyword:
+        return jsonify({"error": "Domein en keyword zijn verplicht"}), 400
+    db.add_tracked_keyword(domain, keyword, lang, loc)
+    dfs = DFS()
+    serp_data = dfs.serp(keyword, lang, loc)
+    position, url = None, None
+    try:
+        items = serp_data['tasks'][0]['result'][0]['items']
+        for item in items:
+            if item.get('type') == 'organic' and domain in item.get('url', ''):
+                position = item.get('rank_absolute')
+                url = item.get('url')
+                break
+    except Exception:
+        pass
+    return jsonify({"ok": True, "position": position, "url": url})
+
+
+@app.route('/api/rank/list', methods=['POST'])
+def api_rank_list():
+    b = request.json or {}
+    domain = clean_domain(b.get('domain', '').strip())
+    if not domain:
+        return jsonify([])
+    rows = db.get_latest_ranks(domain)
+    return jsonify(rows)
+
+
+@app.route('/api/rank/history', methods=['POST'])
+def api_rank_history():
+    b = request.json or {}
+    domain = clean_domain(b.get('domain', '').strip())
+    keyword = b.get('keyword', '').strip()
+    history = db.get_rank_history(domain, keyword)
+    return jsonify(history)
+
+
+@app.route('/api/rank/delete', methods=['POST'])
+def api_rank_delete():
+    b = request.json or {}
+    db.remove_tracked_keyword(b.get('id'))
+    return jsonify({"ok": True})
+
+
 if __name__ == '__main__':
-    print("🚀 SEO Dashboard — http://localhost:5000")
+    print("SEO Monitor — http://localhost:5000")
     app.run(debug=True, port=5000)
