@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Dashboard — Little Oummah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            surface: { DEFAULT: '#13151a', card: '#1c1f27', border: '#2a2d38', hover: '#22252f' },
+            brand: { DEFAULT: '#3b82f6', light: '#60a5fa', dim: '#1d4ed8' },
+            success: '#22c55e', warning: '#f59e0b', danger: '#ef4444',
+            muted: '#64748b', soft: '#94a3b8', bright: '#e2e8f0'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #13151a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+    .tab-btn { transition: all .2s; }
+    .tab-btn.active { background: #3b82f6; color: #fff; }
+    .tab-btn:not(.active):hover { background: #22252f; }
+    .card { background: #1c1f27; border: 1px solid #2a2d38; border-radius: 10px; }
+    .input { background: #1c1f27; border: 1px solid #2a2d38; border-radius: 8px; color: #e2e8f0; padding: 10px 14px; width: 100%; outline: none; transition: border-color .2s; }
+    .input:focus { border-color: #3b82f6; }
+    .input::placeholder { color: #4b5563; }
+    .btn-primary { background: #3b82f6; color: #fff; border-radius: 8px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background .2s; border: none; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-primary:disabled { background: #1e3a6e; cursor: not-allowed; opacity: .6; }
+    .metric-card { background: #1c1f27; border: 1px solid #2a2d38; border-radius: 10px; padding: 20px; }
+    .kd-bar { height: 6px; border-radius: 3px; background: #2a2d38; }
+    .kd-fill { height: 100%; border-radius: 3px; transition: width .6s; }
+    .select { background: #1c1f27; border: 1px solid #2a2d38; border-radius: 8px; color: #e2e8f0; padding: 10px 14px; outline: none; }
+    .select:focus { border-color: #3b82f6; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: #052e16; color: #22c55e; }
+    .badge-red { background: #2d0a0a; color: #ef4444; }
+    .badge-yellow { background: #2d1a00; color: #f59e0b; }
+    .badge-blue { background: #0c1a3d; color: #60a5fa; }
+    .spin { animation: spin 1s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .table-row:hover { background: #1f2430; }
+    .score-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px; cursor: pointer; transition: all .2s; font-size: 14px; font-weight: 500; color: #94a3b8; }
+    .sidebar-item:hover { background: #22252f; color: #e2e8f0; }
+    .sidebar-item.active { background: #1d3a6e; color: #60a5fa; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #13151a; }
+    ::-webkit-scrollbar-thumb { background: #2a2d38; border-radius: 3px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .status-ok { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+    .status-err { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+    .fade-in { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body x-data="app()" x-init="init()">
+
+<!-- ── LAYOUT ─────────────────────────────────────────────── -->
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-56 flex-shrink-0 flex flex-col border-r border-surface-border overflow-y-auto" style="background:#0f1117">
+    <!-- Logo -->
+    <div class="px-5 py-5 border-b border-surface-border">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-lg" style="background:#1d3a6e">📊</div>
+        <div>
+          <div class="text-sm font-bold text-bright">SEO Dashboard</div>
+          <div class="text-xs text-muted">Little Oummah</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <template x-for="item in navItems" :key="item.id">
+        <div class="sidebar-item" :class="activeTab === item.id ? 'active' : ''" @click="activeTab = item.id">
+          <span x-text="item.icon" class="text-base"></span>
+          <span x-text="item.label" class="text-sm"></span>
+        </div>
+      </template>
+    </nav>
+
+    <!-- API Status -->
+    <div class="px-4 py-4 border-t border-surface-border space-y-2">
+      <div class="text-xs text-muted font-semibold uppercase tracking-wider mb-2">API Status</div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="status-dot" :class="config.dataforseo ? 'status-ok' : 'status-err'"></span>
+        <span class="text-soft">DataForSEO</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="status-dot" :class="config.google_api ? 'status-ok' : 'status-err'"></span>
+        <span class="text-soft">Google API</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="status-dot" :class="config.openpagerank ? 'status-ok' : 'status-err'"></span>
+        <span class="text-soft">Open PageRank</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 overflow-y-auto">
+
+    <!-- Top bar -->
+    <header class="sticky top-0 z-10 flex items-center justify-between px-6 py-3 border-b border-surface-border" style="background:#13151a">
+      <h1 class="text-base font-semibold text-bright" x-text="navItems.find(n=>n.id===activeTab)?.label"></h1>
+      <div class="flex items-center gap-3">
+        <select class="select text-xs py-1.5 px-3" x-model="globalLang">
+          <option value="nl">🇳🇱 Nederlands</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="de">🇩🇪 Deutsch</option>
+        </select>
+        <select class="select text-xs py-1.5 px-3" x-model="globalLoc">
+          <option value="2528">🇳🇱 Nederland</option>
+          <option value="2056">🇧🇪 België</option>
+          <option value="2250">🇫🇷 Frankrijk</option>
+          <option value="2276">🇩🇪 Duitsland</option>
+          <option value="2826">🇬🇧 UK</option>
+          <option value="2840">🇺🇸 USA</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="p-6">
+
+      <!-- ── SETUP BANNER ──────────────────────────────── -->
+      <template x-if="!config.dataforseo">
+        <div class="card p-5 mb-6 border-yellow-800" style="border-color:#92400e;background:#1a1200">
+          <div class="flex gap-3">
+            <span class="text-2xl">⚠️</span>
+            <div>
+              <p class="font-semibold text-yellow-400 mb-1">API Sleutels niet geconfigureerd</p>
+              <p class="text-sm text-soft mb-3">Maak een <code class="bg-surface-card px-1 rounded text-xs">.env</code> bestand aan in de <code class="bg-surface-card px-1 rounded text-xs">seo-tool/</code> map. Zie <code class="bg-surface-card px-1 rounded text-xs">.env.example</code> voor instructies.</p>
+              <div class="grid grid-cols-3 gap-3 text-xs">
+                <div class="bg-surface-card rounded p-3">
+                  <p class="font-semibold text-bright mb-1">1. DataForSEO <span class="badge badge-yellow">Verplicht</span></p>
+                  <p class="text-muted">Gratis proefperiode → dataforseo.com</p>
+                  <p class="text-muted mt-1">Kosten: ~€0.001-0.003 per query</p>
+                </div>
+                <div class="bg-surface-card rounded p-3">
+                  <p class="font-semibold text-bright mb-1">2. Google API <span class="badge badge-blue">Gratis</span></p>
+                  <p class="text-muted">console.cloud.google.com</p>
+                  <p class="text-muted mt-1">Voor Site Audit (PageSpeed)</p>
+                </div>
+                <div class="bg-surface-card rounded p-3">
+                  <p class="font-semibold text-bright mb-1">3. Open PageRank <span class="badge badge-blue">Gratis</span></p>
+                  <p class="text-muted">openpagerank.com</p>
+                  <p class="text-muted mt-1">100 gratis requests/dag</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- ════════════════════════════════════════════════
+           TAB 1: KEYWORD EXPLORER
+      ════════════════════════════════════════════════ -->
+      <div x-show="activeTab === 'keywords'" class="fade-in">
+
+        <!-- Search box -->
+        <div class="card p-5 mb-6">
+          <div class="flex gap-3">
+            <input class="input flex-1 text-sm" placeholder="Zoek een keyword, bijv: arabisch alfabet speelgoed" x-model="kw.query" @keydown.enter="searchKeyword()">
+            <button class="btn-primary flex items-center gap-2" @click="searchKeyword()" :disabled="kw.loading">
+              <span x-show="kw.loading" class="spin">⟳</span>
+              <span x-show="!kw.loading">🔍</span>
+              Analyseer
+            </button>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <template x-if="kw.error">
+          <div class="card p-4 mb-4 border-red-900 text-red-400 text-sm" x-text="kw.error"></div>
+        </template>
+
+        <!-- Results -->
+        <template x-if="kw.result">
+          <div class="space-y-6 fade-in">
+
+            <!-- Top metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="metric-card">
+                <p class="text-xs text-muted mb-1">Zoekvolume / maand</p>
+                <p class="text-3xl font-bold text-bright" x-text="formatNum(kw.result.volume_val)"></p>
+                <p class="text-xs text-soft mt-1">gemiddeld</p>
+              </div>
+              <div class="metric-card">
+                <p class="text-xs text-muted mb-1">Keyword Difficulty</p>
+                <p class="text-3xl font-bold" :class="kdColor(kw.result.difficulty_val)" x-text="kw.result.difficulty_val ?? '—'"></p>
+                <div class="kd-bar mt-2">
+                  <div class="kd-fill" :style="`width:${kw.result.difficulty_val}%;background:${kdHex(kw.result.difficulty_val)}`"></div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <p class="text-xs text-muted mb-1">CPC (gemiddeld)</p>
+                <p class="text-3xl font-bold text-bright" x-text="kw.result.cpc_val ? '€' + kw.result.cpc_val.toFixed(2) : '—'"></p>
+                <p class="text-xs text-soft mt-1">cost per klik</p>
+              </div>
+              <div class="metric-card">
+                <p class="text-xs text-muted mb-1">Concurrentie</p>
+                <p class="text-3xl font-bold text-bright" x-text="kw.result.competition ?? '—'"></p>
+                <p class="text-xs text-soft mt-1">Google Ads niveau</p>
+              </div>
+            </div>
+
+            <!-- SERP + Ideas side by side -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+              <!-- SERP Overview -->
+              <div class="card p-5">
+                <h3 class="font-semibold text-bright mb-4 flex items-center gap-2">
+                  <span>🏆</span> SERP Top 10
+                </h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs">
+                    <thead>
+                      <tr class="text-muted border-b border-surface-border">
+                        <th class="pb-2 text-left w-6">#</th>
+                        <th class="pb-2 text-left">URL</th>
+                        <th class="pb-2 text-right">DR</th>
+                        <th class="pb-2 text-right">BL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template x-for="(row, i) in kw.result.serp_rows" :key="i">
+                        <tr class="table-row border-b border-surface-border">
+                          <td class="py-2 text-muted font-mono" x-text="i+1"></td>
+                          <td class="py-2 max-w-xs">
+                            <a :href="row.url" target="_blank" class="text-brand-light hover:underline truncate block" x-text="row.domain"></a>
+                            <span class="text-muted truncate block" x-text="row.title"></span>
+                          </td>
+                          <td class="py-2 text-right font-semibold" x-text="row.dr ?? '—'"></td>
+                          <td class="py-2 text-right text-muted" x-text="formatNum(row.backlinks)"></td>
+                        </tr>
+                      </template>
+                      <template x-if="!kw.result.serp_rows?.length">
+                        <tr><td colspan="4" class="py-4 text-center text-muted">Geen SERP data</td></tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Keyword Ideas -->
+              <div class="card p-5">
+                <h3 class="font-semibold text-bright mb-4 flex items-center gap-2">
+                  <span>💡</span> Keyword Ideeën
+                </h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs">
+                    <thead>
+                      <tr class="text-muted border-b border-surface-border">
+                        <th class="pb-2 text-left">Keyword</th>
+                        <th class="pb-2 text-right">Vol</th>
+                        <th class="pb-2 text-right">KD</th>
+                        <th class="pb-2 text-right">CPC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template x-for="(idea, i) in kw.result.ideas_rows" :key="i">
+                        <tr class="table-row border-b border-surface-border cursor-pointer" @click="kw.query = idea.keyword; searchKeyword()">
+                          <td class="py-2 text-brand-light hover:underline" x-text="idea.keyword"></td>
+                          <td class="py-2 text-right" x-text="formatNum(idea.volume)"></td>
+                          <td class="py-2 text-right" :class="kdColor(idea.kd)" x-text="idea.kd ?? '—'"></td>
+                          <td class="py-2 text-right text-muted" x-text="idea.cpc ? '€'+idea.cpc.toFixed(2) : '—'"></td>
+                        </tr>
+                      </template>
+                      <template x-if="!kw.result.ideas_rows?.length">
+                        <tr><td colspan="4" class="py-4 text-center text-muted">Geen ideeën gevonden</td></tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Related Keywords -->
+            <template x-if="kw.result.related_rows?.length">
+              <div class="card p-5">
+                <h3 class="font-semibold text-bright mb-4">🔗 Gerelateerde Keywords</h3>
+                <div class="flex flex-wrap gap-2">
+                  <template x-for="(r, i) in kw.result.related_rows" :key="i">
+                    <button class="px-3 py-1.5 rounded-full text-xs border border-surface-border text-soft hover:border-brand hover:text-brand-light transition-colors" @click="kw.query = r.keyword; searchKeyword()" x-text="`${r.keyword} (${formatNum(r.volume)})`"></button>
+                  </template>
+                </div>
+              </div>
+            </template>
+
+          </div>
+        </template>
+
+        <!-- Loading -->
+        <template x-if="kw.loading">
+          <div class="flex flex-col items-center justify-center py-20 text-muted">
+            <div class="spin text-4xl mb-4">⟳</div>
+            <p>Echte data ophalen van DataForSEO...</p>
+          </div>
+        </template>
+
+      </div>
+
+
+      <!-- ════════════════════════════════════════════════
+           TAB 2: SITE EXPLORER
+      ════════════════════════════════════════════════ -->
+      <div x-show="activeTab === 'site'" class="fade-in">
+
+        <div class="card p-5 mb-6">
+          <div class="flex gap-3">
+            <input class="input flex-1 text-sm" placeholder="Domein, bijv: littleoummah.com of concurrent.nl" x-model="site.query" @keydown.enter="analyzeSite()">
+            <button class="btn-primary flex items-center gap-2" @click="analyzeSite()" :disabled="site.loading">
+              <span x-show="site.loading" class="spin">⟳</span>
+              <span x-show="!site.loading">🌐</span>
+              Analyseer
+            </button>
+          </div>
+        </div>
+
+        <template x-if="site.error">
+          <div class="card p-4 mb-4 border-red-900 text-red-400 text-sm" x-text="site.error"></div>
+        </template>
+
+        <template x-if="site.result">
+          <div class="space-y-6 fade-in">
+
+            <!-- Domain header -->
+            <div class="card p-5">
+              <div class="flex items-center gap-4">
+                <img :src="`https://www.google.com/s2/favicons?sz=32&domain=${site.result.domain}`" class="w-8 h-8 rounded">
+                <div>
+                  <h2 class="text-xl font-bold text-bright" x-text="site.result.domain"></h2>
+                  <a :href="`https://${site.result.domain}`" target="_blank" class="text-xs text-brand-light hover:underline">↗ Bezoek website</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div class="metric-card text-center">
+                <p class="text-xs text-muted mb-1">Domain Rating</p>
+                <p class="text-3xl font-bold" :class="site.result.dr >= 50 ? 'text-success' : site.result.dr >= 20 ? 'text-warning' : 'text-danger'" x-text="site.result.dr ?? '—'"></p>
+                <p class="text-xs text-muted mt-1">/100</p>
+              </div>
+              <div class="metric-card text-center">
+                <p class="text-xs text-muted mb-1">Backlinks</p>
+                <p class="text-3xl font-bold text-bright" x-text="formatNum(site.result.backlinks_count)"></p>
+                <p class="text-xs text-muted mt-1">totaal</p>
+              </div>
+              <div class="metric-card text-center">
+                <p class="text-xs text-muted mb-1">Ref. Domeinen</p>
+                <p class="text-3xl font-bold text-bright" x-text="formatNum(site.result.ref_domains)"></p>
+                <p class="text-xs text-muted mt-1">unieke domeinen</p>
+              </div>
+              <div class="metric-card text-center">
+                <p class="text-xs text-muted mb-1">Org. Keywords</p>
+                <p class="text-3xl font-bold text-bright" x-text="formatNum(site.result.org_keywords)"></p>
+                <p class="text-xs text-muted mt-1">gevonden</p>
+              </div>
+              <div class="metric-card text-center">
+                <p class="text-xs text-muted mb-1">Est. Traffic</p>
+                <p class="text-3xl font-bold text-bright" x-text="formatNum(site.result.org_traffic)"></p>
+                <p class="text-xs text-muted mt-1">/maand</p>
+              </div>
+            </div>
+
+            <!-- Keywords + Competitors -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+              <div class="card p-5">
+                <h3 class="font-semibold text-bright mb-4">🎯 Top Organische Keywords</h3>
+                <table class="w-full text-xs">
+                  <thead>
+                    <tr class="text-muted border-b border-surface-border">
+                      <th class="pb-2 text-left">Keyword</th>
+                      <th class="pb-2 text-right">Pos.</th>
+                      <th class="pb-2 text-right">Vol.</th>
+                      <th class="pb-2 text-right">Traffic</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="(row, i) in site.result.kw_rows" :key="i">
+                      <tr class="table-row border-b border-surface-border">
+                        <td class="py-2 text-soft" x-text="row.keyword"></td>
+                        <td class="py-2 text-right">
+                          <span class="badge" :class="row.pos <= 3 ? 'badge-green' : row.pos <= 10 ? 'badge-blue' : 'badge-yellow'" x-text="row.pos"></span>
+                        </td>
+                        <td class="py-2 text-right text-muted" x-text="formatNum(row.volume)"></td>
+                        <td class="py-2 text-right text-muted" x-text="formatNum(row.traffic)"></td>
+                      </tr>
+                    </template>
+                    <template x-if="!site.result.kw_rows?.length">
+                      <tr><td colspan="4" class="py-4 text-center text-muted">Geen data beschikbaar</td></tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="card p-5">
+                <h3 class="font-semibold text-bright mb-4">⚔️ Organische Concurrenten</h3>
+                <table class="w-full text-xs">
+                  <thead>
+                    <tr class="text-muted border-b border-surface-border">
+                      <th class="pb-2 text-left">Domein</th>
+                      <th class="pb-2 text-right">Gelijke KW</th>
+                      <th class="pb-2 text-right">Traffic</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="(row, i) in site.result.comp_rows" :key="i">
+                      <tr class="table-row border-b border-surface-border cursor-pointer" @click="site.query = row.domain; analyzeSite()">
+                        <td class="py-2 text-brand-light hover:underline flex items-center gap-1">
+                          <img :src="`https://www.google.com/s2/favicons?sz=16&domain=${row.domain}`" class="w-3 h-3">
+                          <span x-text="row.domain"></span>
+                        </td>
+                        <td class="py-2 text-right text-muted" x-text="formatNum(row.shared_kw)"></td>
+                        <td class="py-2 text-right text-muted" x-text="formatNum(row.traffic)"></td>
+                      </tr>
+                    </template>
+                    <template x-if="!site.result.comp_rows?.length">
+                      <tr><td colspan="3" class="py-4 text-center text-muted">Geen concurrenten gevonden</td></tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template x-if="site.loading">
+          <div class="flex flex-col items-center justify-center py-20 text-muted">
+            <div class="spin text-4xl mb-4">⟳</div>
+            <p>Domein analyseren via DataForSEO...</p>
+          </div>
+        </template>
+
+      </div>
+
+
+      <!-- ════════════════════════════════════════════════
+           TAB 3: BACKLINK CHECKER
+      ════════════════════════════════════════════════ -->
+      <div x-show="activeTab === 'backlinks'" class="fade-in">
+
+        <div class="card p-5 mb-6">
+          <div class="flex gap-3">
+            <input class="input flex-1 text-sm" placeholder="Domein, bijv: littleoummah.com" x-model="bl.query" @keydown.enter="checkBacklinks()">
+            <select class="select text-sm" x-model="bl.limit">
+              <option value="25">25 backlinks</option>
+              <option value="50">50 backlinks</option>
+              <option value="100">100 backlinks</option>
+              <option value="200">200 backlinks</option>
+            </select>
+            <button class="btn-primary flex items-center gap-2" @click="checkBacklinks()" :disabled="bl.loading">
+              <span x-show="bl.loading" class="spin">⟳</span>
+              <span x-show="!bl.loading">🔗</span>
+              Ophalen
+            </button>
+          </div>
+        </div>
+
+        <template x-if="bl.error">
+          <div class="card p-4 mb-4 border-red-900 text-red-400 text-sm" x-text="bl.error"></div>
+        </template>
+
+        <template x-if="bl.result">
+          <div class="fade-in">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-soft text-sm"><span class="text-bright font-bold" x-text="bl.result.length"></span> backlinks gevonden</span>
+            </div>
+            <div class="card overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                  <thead style="background:#1a1d25">
+                    <tr class="text-muted border-b border-surface-border">
+                      <th class="px-4 py-3 text-left">Bron URL</th>
+                      <th class="px-4 py-3 text-left">Ankertekst</th>
+                      <th class="px-4 py-3 text-right">DR</th>
+                      <th class="px-4 py-3 text-center">Type</th>
+                      <th class="px-4 py-3 text-right">Spam Score</th>
+                      <th class="px-4 py-3 text-right">Eerste Gezien</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="(row, i) in bl.result" :key="i">
+                      <tr class="table-row border-b border-surface-border">
+                        <td class="px-4 py-2.5 max-w-xs">
+                          <a :href="row.url_from" target="_blank" class="text-brand-light hover:underline truncate block" x-text="row.domain_from || row.url_from"></a>
+                          <span class="text-muted truncate block" x-text="row.url_from"></span>
+                        </td>
+                        <td class="px-4 py-2.5 text-soft" x-text="row.anchor || '—'"></td>
+                        <td class="px-4 py-2.5 text-right">
+                          <span class="font-bold" :class="row.rank >= 50 ? 'text-success' : row.rank >= 20 ? 'text-warning' : 'text-soft'" x-text="row.rank ?? '—'"></span>
+                        </td>
+                        <td class="px-4 py-2.5 text-center">
+                          <span class="badge" :class="row.dofollow ? 'badge-green' : 'badge-red'" x-text="row.dofollow ? 'dofollow' : 'nofollow'"></span>
+                        </td>
+                        <td class="px-4 py-2.5 text-right">
+                          <span :class="row.spam_score > 60 ? 'text-danger' : row.spam_score > 30 ? 'text-warning' : 'text-success'" x-text="row.spam_score ?? '—'"></span>
+                        </td>
+                        <td class="px-4 py-2.5 text-right text-muted" x-text="row.first_seen ? row.first_seen.slice(0,10) : '—'"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template x-if="bl.loading">
+          <div class="flex flex-col items-center justify-center py-20 text-muted">
+            <div class="spin text-4xl mb-4">⟳</div>
+            <p>Backlinks ophalen...</p>
+          </div>
+        </template>
+
+      </div>
+
+
+      <!-- ════════════════════════════════════════════════
+           TAB 4: SITE AUDIT
+      ════════════════════════════════════════════════ -->
+      <div x-show="activeTab === 'audit'" class="fade-in">
+
+        <div class="card p-5 mb-6">
+          <div class="flex gap-3">
+            <input class="input flex-1 text-sm" placeholder="Volledige URL, bijv: https://littleoummah.com" x-model="audit.query" @keydown.enter="runAudit()">
+            <button class="btn-primary flex items-center gap-2" @click="runAudit()" :disabled="audit.loading">
+              <span x-show="audit.loading" class="spin">⟳</span>
+              <span x-show="!audit.loading">🔧</span>
+              Analyseer
+            </button>
+          </div>
+          <p class="text-xs text-muted mt-2">Gebruikt Google PageSpeed Insights API. Geen API key nodig (maar met key hogere limiet).</p>
+        </div>
+
+        <template x-if="audit.error">
+          <div class="card p-4 mb-4 border-red-900 text-red-400 text-sm" x-text="audit.error"></div>
+        </template>
+
+        <template x-if="audit.result">
+          <div class="space-y-6 fade-in">
+
+            <!-- Scores -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <template x-for="(s, key) in audit.result.scores" :key="key">
+                <div class="metric-card text-center">
+                  <div class="relative inline-flex items-center justify-center mb-3" style="width:80px;height:80px">
+                    <svg width="80" height="80" style="transform:rotate(-90deg)">
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="#2a2d38" stroke-width="6"/>
+                      <circle cx="40" cy="40" r="32" fill="none"
+                        :stroke="s.score >= 90 ? '#22c55e' : s.score >= 50 ? '#f59e0b' : '#ef4444'"
+                        stroke-width="6"
+                        :stroke-dasharray="`${s.score * 2.01} 201`"
+                        stroke-linecap="round"/>
+                    </svg>
+                    <span class="absolute text-xl font-bold" :class="s.score >= 90 ? 'text-success' : s.score >= 50 ? 'text-warning' : 'text-danger'" x-text="s.score"></span>
+                  </div>
+                  <p class="text-sm font-semibold text-bright" x-text="s.label"></p>
+                  <p class="text-xs text-muted mt-1" x-text="s.desc"></p>
+                </div>
+              </template>
+            </div>
+
+            <!-- Core Web Vitals -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <template x-for="strat in ['mobile', 'desktop']" :key="strat">
+                <div class="card p-5" x-show="audit.result[strat]">
+                  <h3 class="font-semibold text-bright mb-4 capitalize" x-text="(strat === 'mobile' ? '📱' : '💻') + ' ' + strat.charAt(0).toUpperCase() + strat.slice(1)"></h3>
+                  <div class="space-y-3">
+                    <template x-for="(vital, i) in audit.result[strat].vitals" :key="i">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm text-soft" x-text="vital.name"></span>
+                        <span class="text-sm font-semibold" :class="vital.good ? 'text-success' : vital.warn ? 'text-warning' : 'text-danger'" x-text="vital.value"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+
+            <!-- Opportunities -->
+            <div class="card p-5" x-show="audit.result.opportunities?.length">
+              <h3 class="font-semibold text-bright mb-4">💡 Verbetermogelijkheden</h3>
+              <div class="space-y-2">
+                <template x-for="(opp, i) in audit.result.opportunities" :key="i">
+                  <div class="flex items-start gap-3 p-3 rounded-lg" style="background:#1a1d25">
+                    <span class="text-warning mt-0.5">⚠</span>
+                    <div>
+                      <p class="text-sm font-medium text-bright" x-text="opp.title"></p>
+                      <p class="text-xs text-muted mt-0.5" x-text="opp.description"></p>
+                      <p class="text-xs text-success mt-1" x-show="opp.savings" x-text="'Tijdwinst: ' + opp.savings"></p>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+          </div>
+        </template>
+
+        <template x-if="audit.loading">
+          <div class="flex flex-col items-center justify-center py-20 text-muted">
+            <div class="spin text-4xl mb-4">⟳</div>
+            <p>Pagina analyseren via Google PageSpeed...</p>
+            <p class="text-xs mt-2">Dit kan 10-30 seconden duren</p>
+          </div>
+        </template>
+
+      </div>
+
+
+      <!-- ════════════════════════════════════════════════
+           TAB 5: KEYWORD GAP
+      ════════════════════════════════════════════════ -->
+      <div x-show="activeTab === 'gap'" class="fade-in">
+
+        <div class="card p-5 mb-6">
+          <p class="text-sm text-soft mb-4">Zoek keywords waar een concurrent voor rankt, maar jij nog niet. Kansen om organisch verkeer te stelen! 🎯</p>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="text-xs text-muted mb-1 block">Jouw domein</label>
+              <input class="input text-sm" placeholder="jouwdomein.com" x-model="gap.mine">
+            </div>
+            <div>
+              <label class="text-xs text-muted mb-1 block">Concurrent domein</label>
+              <input class="input text-sm" placeholder="concurrent.nl" x-model="gap.comp">
+            </div>
+          </div>
+          <button class="btn-primary flex items-center gap-2" @click="runGap()" :disabled="gap.loading">
+            <span x-show="gap.loading" class="spin">⟳</span>
+            <span x-show="!gap.loading">📊</span>
+            Vergelijk Keywords
+          </button>
+        </div>
+
+        <template x-if="gap.error">
+          <div class="card p-4 mb-4 border-red-900 text-red-400 text-sm" x-text="gap.error"></div>
+        </template>
+
+        <template x-if="gap.result">
+          <div class="fade-in">
+            <div class="flex items-center gap-3 mb-4">
+              <p class="text-sm text-soft">
+                <span class="text-bright font-bold" x-text="gap.result.length"></span> keywords gevonden waar
+                <span class="text-danger font-semibold" x-text="gap.comp"></span> voor rankt maar
+                <span class="text-success font-semibold" x-text="gap.mine"></span> niet.
+              </p>
+            </div>
+            <div class="card overflow-hidden">
+              <table class="w-full text-xs">
+                <thead style="background:#1a1d25">
+                  <tr class="text-muted border-b border-surface-border">
+                    <th class="px-4 py-3 text-left">Keyword</th>
+                    <th class="px-4 py-3 text-right">Zoekvolume</th>
+                    <th class="px-4 py-3 text-right">KD</th>
+                    <th class="px-4 py-3 text-right">Positie concurrent</th>
+                    <th class="px-4 py-3 text-right">CPC</th>
+                    <th class="px-4 py-3 text-center">Actie</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="(row, i) in gap.result" :key="i">
+                    <tr class="table-row border-b border-surface-border">
+                      <td class="px-4 py-2.5 text-soft" x-text="row.keyword"></td>
+                      <td class="px-4 py-2.5 text-right text-bright font-medium" x-text="formatNum(row.volume)"></td>
+                      <td class="px-4 py-2.5 text-right" :class="kdColor(row.kd)" x-text="row.kd ?? '—'"></td>
+                      <td class="px-4 py-2.5 text-right">
+                        <span class="badge badge-blue" x-text="'#' + (row.pos || '?')"></span>
+                      </td>
+                      <td class="px-4 py-2.5 text-right text-muted" x-text="row.cpc ? '€'+row.cpc.toFixed(2) : '—'"></td>
+                      <td class="px-4 py-2.5 text-center">
+                        <button class="text-brand-light text-xs hover:underline" @click="activeTab='keywords'; kw.query=row.keyword; searchKeyword()">Analyseer →</button>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </template>
+
+        <template x-if="gap.loading">
+          <div class="flex flex-col items-center justify-center py-20 text-muted">
+            <div class="spin text-4xl mb-4">⟳</div>
+            <p>Keyword gap analyseren...</p>
+          </div>
+        </template>
+
+      </div>
+
+
+      <!-- ════════════════════════════════════════════════
+           TAB 6: INSTELLINGEN
+      ════════════════════════════════════════════════ -->
+      <div x-show="activeTab === 'settings'" class="fade-in max-w-2xl">
+
+        <div class="space-y-4">
+
+          <div class="card p-5">
+            <h3 class="font-semibold text-bright mb-4">📋 Kosten Overzicht (DataForSEO)</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-muted text-xs border-b border-surface-border">
+                  <th class="pb-2 text-left">Functie</th>
+                  <th class="pb-2 text-right">Kosten per query</th>
+                  <th class="pb-2 text-right">100 queries/maand</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-border">
+                <tr><td class="py-2 text-soft">Keyword zoekvolume</td><td class="py-2 text-right text-muted">€0.0025/keyword</td><td class="py-2 text-right text-success">€0.25</td></tr>
+                <tr><td class="py-2 text-soft">Keyword ideeën (50 per call)</td><td class="py-2 text-right text-muted">€0.015/call</td><td class="py-2 text-right text-success">€1.50</td></tr>
+                <tr><td class="py-2 text-soft">SERP resultaten</td><td class="py-2 text-right text-muted">€0.002/SERP</td><td class="py-2 text-right text-success">€0.20</td></tr>
+                <tr><td class="py-2 text-soft">Backlink samenvatting</td><td class="py-2 text-right text-muted">€0.001/domein</td><td class="py-2 text-right text-success">€0.10</td></tr>
+                <tr><td class="py-2 text-soft">Domein overzicht</td><td class="py-2 text-right text-muted">€0.002/domein</td><td class="py-2 text-right text-success">€0.20</td></tr>
+                <tr class="font-semibold"><td class="py-3 text-bright">Typisch maandgebruik</td><td class="py-3 text-right text-muted">—</td><td class="py-3 text-right text-success">~€5-15/maand</td></tr>
+              </tbody>
+            </table>
+            <p class="text-xs text-muted mt-3">vs. Ahrefs Lite: €99/maand | Ahrefs Standard: €199/maand</p>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="font-semibold text-bright mb-4">🔑 API Keys Instellen</h3>
+            <p class="text-sm text-soft mb-3">Maak een bestand <code class="bg-surface-border px-1.5 py-0.5 rounded text-xs">seo-tool/.env</code> aan met deze inhoud:</p>
+            <pre class="text-xs p-4 rounded-lg overflow-x-auto" style="background:#0f1117;color:#a5f3fc;line-height:1.8">DATAFORSEO_LOGIN=jouw@email.com
+DATAFORSEO_PASSWORD=jouw_wachtwoord
+
+GOOGLE_API_KEY=jouw_google_api_key
+
+OPENPAGERANK_API_KEY=jouw_key
+
+SECRET_KEY=willekeurige-string</pre>
+            <div class="grid grid-cols-3 gap-3 mt-4">
+              <a href="https://dataforseo.com" target="_blank" class="block p-3 rounded-lg text-center text-xs border border-surface-border hover:border-brand transition-colors">
+                <p class="text-brand-light font-semibold mb-1">DataForSEO</p>
+                <p class="text-muted">Gratis proefperiode</p>
+                <p class="text-muted">Daarna pay-per-use</p>
+              </a>
+              <a href="https://console.cloud.google.com" target="_blank" class="block p-3 rounded-lg text-center text-xs border border-surface-border hover:border-brand transition-colors">
+                <p class="text-brand-light font-semibold mb-1">Google Cloud Console</p>
+                <p class="text-muted">PageSpeed Insights API</p>
+                <p class="text-muted">Gratis tier beschikbaar</p>
+              </a>
+              <a href="https://openpagerank.com" target="_blank" class="block p-3 rounded-lg text-center text-xs border border-surface-border hover:border-brand transition-colors">
+                <p class="text-brand-light font-semibold mb-1">Open PageRank</p>
+                <p class="text-muted">Volledig gratis</p>
+                <p class="text-muted">100 requests/dag</p>
+              </a>
+            </div>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="font-semibold text-bright mb-3">🚀 Dashboard Starten</h3>
+            <pre class="text-xs p-4 rounded-lg" style="background:#0f1117;color:#a5f3fc;line-height:2">cd seo-tool
+pip install -r requirements.txt
+cp .env.example .env
+<span style="color:#6b7280"># Vul je API keys in .env</span>
+python app.py</pre>
+            <p class="text-xs text-muted mt-2">Dashboard draait op <a href="http://localhost:5000" target="_blank" class="text-brand-light hover:underline">http://localhost:5000</a></p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ── ALPINE DATA ─────────────────────────────────────────── -->
+<script>
+function app() {
+  return {
+    activeTab: 'keywords',
+    globalLang: 'nl',
+    globalLoc: '2528',
+    config: {{ config | tojson }},
+
+    navItems: [
+      { id: 'keywords', icon: '🔍', label: 'Keyword Explorer' },
+      { id: 'site',     icon: '🌐', label: 'Site Explorer' },
+      { id: 'backlinks',icon: '🔗', label: 'Backlinks' },
+      { id: 'audit',    icon: '🔧', label: 'Site Audit' },
+      { id: 'gap',      icon: '📊', label: 'Keyword Gap' },
+      { id: 'settings', icon: '⚙️', label: 'Instellingen' },
+    ],
+
+    kw: { query: '', loading: false, result: null, error: null },
+    site: { query: '', loading: false, result: null, error: null },
+    bl: { query: '', limit: '50', loading: false, result: null, error: null },
+    audit: { query: '', loading: false, result: null, error: null },
+    gap: { mine: '', comp: '', loading: false, result: null, error: null },
+
+    init() {
+      // pre-fill with Little Oummah domain
+      this.site.query = 'littleoummah.com';
+      this.bl.query = 'littleoummah.com';
+      this.gap.mine = 'littleoummah.com';
+      this.audit.query = 'https://littleoummah.com';
+    },
+
+    formatNum(n) {
+      if (n == null || n === '') return '—';
+      if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+      return n.toString();
+    },
+
+    kdColor(kd) {
+      if (kd == null) return 'text-muted';
+      if (kd <= 30) return 'text-success';
+      if (kd <= 60) return 'text-warning';
+      return 'text-danger';
+    },
+
+    kdHex(kd) {
+      if (kd == null) return '#64748b';
+      if (kd <= 30) return '#22c55e';
+      if (kd <= 60) return '#f59e0b';
+      return '#ef4444';
+    },
+
+    async post(url, body) {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      return r.json();
+    },
+
+    // ── KEYWORD RESEARCH ────────────────────────────────────
+    async searchKeyword() {
+      if (!this.kw.query.trim()) return;
+      this.kw.loading = true; this.kw.error = null; this.kw.result = null;
+      try {
+        const data = await this.post('/api/keywords', {
+          keyword: this.kw.query.trim(),
+          language: this.globalLang,
+          location: this.globalLoc
+        });
+        if (data.error) { this.kw.error = data.error; return; }
+        this.kw.result = this.parseKeywordData(data);
+      } catch(e) { this.kw.error = 'Verbindingsfout: ' + e.message; }
+      finally { this.kw.loading = false; }
+    },
+
+    parseKeywordData(data) {
+      // Volume + difficulty
+      let volume_val = null, cpc_val = null, competition = null, difficulty_val = null;
+      try {
+        const items = data.volume?.tasks?.[0]?.result?.[0]?.items;
+        if (items?.[0]) {
+          volume_val = items[0].search_volume;
+          cpc_val = items[0].cpc;
+          competition = items[0].competition_level;
+        }
+      } catch(e) {}
+      try {
+        const dItems = data.difficulty?.tasks?.[0]?.result?.[0]?.items;
+        if (dItems?.[0]) difficulty_val = dItems[0].keyword_difficulty;
+      } catch(e) {}
+
+      // SERP rows
+      let serp_rows = [];
+      try {
+        const res = data.serp?.tasks?.[0]?.result?.[0];
+        if (res?.items) {
+          serp_rows = res.items
+            .filter(i => i.type === 'organic')
+            .slice(0, 10)
+            .map(i => ({
+              url: i.url,
+              domain: i.domain || i.url?.split('/')[2] || '?',
+              title: i.title,
+              dr: i.domain_rank ?? null,
+              backlinks: i.backlinks_data?.referring_domains ?? null
+            }));
+        }
+      } catch(e) {}
+
+      // Keyword ideas
+      let ideas_rows = [];
+      try {
+        const iItems = data.ideas?.tasks?.[0]?.result?.[0]?.items;
+        if (iItems) {
+          ideas_rows = iItems.slice(0, 40).map(i => ({
+            keyword: i.keyword,
+            volume: i.search_volume,
+            kd: i.keyword_difficulty ?? null,
+            cpc: i.cpc
+          }));
+        }
+      } catch(e) {}
+
+      // Related
+      let related_rows = [];
+      try {
+        const rItems = data.related?.tasks?.[0]?.result?.[0]?.items;
+        if (rItems) {
+          related_rows = rItems.slice(0, 30).map(i => ({
+            keyword: i.keyword_data?.keyword || i.keyword,
+            volume: i.keyword_data?.search_volume ?? null
+          })).filter(r => r.keyword);
+        }
+      } catch(e) {}
+
+      return { volume_val, cpc_val, competition, difficulty_val, serp_rows, ideas_rows, related_rows };
+    },
+
+    // ── SITE EXPLORER ────────────────────────────────────────
+    async analyzeSite() {
+      if (!this.site.query.trim()) return;
+      this.site.loading = true; this.site.error = null; this.site.result = null;
+      try {
+        const data = await this.post('/api/domain', {
+          domain: this.site.query.trim(),
+          language: this.globalLang,
+          location: this.globalLoc
+        });
+        if (data.error) { this.site.error = data.error; return; }
+        this.site.result = this.parseSiteData(data);
+      } catch(e) { this.site.error = 'Verbindingsfout: ' + e.message; }
+      finally { this.site.loading = false; }
+    },
+
+    parseSiteData(data) {
+      let dr = null, backlinks_count = null, ref_domains = null, org_keywords = null, org_traffic = null;
+      const domain = data.domain;
+
+      // Backlink summary
+      try {
+        const b = data.backlinks?.tasks?.[0]?.result?.[0];
+        if (b) {
+          backlinks_count = b.backlinks;
+          ref_domains = b.referring_domains;
+          dr = b.rank;
+        }
+      } catch(e) {}
+
+      // Domain overview
+      try {
+        const o = data.overview?.tasks?.[0]?.result?.[0];
+        if (o) {
+          org_keywords = o.metrics?.organic?.count;
+          org_traffic = o.metrics?.organic?.etv;
+        }
+      } catch(e) {}
+
+      // Open PageRank
+      try {
+        const opr = data.pagerank?.response?.[0];
+        if (opr && !dr) dr = Math.round((opr.page_rank_decimal || 0) * 10);
+      } catch(e) {}
+
+      // Keywords
+      let kw_rows = [];
+      try {
+        const items = data.keywords?.tasks?.[0]?.result?.[0]?.items;
+        if (items) {
+          kw_rows = items.slice(0, 20).map(i => {
+            const se = i.ranked_serp_element?.serp_item;
+            return {
+              keyword: i.keyword_data?.keyword || '?',
+              pos: se?.rank_absolute ?? '?',
+              volume: i.keyword_data?.search_volume ?? null,
+              traffic: se?.etv ?? null
+            };
+          });
+        }
+      } catch(e) {}
+
+      // Competitors
+      let comp_rows = [];
+      try {
+        const items = data.competitors?.tasks?.[0]?.result?.[0]?.items;
+        if (items) {
+          comp_rows = items.slice(0, 15).map(i => ({
+            domain: i.domain,
+            shared_kw: i.intersections,
+            traffic: i.metrics?.organic?.etv ?? null
+          }));
+        }
+      } catch(e) {}
+
+      return { domain, dr, backlinks_count, ref_domains, org_keywords, org_traffic, kw_rows, comp_rows };
+    },
+
+    // ── BACKLINKS ───────────────────────────────────────────
+    async checkBacklinks() {
+      if (!this.bl.query.trim()) return;
+      this.bl.loading = true; this.bl.error = null; this.bl.result = null;
+      try {
+        const data = await this.post('/api/backlinks', {
+          domain: this.bl.query.trim(),
+          limit: parseInt(this.bl.limit)
+        });
+        if (data.error) { this.bl.error = data.error; return; }
+        let items = data?.tasks?.[0]?.result?.[0]?.items || [];
+        this.bl.result = items.map(i => ({
+          url_from: i.url_from,
+          domain_from: i.domain_from,
+          anchor: i.anchor,
+          rank: i.rank,
+          dofollow: i.dofollow,
+          spam_score: i.spam_score,
+          first_seen: i.first_seen
+        }));
+      } catch(e) { this.bl.error = 'Verbindingsfout: ' + e.message; }
+      finally { this.bl.loading = false; }
+    },
+
+    // ── SITE AUDIT ──────────────────────────────────────────
+    async runAudit() {
+      if (!this.audit.query.trim()) return;
+      this.audit.loading = true; this.audit.error = null; this.audit.result = null;
+      try {
+        const data = await this.post('/api/audit', { url: this.audit.query.trim() });
+        if (data.error) { this.audit.error = data.error; return; }
+        this.audit.result = this.parseAuditData(data);
+      } catch(e) { this.audit.error = 'Verbindingsfout: ' + e.message; }
+      finally { this.audit.loading = false; }
+    },
+
+    parseAuditData(data) {
+      const result = { scores: [], mobile: null, desktop: null, opportunities: [] };
+      const catLabels = { performance: 'Performance', seo: 'SEO', accessibility: 'Toegankelijkheid', 'best-practices': 'Best Practices' };
+      const catDescs = { performance: 'Laadsnelheid', seo: 'Zoekoptimalisatie', accessibility: 'Gebruikers', 'best-practices': 'Web standaarden' };
+
+      // scores from mobile (primary)
+      const mob = data.mobile?.lighthouseResult;
+      if (mob) {
+        Object.entries(mob.categories || {}).forEach(([key, cat]) => {
+          result.scores.push({
+            label: catLabels[key] || key,
+            desc: catDescs[key] || '',
+            score: Math.round((cat.score || 0) * 100)
+          });
+        });
+      }
+
+      // vitals per strategy
+      ['mobile', 'desktop'].forEach(strat => {
+        const lhr = data[strat]?.lighthouseResult;
+        if (!lhr) return;
+        const audits = lhr.audits || {};
+        const vitals = [];
+        const vitalKeys = [
+          ['first-contentful-paint', 'FCP', [1800, 3000]],
+          ['largest-contentful-paint', 'LCP', [2500, 4000]],
+          ['total-blocking-time', 'TBT', [200, 600]],
+          ['cumulative-layout-shift', 'CLS', [0.1, 0.25]],
+          ['speed-index', 'Speed Index', [3400, 5800]],
+          ['interactive', 'Time to Interactive', [3800, 7300]],
+        ];
+        vitalKeys.forEach(([k, name, [good, warn]]) => {
+          const a = audits[k];
+          if (!a) return;
+          const val = a.numericValue ?? 0;
+          vitals.push({ name, value: a.displayValue || '—', good: val <= good, warn: val <= warn && val > good });
+        });
+        result[strat] = { vitals };
+      });
+
+      // Opportunities from mobile
+      if (mob) {
+        const opps = Object.values(mob.audits || {})
+          .filter(a => a.score != null && a.score < 0.9 && a.details?.type === 'opportunity' && a.title)
+          .slice(0, 8);
+        result.opportunities = opps.map(a => ({
+          title: a.title,
+          description: a.description?.split('.')[0] + '.' || '',
+          savings: a.details?.overallSavingsMs > 100 ? (a.details.overallSavingsMs / 1000).toFixed(1) + 's' : null
+        }));
+      }
+
+      return result;
+    },
+
+    // ── KEYWORD GAP ─────────────────────────────────────────
+    async runGap() {
+      if (!this.gap.mine.trim() || !this.gap.comp.trim()) return;
+      this.gap.loading = true; this.gap.error = null; this.gap.result = null;
+      try {
+        const data = await this.post('/api/gap', {
+          my_domain: this.gap.mine.trim(),
+          competitor: this.gap.comp.trim(),
+          language: this.globalLang,
+          location: this.globalLoc
+        });
+        if (data.error) { this.gap.error = data.error; return; }
+        let items = data?.tasks?.[0]?.result?.[0]?.items || [];
+        this.gap.result = items.slice(0, 50).map(i => ({
+          keyword: i.keyword_data?.keyword || i.keyword,
+          volume: i.keyword_data?.search_volume ?? null,
+          kd: i.keyword_data?.keyword_difficulty ?? null,
+          pos: i.ranked_serp_element?.serp_item?.rank_absolute ?? null,
+          cpc: i.keyword_data?.cpc ?? null
+        }));
+      } catch(e) { this.gap.error = 'Verbindingsfout: ' + e.message; }
+      finally { this.gap.loading = false; }
+    },
+  }
+}
+</script>
+
+</body>
+</html>
