@@ -31,13 +31,15 @@
 - [x] **Barra de anuncio**: "✨ Envío gratis a partir de 49€ · Perfumes árabes auténticos · Devolución gratuita 14 días"
 - [x] **Términos y políticas**: ya "Términos y políticas" en `locales/es.json` ✅
 
-### Homepage del tema sin publicar (SUPERIOR al tema publicado)
-El tema `Kopie van Esencias de Dubai – Luxury` tiene una homepage premium con:
-- [x] **Hero de lujo** (`ed-luxury-hero`) — fullscreen con partículas doradas, "Esencias de Dubai" en Playfair Display, botones CTA en español, estadísticas (300+ fragancias, 15+ marcas, 48h envío)
+### Homepage del tema sin publicar — VERSIÓN PREMIUM 3D (SUPERIOR al tema publicado)
+El tema `Kopie van Esencias de Dubai – Luxury` tiene una homepage premium con **10 secciones** en orden:
+- [x] **Hero de lujo v2** (`ed-luxury-hero`) — fullscreen `#060606`, canvas de partículas constelación (70 puntos dorados conectados), 3D mouse parallax con `perspective(1400px)` + lerp (±4.5°), 3 orbes radiales flotantes a distintas velocidades, 4 marcos decorativos en esquinas, título "de Dubai" con shimmer dorado animado (`background-clip:text`), barra de estadísticas con vidrio backdrop-blur (194 Fragancias, 10+ Marcas, 48h, 5★), contador animado por IntersectionObserver, indicador de scroll
 - [x] **Ticker animado** (`ed-marquee-ticker`) — "Perfumes Árabes Originales de Dubai · Envío Gratis +49€ · LATTAFA · ARMAF · RASASI · AFNAN"
-- [x] **Mosaico de colecciones** (`ed-collection-tiles`) — grid de 4 tiles (Hombre, Mujer, Sets & Regalos, Oud & Orientales)
-- [x] **Brand story** (`ed-brand-story`) — "El Alma de Dubai, en Cada Frasco" con 3 pilares (Autenticidad, Exclusividad, Confianza)
-- [x] **5 secciones de productos** en español (Hombre, Mujer, Oud, LATTAFA, Sets de Regalo)
+- [x] **Mosaico de colecciones v2** (`ed-collection-tiles`) — grid magazine 3×2, tiles grandes (Hombre+Oud) y pequeños (Mujer+Sets), handles correctos (`perfumes-hombre`, `perfumes-mujer`, `sets-de-regalo-perfumes-arabes`, `perfumes-con-oud`), 3D tilt por tile con lerp ±12°, glare overlay siguiendo ratón
+- [x] **Sección Perfumes Hombre** (`product-list`) — 8 productos, 4 columnas
+- [x] **Brand story v2** (`ed-brand-story`) — split layout imagen/texto, 3D tilt imagen ±14° con lerp, 7 partículas flotantes animadas, badge dorado "15+ años", 3 pilares con iconos SVG, CTA
+- [x] **🆕 Bestsellers 3D** (`ed-3d-showcase`) — grid 4 columnas, colección `bestsellers-esencias-de-dubai`, 3D tilt por tarjeta ±10° + glare, animación scroll-in escalonada (idx × 80ms), badges Oferta/Popular, botón CTA
+- [x] **Secciones de productos** en español (Mujer, Oud, LATTAFA, Sets de Regalo)
 
 ### Idiomas
 - [x] **Español habilitado y publicado** como idioma de tienda
@@ -170,6 +172,7 @@ Crear en **Online Store → Pages**:
 5. **[✅ HECHO] Metafields "Inspirado en…"** — definición creada + valores en 25 productos clave (12 bestsellers + otras referencias conocidas)
 6. **Activar Google Merchant Feed** con la app Google & YouTube de Shopify
 7. **Configurar Hostinger DNS** — NO AUTOMATIZABLE desde este entorno (ver Sección 0 arriba)
+8. **[🔄 EN PROGRESO] Imágenes para 32 productos** (Maison Alhambra, Al Haramain, Nusuk, Riiffs, Fragrance World, Afnan) — buscando URLs de imágenes para adjuntar vía `productCreateMedia`
 
 ---
 
