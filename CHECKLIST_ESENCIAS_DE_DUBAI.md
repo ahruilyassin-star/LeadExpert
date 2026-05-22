@@ -28,6 +28,27 @@
 - [x] **Español habilitado y publicado** como idioma de tienda
 - [x] Neerlandés (`nl`) NO está publicado como idioma de tienda — los archivos `nl.json` del tema existen pero no se sirven al cliente
 
+### Colecciones nuevas (Spaanse SEO-vriendelijke verzamelingen)
+- [x] **Perfumes Dulces y Gourmand** (18 productos) — Khamrah, Yara Candy, Eclaire, Choco Overdose
+- [x] **Perfumes Amaderados** (49 productos) — productos met oud, sándalo, cedro
+- [x] **Perfumes Frutales** (20 productos) — Yara, Hawas Tropical, Odyssey Go Mango
+- [x] **Perfumes para el Verano** (12 productos) — frescos, cítricos y tropicales
+- [x] **Perfumes para la Noche** (9 productos) — 9PM, Asad, Veneno
+- [x] **Bestsellers Esencias de Dubai** (8 productos) — los más vendidos automáticamente
+- [x] **Perfumes Cálidos y Especiados** (30 productos) — voor herfst/winter
+
+### Páginas legales
+- [x] **Aviso Legal** creado (LSSI-CE compliant — alleen bedrijfsgegevens nog invullen)
+- [x] Verificado dat ya bestaan: Política de Privacidad, Política de Cookies, Términos y Condiciones, Envío y Devoluciones, Sobre Nosotros, Contacto, FAQ, Test Fragancia
+
+### SEO meta-titels + descriptions (Spaans)
+- [x] 12 bestsellers: Club de Nuit Intense Man, 9PM, Khamrah, Yara, Hawas For Him, L'Aventure, Amber Oud Gold, Champion G.O.A.T., Asad, Bade'e Al Oud Glory, Club de Nuit Untold, Club de Nuit Woman
+- [x] 7 nieuwe collecties met SEO meta voor Google
+
+### Producten kwaliteit
+- [x] Geverifieerd: 0 producten met Nederlandse titels (`Heren`, `Dames`, `Reisset`, `Cadeaupakket`, `Kennismaking`, etc.)
+- [x] Geverifieerd: productbeschrijvingen volledig in correct Spaans (steekproef op 3 producten met "met"-trigger — false positives)
+
 ---
 
 ## ⚠️ Acciones manuales que debes hacer tú
@@ -106,13 +127,11 @@ Cuando me digas que continúe, puedo:
 
 1. **Asignar SKUs** a los 194 productos (necesito el Excel `LISTA PERFUMES ESENCIAS DE DUBAI_OK2`)
 2. **Importar inventario** en bloque (cuando me digas las cantidades)
-3. **Crear colecciones adicionales** por familia olfativa (Dulces/Gourmand, Cálidos, Frutales, Verano, Noche, Bestsellers)
-4. **Optimizar SEO** de cada producto (título meta, descripción meta en español)
-5. **Añadir notas olfativas** (salida / corazón / fondo) como metafields estructurados
-6. **Crear las páginas legales** (te paso las plantillas en español listas)
-7. **Configurar metafields** "Inspirado en…" para señalar a qué fragancia de diseñador es alternativa cada perfume (gran impulso SEO)
-8. **Revisar las descripciones** de los productos en busca de palabras neerlandesas o frases torpes
-9. **Activar Google Merchant Feed** automáticamente con la app de Google & YouTube de Shopify
+3. **Optimizar SEO de los otros ~182 productos** (los 12 bestsellers ya tienen SEO en español; quedan los demás)
+4. **Añadir notas olfativas** (salida / corazón / fondo) como metafields estructurados, para mostrarlas con bonita pirámide en la ficha de producto
+5. **Configurar metafields** "Inspirado en…" para señalar a qué fragancia de diseñador (Creed Aventus, Dior Sauvage, Tom Ford, etc.) es alternativa cada perfume árabe (gran impulso SEO)
+6. **Activar Google Merchant Feed** automáticamente con la app de Google & YouTube de Shopify
+7. **Configurar Hostinger DNS** vía API → necesita añadir `developers.hostinger.com` a la allowlist del entorno de Claude Code on the Web
 
 ---
 
