@@ -12,7 +12,7 @@ import datetime as dt
 import json
 import re
 import sys
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict  # noqa: F401
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -58,12 +58,15 @@ def build_stats(leads: list[dict]) -> dict:
     by_language: Counter[str] = Counter()
     by_day: Counter[str] = Counter()
     by_score_bucket: Counter[str] = Counter()
+    by_source_day: dict[str, Counter[str]] = defaultdict(Counter)
     today_count = week_count = month_count = 0
 
     for lead in leads:
-        by_source[lead.get("source") or "unknown"] += 1
+        src = lead.get("source") or "unknown"
+        by_source[src] += 1
         by_language[lead.get("language") or "?"] += 1
         by_day[lead["_file_date"]] += 1
+        by_source_day[src][lead["_file_date"]] += 1
 
         score = lead["intent_score"]
         if score >= 10:
@@ -87,19 +90,38 @@ def build_stats(leads: list[dict]) -> dict:
             month_count += 1
 
     timeline = []
+    day_iso = []
     for i in range(29, -1, -1):
         d = (now - dt.timedelta(days=i)).date().isoformat()
+        day_iso.append(d)
         timeline.append({"date": d, "count": by_day.get(d, 0)})
+
+    # Sparkline per bron — laatste 14 dagen, voor compacte trend-widget
+    sparkline_per_source: dict[str, list[int]] = {}
+    spark_days = day_iso[-14:]
+    for src, day_counter in by_source_day.items():
+        sparkline_per_source[src] = [day_counter.get(d, 0) for d in spark_days]
+
+    # Yesterday counts voor delta-berekeningen in UI
+    yesterday = (now - dt.timedelta(days=1)).date().isoformat()
+    last_7_prev = (now - dt.timedelta(days=14)).date()
+    yesterday_count = by_day.get(yesterday, 0)
+    week_prev_count = sum(c for d, c in by_day.items()
+                          if last_7_prev <= dt.date.fromisoformat(d) < last_7)
 
     return {
         "total": len(leads),
         "today": today_count,
+        "yesterday": yesterday_count,
         "last_7_days": week_count,
+        "last_7_days_prev": week_prev_count,
         "last_30_days": month_count,
         "by_source": dict(by_source.most_common()),
         "by_language": dict(by_language.most_common()),
         "by_score_bucket": dict(by_score_bucket.most_common()),
         "timeline_30d": timeline,
+        "sparkline_per_source": sparkline_per_source,
+        "spark_dates": spark_days,
     }
 
 

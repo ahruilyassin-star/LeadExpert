@@ -23,6 +23,7 @@ SOURCES = [
     ("hackernews", "fetch_hackernews"),
     ("hn-monthly", "fetch_hn_monthly"),
     ("stackexchange", "fetch_stackexchange"),
+    ("lemmy", "fetch_lemmy"),
     ("2dehands", "fetch_2dehands"),
     ("mastodon", "fetch_mastodon"),
     ("bluesky", "fetch_bluesky"),

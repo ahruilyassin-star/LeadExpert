@@ -11,15 +11,27 @@ Doel: elke dag een verse lijst van mensen die **zelf** online vragen om een webd
 5. `scripts/build_dashboard.py` aggregeert alle historische CSVs in `dashboard/data.json`.
 6. Action commit & pusht naar `claude/daily-webdesign-leads-Le4c5` én publiceert het dashboard naar **GitHub Pages**.
 
-## 📊 Dashboard
+## 📊 Dashboard — modern, live, overal
 
-Het dashboard is een static HTML-bestand (`dashboard/index.html`) dat `dashboard/data.json` inlaadt. Het toont:
+Het dashboard is een **single-page PWA** die `dashboard/data.json` laadt en elke **5 minuten auto-refresht**. Werkt offline na eerste bezoek (service worker cache). Installeerbaar op iOS/Android home screen via PWA manifest.
 
-- Stat-cards: vandaag · 7d · 30d · totaal
-- Lijn-chart: leads per dag (30d-venster)
-- Doughnut-charts: distributie per bron en per taal
-- Filterbalk: zoek, bron, taal, min-score, leeftijd
-- Sorteerbare lead-tabel met directe links naar de Reddit-/HN-/RSS-posts
+**Visueel:**
+- Glassmorphism cards met backdrop-blur, gradient accents (Inter font, JetBrains Mono voor data)
+- Live indicator met pulserende dot, pauzeert auto-refresh wanneer tab inactief is
+- Stat cards met delta-arrows (`↑+5` vs gisteren, vs vorige week)
+- Activity heatmap (30 dagen, 6-level intensity)
+- Per-source sparklines (14-dagen mini-trendgrafiekjes inline)
+- Score-badges met HOT/HIGH/MED labels en kleurcoderingen
+- "NEW" highlight + glow animatie wanneer een lead binnenkomt tussen twee refreshes
+- Dark/light mode automatisch (volgt OS-preference)
+- Mobile-first responsive
+
+**Live everywhere:**
+- Auto-refresh elke 5 min (pauzeert bij tab-hide)
+- Service worker → offline beschikbaar
+- PWA manifest → installeerbaar op telefoon
+- Same URL werkt op desktop/tablet/mobiel
+- Cache-busting query strings voor verse data
 
 ### Dashboard live zien — eenmalige GitHub Pages setup
 
@@ -38,7 +50,7 @@ GitHub Actions cron-schedules vuren **alleen** als het workflow-bestand op de de
 
 **Voor volautomatische dagelijkse runs:** merge deze branch naar `main`, of cherry-pick alleen `.github/workflows/daily-leads.yml` naar `main`. Tot dan kan je elke ochtend de Action handmatig triggeren (1 klik).
 
-## Bronnen — 9 parallel, fail-isolated
+## Bronnen — 10 parallel, fail-isolated
 
 | Bron | Module | Setup | Volume/maand |
 |------|--------|-------|---------------|
@@ -47,6 +59,7 @@ GitHub Actions cron-schedules vuren **alleen** als het workflow-bestand op de de
 | HackerNews search | `fetch_hackernews.py` | Geen — publieke Algolia | 1-3 |
 | **HN monthly thread** | `fetch_hn_monthly.py` | Geen — Algolia + Firebase API | 1-5 (rond 1e v.d. maand) |
 | **Stack Exchange** | `fetch_stackexchange.py` | Geen — publieke SE API | 0-3 |
+| **Lemmy (6 instances)** | `fetch_lemmy.py` | Geen — publieke `/api/v3/search` | 1-5 |
 | 2dehands.be | `fetch_2dehands.py` | Geen — HTML scrape | 8-30 |
 | Mastodon (5 instances) | `fetch_mastodon.py` | Geen — `/api/v2/search` | 3-12 |
 | Bluesky | `fetch_bluesky.py` | Geen — `searchPosts` API | 4-20 |
@@ -223,17 +236,23 @@ Vraag mij wanneer je een van deze wil aanzetten.
 .github/workflows/daily-leads.yml   ← cron 07:00 Brussel + Pages deploy
 scripts/
   common.py            ← Lead dataclass, scoring, output writers
-  daily.py             ← orchestrator (roept alle 9 bronnen + dashboard build)
-  fetch_reddit.py      ← Reddit OAuth scraper (rijke data, vereist secrets)
+  daily.py             ← orchestrator (10 bronnen + dashboard build)
+  fetch_reddit.py      ← Reddit OAuth scraper (vereist secrets)
   fetch_reddit_rss.py  ← Reddit no-auth fallback via .rss endpoints
   fetch_hackernews.py  ← HN Algolia API search
   fetch_hn_monthly.py  ← HN 'Freelancer? Seeking freelancer?' thread parser
   fetch_stackexchange.py ← Webmasters/Startups SE API
+  fetch_lemmy.py       ← Lemmy publieke /api/v3/search (6 instances)
   fetch_2dehands.py    ← 2dehands.be classifieds HTML scraper
   fetch_mastodon.py    ← Mastodon publieke search-API (5 instances)
   fetch_bluesky.py     ← Bluesky publieke searchPosts API
   fetch_rss.py         ← generieke RSS / Atom parser (Google Alerts feeds)
   build_dashboard.py   ← aggregeert CSVs → dashboard/data.json
+dashboard/
+  index.html           ← static HTML dashboard (Chart.js, vanilla JS, glassmorphism)
+  manifest.json        ← PWA manifest (installeerbaar op telefoon)
+  sw.js                ← service worker (offline cache, network-first voor data)
+  data.json            ← gegenereerd door build_dashboard.py
 config/
   rss_feeds.json       ← user-editable RSS feed list
 dashboard/
