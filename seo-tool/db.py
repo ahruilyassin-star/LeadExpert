@@ -8,7 +8,8 @@ import hashlib
 from datetime import datetime, timedelta
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'seo_data.db')
+# Op Vercel is het filesystem read-only, gebruik /tmp voor de database
+DB_PATH = '/tmp/seo_data.db' if os.environ.get('VERCEL') else os.path.join(os.path.dirname(__file__), 'seo_data.db')
 
 
 def get_db():

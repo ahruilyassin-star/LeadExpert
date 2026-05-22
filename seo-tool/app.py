@@ -16,7 +16,16 @@ from bs4 import BeautifulSoup
 
 import db
 import ai
-import scheduler as sched_module
+
+# Scheduler werkt niet op Vercel (serverless) — skip op productie
+if not os.environ.get('VERCEL'):
+    try:
+        import scheduler as sched_module
+        _scheduler_available = True
+    except Exception:
+        _scheduler_available = False
+else:
+    _scheduler_available = False
 
 load_dotenv()
 db.init_db()
@@ -24,11 +33,11 @@ db.init_db()
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'seo-monitor-multi-secret')
 
-# Start de scheduler
-try:
-    sched_module.start_scheduler()
-except Exception as e:
-    app.logger.warning(f"Scheduler kon niet starten: {e}")
+if _scheduler_available:
+    try:
+        sched_module.start_scheduler()
+    except Exception as e:
+        app.logger.warning(f"Scheduler kon niet starten: {e}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -249,7 +258,7 @@ def index():
 def api_config():
     c = cfg()
     c['costs'] = db.get_cost_stats()
-    c['scheduler'] = sched_module.get_scheduler_status()
+    c['scheduler'] = sched_module.get_scheduler_status() if _scheduler_available else {'running': False, 'jobs': []}
     return jsonify(c)
 
 
@@ -316,6 +325,9 @@ def api_trigger_check(site_id):
     site = db.get_site(site_id)
     if not site:
         return jsonify({"error": "Site niet gevonden"}), 404
+
+    if not _scheduler_available:
+        return jsonify({"error": "Automatische checks niet beschikbaar op deze omgeving. Gebruik lokaal voor volledige functionaliteit."}), 503
 
     def _run():
         try:
