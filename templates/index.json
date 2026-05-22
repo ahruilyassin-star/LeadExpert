@@ -1,0 +1,829 @@
+{
+  "sections": {
+    "luxury_hero": {
+      "type": "ed-luxury-hero",
+      "settings": {
+        "eyebrow": "Perfumería Árabe de Lujo",
+        "heading1": "Esencias",
+        "heading2": "de Dubai",
+        "subheading": "Fragancias auténticas del Oriente Medio. Importadas directamente de Dubai. Elaboradas para la eternidad.",
+        "cta1_text": "Explorar Colección",
+        "cta1_url": "/collections/all",
+        "cta2_text": "Oud & Orientales",
+        "cta2_url": "/collections/perfumes-con-oud"
+      }
+    },
+    "ticker": {
+      "type": "ed-marquee-ticker",
+      "settings": {}
+    },
+    "collection_tiles": {
+      "type": "ed-collection-tiles",
+      "settings": {
+        "eyebrow": "Nuestras Colecciones",
+        "title": "El Arte de la Fragancia",
+        "tile1_name": "Hombre",
+        "tile1_desc": "Fragancias potentes y elegantes",
+        "tile1_url": "/collections/perfumes-hombre",
+        "tile2_name": "Mujer",
+        "tile2_url": "/collections/perfumes-mujer",
+        "tile3_name": "Sets & Regalos",
+        "tile3_url": "/collections/sets-de-regalo-perfumes-arabes",
+        "tile4_name": "Oud & Orientales",
+        "tile4_desc": "La esencia del lujo árabe",
+        "tile4_url": "/collections/perfumes-con-oud"
+      }
+    },
+    "collection_hombre": {
+      "type": "product-list",
+      "blocks": {
+        "static-header": {
+          "type": "_product-list-content",
+          "static": true,
+          "settings": {
+            "content_direction": "row",
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "gap": 12,
+            "width": "fill",
+            "width_mobile": "fill",
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "title_h": {
+              "type": "_product-list-text",
+              "settings": {
+                "text": "<h2>Perfumes Hombre</h2>",
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-heading--family)",
+                "color": "var(--color-foreground-heading)",
+                "wrap": "pretty",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "btn_h": {
+              "type": "_product-list-button",
+              "settings": {
+                "label": "Ver todo",
+                "open_in_new_tab": false,
+                "style_class": "link",
+                "width": "fit-content",
+                "width_mobile": "fit-content"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title_h",
+            "btn_h"
+          ]
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "ptitle": {
+              "type": "product-title",
+              "settings": {
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "gallery",
+            "ptitle",
+            "price"
+          ]
+        }
+      },
+      "settings": {
+        "collection": "perfumes-hombre",
+        "layout_type": "grid",
+        "carousel_on_mobile": true,
+        "max_products": 8,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 8,
+        "rows_gap": 24,
+        "section_width": "page-width",
+        "horizontal_alignment": "flex-start",
+        "gap": 28,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 64,
+        "padding-block-end": 48
+      }
+    },
+    "brand_story": {
+      "type": "ed-brand-story",
+      "settings": {
+        "eyebrow": "Nuestra Historia",
+        "title": "El Alma de Dubai, en Cada Frasco",
+        "text1": "Nacimos de una pasión por los aromas del Oriente Medio. Desde los zócos de Dubai hasta tu hogar, traemos las fragancias más exclusivas del mundo árabe con auténtica procedencia garantizada.",
+        "text2": "Cada perfume es seleccionado directamente de los mejores maestros perfumeros de Emiratos, Arabia Saudií y Egípto — una experiencia olfativa sin igual.",
+        "stat_number": "5.000+",
+        "stat_label": "Clientes satisfechos",
+        "cta_text": "Conocer más sobre nosotros",
+        "cta_url": "/pages/about"
+      }
+    },
+    "showcase_bestsellers": {
+      "type": "ed-3d-showcase",
+      "settings": {
+        "eyebrow": "Los Más Vendidos",
+        "title": "Bestsellers",
+        "subtitle": "Las fragancias más deseadas de nuestra tienda",
+        "collection_handle": "bestsellers-esencias-de-dubai",
+        "cta_text": "Ver todos los bestsellers",
+        "cta_url": "/collections/bestsellers-esencias-de-dubai"
+      }
+    },
+    "collection_mujer": {
+      "type": "product-list",
+      "blocks": {
+        "static-header": {
+          "type": "_product-list-content",
+          "static": true,
+          "settings": {
+            "content_direction": "row",
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "gap": 12,
+            "width": "fill",
+            "width_mobile": "fill",
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "title_m": {
+              "type": "_product-list-text",
+              "settings": {
+                "text": "<h2>Perfumes Mujer</h2>",
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-heading--family)",
+                "color": "var(--color-foreground-heading)",
+                "wrap": "pretty",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "btn_m": {
+              "type": "_product-list-button",
+              "settings": {
+                "label": "Ver todo",
+                "open_in_new_tab": false,
+                "style_class": "link",
+                "width": "fit-content",
+                "width_mobile": "fit-content"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title_m",
+            "btn_m"
+          ]
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "ptitle": {
+              "type": "product-title",
+              "settings": {
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "gallery",
+            "ptitle",
+            "price"
+          ]
+        }
+      },
+      "settings": {
+        "collection": "perfumes-mujer",
+        "layout_type": "grid",
+        "carousel_on_mobile": true,
+        "max_products": 8,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 8,
+        "rows_gap": 24,
+        "section_width": "page-width",
+        "horizontal_alignment": "flex-start",
+        "gap": 28,
+        "color_scheme": "scheme-2",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "collection_oud": {
+      "type": "product-list",
+      "blocks": {
+        "static-header": {
+          "type": "_product-list-content",
+          "static": true,
+          "settings": {
+            "content_direction": "row",
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "gap": 12,
+            "width": "fill",
+            "width_mobile": "fill",
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "title_o": {
+              "type": "_product-list-text",
+              "settings": {
+                "text": "<h2>Perfumes con Oud — El Oro Negro de Dubai</h2>",
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-heading--family)",
+                "color": "var(--color-foreground-heading)",
+                "wrap": "pretty",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "btn_o": {
+              "type": "_product-list-button",
+              "settings": {
+                "label": "Ver todos los ouds",
+                "open_in_new_tab": false,
+                "style_class": "link",
+                "width": "fit-content",
+                "width_mobile": "fit-content"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title_o",
+            "btn_o"
+          ]
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "ptitle": {
+              "type": "product-title",
+              "settings": {
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "gallery",
+            "ptitle",
+            "price"
+          ]
+        }
+      },
+      "settings": {
+        "collection": "perfumes-con-oud",
+        "layout_type": "grid",
+        "carousel_on_mobile": true,
+        "max_products": 8,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 8,
+        "rows_gap": 24,
+        "section_width": "page-width",
+        "horizontal_alignment": "flex-start",
+        "gap": 28,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "collection_lattafa": {
+      "type": "product-list",
+      "blocks": {
+        "static-header": {
+          "type": "_product-list-content",
+          "static": true,
+          "settings": {
+            "content_direction": "row",
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "gap": 12,
+            "width": "fill",
+            "width_mobile": "fill",
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "title_l": {
+              "type": "_product-list-text",
+              "settings": {
+                "text": "<h2>Colección LATTAFA — La Marca Más Popular</h2>",
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-heading--family)",
+                "color": "var(--color-foreground-heading)",
+                "wrap": "pretty",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "btn_l": {
+              "type": "_product-list-button",
+              "settings": {
+                "label": "Ver todos los LATTAFA",
+                "open_in_new_tab": false,
+                "style_class": "link",
+                "width": "fit-content",
+                "width_mobile": "fit-content"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title_l",
+            "btn_l"
+          ]
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "ptitle": {
+              "type": "product-title",
+              "settings": {
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "gallery",
+            "ptitle",
+            "price"
+          ]
+        }
+      },
+      "settings": {
+        "collection": "perfumes-lattafa",
+        "layout_type": "grid",
+        "carousel_on_mobile": true,
+        "max_products": 8,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 8,
+        "rows_gap": 24,
+        "section_width": "page-width",
+        "horizontal_alignment": "flex-start",
+        "gap": 28,
+        "color_scheme": "scheme-2",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "collection_sets": {
+      "type": "product-list",
+      "blocks": {
+        "static-header": {
+          "type": "_product-list-content",
+          "static": true,
+          "settings": {
+            "content_direction": "row",
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "gap": 12,
+            "width": "fill",
+            "width_mobile": "fill",
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "title_s": {
+              "type": "_product-list-text",
+              "settings": {
+                "text": "<h2>Sets de Regalo — El Lujo Árabe para Regalar</h2>",
+                "alignment": "left",
+                "type_preset": "h3",
+                "font": "var(--font-heading--family)",
+                "color": "var(--color-foreground-heading)",
+                "wrap": "pretty",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "btn_s": {
+              "type": "_product-list-button",
+              "settings": {
+                "label": "Ver sets de regalo",
+                "open_in_new_tab": false,
+                "style_class": "link",
+                "width": "fit-content",
+                "width_mobile": "fit-content"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title_s",
+            "btn_s"
+          ]
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "inherit_color_scheme": true,
+            "border": "none",
+            "border_width": 1,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "ptitle": {
+              "type": "product-title",
+              "settings": {
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "gallery",
+            "ptitle",
+            "price"
+          ]
+        }
+      },
+      "settings": {
+        "collection": "sets-de-regalo-perfumes-arabes",
+        "layout_type": "grid",
+        "carousel_on_mobile": true,
+        "max_products": 6,
+        "columns": 3,
+        "mobile_columns": "2",
+        "columns_gap": 8,
+        "rows_gap": 24,
+        "section_width": "page-width",
+        "horizontal_alignment": "flex-start",
+        "gap": 28,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 48,
+        "padding-block-end": 64
+      }
+    }
+  },
+  "order": [
+    "luxury_hero",
+    "ticker",
+    "collection_tiles",
+    "collection_hombre",
+    "brand_story",
+    "showcase_bestsellers",
+    "collection_mujer",
+    "collection_oud",
+    "collection_lattafa",
+    "collection_sets"
+  ]
+}
