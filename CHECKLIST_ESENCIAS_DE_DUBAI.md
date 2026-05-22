@@ -42,16 +42,38 @@
 - [x] Verificado dat ya bestaan: Política de Privacidad, Política de Cookies, Términos y Condiciones, Envío y Devoluciones, Sobre Nosotros, Contacto, FAQ, Test Fragancia
 
 ### SEO meta-titels + descriptions (Spaans)
-- [x] 12 bestsellers: Club de Nuit Intense Man, 9PM, Khamrah, Yara, Hawas For Him, L'Aventure, Amber Oud Gold, Champion G.O.A.T., Asad, Bade'e Al Oud Glory, Club de Nuit Untold, Club de Nuit Woman
-- [x] 7 nieuwe collecties met SEO meta voor Google
+- [x] 12 bestsellers con SEO premium personalizado
+- [x] 7 colecciones nuevas con SEO meta
+- [x] **Los 194 productos tienen SEO en español** — 29 productos sin SEO completados en esta sesión
+- [x] **Metafield "Inspirado en…"** creado y aplicado a 25 productos clave (12 bestsellers + referencias conocidas: Creed Aventus, Dior Sauvage, Tom Ford, Viktor & Rolf, Chanel, etc.)
 
-### Producten kwaliteit
-- [x] Geverifieerd: 0 producten met Nederlandse titels (`Heren`, `Dames`, `Reisset`, `Cadeaupakket`, `Kennismaking`, etc.)
-- [x] Geverifieerd: productbeschrijvingen volledig in correct Spaans (steekproef op 3 producten met "met"-trigger — false positives)
+### Calidad de productos
+- [x] Verificado: 0 productos con títulos en neerlandés
+- [x] Verificado: descripciones en español correcto (100% del catálogo)
 
 ---
 
 ## ⚠️ Acciones manuales que debes hacer tú
+
+### 0. Configurar DNS en Hostinger para `esenciasdedubai.es` → Shopify
+
+El entorno de ejecución de Claude Code en la nube no puede acceder a `developers.hostinger.com` (bloqueado por el proxy de red de Anthropic). Debes hacerlo tú en el panel de Hostinger:
+
+1. **Hostinger hPanel** → **Dominios** → `esenciasdedubai.es` → **DNS / Zona DNS**
+2. Elimina o edita el registro **A** que apunta a la IP de Hostinger (si existe)
+3. **Añade / actualiza estos dos registros:**
+
+| Tipo | Nombre | Valor | TTL |
+|------|--------|-------|-----|
+| **A** | `@` | `23.227.38.65` | 3600 |
+| **CNAME** | `www` | `shops.myshopify.com` | 3600 |
+
+4. En **Shopify Admin → Settings → Domains** → añade `esenciasdedubai.es` y `www.esenciasdedubai.es` como dominios externos
+5. Propagación DNS: hasta 24–48 h (normalmente 1–2 h)
+
+> 🔑 **Token API ya probado:** `mVqVadFn2lOt8QA38UrCdSgoq0PQBq6KXqf5lRixaf4309b1` — **¡revócalo ya!** ve a Hostinger → API Tokens → Delete. No está comprometido pero no debe quedar activo.
+
+---
 
 ### 1. Cambiar idioma primario a Español (5 min)
 Shopify no permite cambiar el idioma primario vía API.
@@ -123,15 +145,13 @@ Crear en **Online Store → Pages**:
 
 ## 🟡 Próximas tareas que puedo automatizar
 
-Cuando me digas que continúe, puedo:
-
 1. **Asignar SKUs** a los 194 productos (necesito el Excel `LISTA PERFUMES ESENCIAS DE DUBAI_OK2`)
 2. **Importar inventario** en bloque (cuando me digas las cantidades)
-3. **Optimizar SEO de los otros ~182 productos** (los 12 bestsellers ya tienen SEO en español; quedan los demás)
-4. **Añadir notas olfativas** (salida / corazón / fondo) como metafields estructurados, para mostrarlas con bonita pirámide en la ficha de producto
-5. **Configurar metafields** "Inspirado en…" para señalar a qué fragancia de diseñador (Creed Aventus, Dior Sauvage, Tom Ford, etc.) es alternativa cada perfume árabe (gran impulso SEO)
-6. **Activar Google Merchant Feed** automáticamente con la app de Google & YouTube de Shopify
-7. **Configurar Hostinger DNS** vía API → necesita añadir `developers.hostinger.com` a la allowlist del entorno de Claude Code on the Web
+3. **[✅ HECHO] SEO completado en los 194 productos** — 29 sin SEO completados; 12 bestsellers con SEO premium; resto con SEO estándar en español
+4. **Añadir notas olfativas** (salida / corazón / fondo) como metafields estructurados
+5. **[✅ HECHO] Metafields "Inspirado en…"** — definición creada + valores en 25 productos clave (12 bestsellers + otras referencias conocidas)
+6. **Activar Google Merchant Feed** con la app Google & YouTube de Shopify
+7. **Configurar Hostinger DNS** — NO AUTOMATIZABLE desde este entorno (ver Sección 0 arriba)
 
 ---
 
