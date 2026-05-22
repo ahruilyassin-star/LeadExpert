@@ -38,16 +38,45 @@ GitHub Actions cron-schedules vuren **alleen** als het workflow-bestand op de de
 
 **Voor volautomatische dagelijkse runs:** merge deze branch naar `main`, of cherry-pick alleen `.github/workflows/daily-leads.yml` naar `main`. Tot dan kan je elke ochtend de Action handmatig triggeren (1 klik).
 
-## Bronnen
+## Bronnen — 9 parallel, fail-isolated
 
-| Bron | Module | Setup | Geschat volume |
-|------|--------|-------|----------------|
-| Reddit | `scripts/fetch_reddit.py` | OAuth-secrets (zie hieronder) | 0-3/dag |
-| HackerNews | `scripts/fetch_hackernews.py` | Geen setup — publieke Algolia API | +5-10/maand |
-| **2dehands.be** | `scripts/fetch_2dehands.py` | Geen setup — publieke classifieds (HTML scrape) | +2-8/week |
-| **Mastodon** | `scripts/fetch_mastodon.py` | Geen setup — publieke `/api/v2/search` op 5 instances | +1-3/week |
-| **Bluesky** | `scripts/fetch_bluesky.py` | Geen setup — publieke `searchPosts` API | +1-5/week |
-| RSS feeds (Google Alerts, jobs) | `scripts/fetch_rss.py` | Feeds toevoegen aan `config/rss_feeds.json` | varieert |
+| Bron | Module | Setup | Volume/maand |
+|------|--------|-------|---------------|
+| Reddit (OAuth) | `fetch_reddit.py` | 2 GH secrets | 1-10 |
+| **Reddit (RSS fallback)** | `fetch_reddit_rss.py` | Geen — werkt zonder OAuth | 1-8 |
+| HackerNews search | `fetch_hackernews.py` | Geen — publieke Algolia | 1-3 |
+| **HN monthly thread** | `fetch_hn_monthly.py` | Geen — Algolia + Firebase API | 1-5 (rond 1e v.d. maand) |
+| **Stack Exchange** | `fetch_stackexchange.py` | Geen — publieke SE API | 0-3 |
+| 2dehands.be | `fetch_2dehands.py` | Geen — HTML scrape | 8-30 |
+| Mastodon (5 instances) | `fetch_mastodon.py` | Geen — `/api/v2/search` | 3-12 |
+| Bluesky | `fetch_bluesky.py` | Geen — `searchPosts` API | 4-20 |
+| RSS / Google Alerts | `fetch_rss.py` | Feeds in `config/rss_feeds.json` | 4-30 |
+
+**Totaal verwacht: 23-121 leads/maand**, waarvan ~80% volledig zonder user-setup binnenkomt zodra de Action draait op een vrij netwerk.
+
+### Strategie achter de redundante Reddit-bronnen
+
+`fetch_reddit.py` gebruikt Reddit's OAuth API (vereist `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`) en geeft de rijkste data: full body, score, num_comments, gericht zoeken per keyword.
+
+`fetch_reddit_rss.py` is een no-auth fallback via publieke `.rss` endpoints. Werkt zonder credentials, geeft minder rich data, maar vangt veel als OAuth om welke reden ook faalt. `common.deduplicate()` merge't beide op URL — geen dubbele entries in het dashboard.
+
+### Over de HN monthly-thread parser
+
+Elke maand verschijnt op HN een *"Ask HN: Freelancer? Seeking freelancer?"* thread. Top-level comments hebben twee vormen: `SEEKING WORK` (freelancer biedt zich aan — niet bruikbaar) en `SEEKING FREELANCER` (client zoekt). `fetch_hn_monthly.py` parseert via Algolia + Firebase API:
+
+1. Vind huidige + vorige monthly thread
+2. Fetch alle top-level comments
+3. Filter op `^SEEKING FREELANCER` + BE-locatie
+4. Boost score +5 (deze hebben hoge intent)
+
+### Over de 2dehands-scraper
+
+2dehands.be heeft een "Diensten en Vakmensen" rubriek waar zoekertjes verschijnen zoals *"webdesigner gezocht"*, *"website gezocht"*. De scraper haalt enkel publieke zoekresultatenpagina's op (geen authenticatie), parseert de ad-tegels, en filtert op intent-keywords in de titel.
+
+Beperkingen:
+- HTML scraping is fragiel — als 2dehands hun layout wijzigt moeten de selectors aangepast worden
+- Crawl-rate is bewust traag (2 sec tussen queries) om vriendelijk te blijven
+- Werkt enkel vanaf vrije netwerken (GitHub Actions runners). Containers met strikte allowlist (zoals deze Claude-omgeving) krijgen 403
 
 ### Over de 2dehands-scraper
 
@@ -160,16 +189,7 @@ Minimum-score voor kwalificatie: **5 punten**.
 
 ## Verwachte volumes — eerlijke schatting
 
-| Bron | Per dag | Per week | Per maand |
-|------|---------|----------|-----------|
-| Reddit | 0-1 | 0-3 | 1-10 |
-| HackerNews | 0 | 0-1 | 1-3 (rond 1e v.d. maand) |
-| 2dehands.be | 0-2 | 2-8 | 8-30 |
-| Mastodon | 0 | 1-3 | 3-12 |
-| Bluesky | 0-1 | 1-5 | 4-20 |
-| Google Alerts NL/FR | 0-2 | 1-8 | 4-30 |
-| Job-RSS feeds | 0-1 | 1-5 | 4-20 |
-| **Totaal verwacht** | **1-7** | **7-30** | **25-120** |
+Zie tabel hierboven onder *Bronnen*.
 
 Dit is **substantieel minder dan 25/dag**, maar elke lead is een persoon die zelf om hulp vraagt — conversieratio een orde van grootte hoger dan koude prospects.
 
@@ -203,13 +223,16 @@ Vraag mij wanneer je een van deze wil aanzetten.
 .github/workflows/daily-leads.yml   ← cron 07:00 Brussel + Pages deploy
 scripts/
   common.py            ← Lead dataclass, scoring, output writers
-  daily.py             ← orchestrator (roept alle bronnen + dashboard build)
-  fetch_reddit.py      ← Reddit OAuth scraper
-  fetch_hackernews.py  ← HN Algolia API
+  daily.py             ← orchestrator (roept alle 9 bronnen + dashboard build)
+  fetch_reddit.py      ← Reddit OAuth scraper (rijke data, vereist secrets)
+  fetch_reddit_rss.py  ← Reddit no-auth fallback via .rss endpoints
+  fetch_hackernews.py  ← HN Algolia API search
+  fetch_hn_monthly.py  ← HN 'Freelancer? Seeking freelancer?' thread parser
+  fetch_stackexchange.py ← Webmasters/Startups SE API
   fetch_2dehands.py    ← 2dehands.be classifieds HTML scraper
   fetch_mastodon.py    ← Mastodon publieke search-API (5 instances)
   fetch_bluesky.py     ← Bluesky publieke searchPosts API
-  fetch_rss.py         ← generieke RSS / Atom parser
+  fetch_rss.py         ← generieke RSS / Atom parser (Google Alerts feeds)
   build_dashboard.py   ← aggregeert CSVs → dashboard/data.json
 config/
   rss_feeds.json       ← user-editable RSS feed list
