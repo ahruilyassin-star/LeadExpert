@@ -1,5 +1,15 @@
 {
   "sections": {
+    "top_bar": {
+      "type": "ed-top-bar",
+      "blocks": {
+        "u1": {"type": "usp", "settings": {"text": "<strong>Envío gratis</strong> a partir de 49€"}},
+        "u2": {"type": "usp", "settings": {"text": "<strong>Entrega 24-48h</strong> en toda España"}},
+        "u3": {"type": "usp", "settings": {"text": "<strong>Devolución gratuita</strong> en 14 días"}}
+      },
+      "block_order": ["u1", "u2", "u3"],
+      "settings": {"bg_color": "#f7efe6", "show_trustpilot": true, "review_count": "5K reviews"}
+    },
     "hero_mosaic": {
       "type": "ed-banner-mosaic",
       "blocks": {
@@ -37,22 +47,32 @@
         "cta_url": "/collections/bestsellers-esencias-de-dubai"
       }
     },
-    "brand_strip": {
-      "type": "ed-brand-strip",
+    "promo_asym": {
+      "type": "ed-promo-asymmetric",
       "blocks": {
-        "b1": {"type": "brand", "settings": {"name": "LATTAFA", "logo_url": "/collections/perfumes-lattafa"}},
-        "b2": {"type": "brand", "settings": {"name": "ARMAF", "logo_url": "/collections/perfumes-armaf"}},
-        "b3": {"type": "brand", "settings": {"name": "AFNAN", "logo_url": "/collections/perfumes-afnan"}},
-        "b4": {"type": "brand", "settings": {"name": "RASASI", "logo_url": "/collections/perfumes-rasasi"}},
-        "b5": {"type": "brand", "settings": {"name": "MAISON ALHAMBRA", "logo_url": "/collections/perfumes-maison-alhambra"}},
-        "b6": {"type": "brand", "settings": {"name": "AL HARAMAIN", "logo_url": "/collections/perfumes-al-haramain"}},
-        "b7": {"type": "brand", "settings": {"name": "NUSUK", "logo_url": "/collections/perfumes-nusuk"}},
-        "b8": {"type": "brand", "settings": {"name": "RIIFFS", "logo_url": "/collections/perfumes-riiffs"}},
-        "b9": {"type": "brand", "settings": {"name": "FRAGRANCE WORLD", "logo_url": "/collections/perfumes-fragrance-world"}},
-        "b10": {"type": "brand", "settings": {"name": "FRENCH AVENUE", "logo_url": "/collections/perfumes-french-avenue"}}
+        "p1": {"type": "banner", "settings": {"show_overlay": true, "eyebrow": "Marca destacada", "title": "Colección LATTAFA", "subtitle": "Khamrah, Asad, Yara y muchos más bestsellers.", "url": "/collections/perfumes-lattafa"}},
+        "p2": {"type": "banner", "settings": {"title": "Sets de Regalo", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
+        "p3": {"type": "banner", "settings": {"title": "Oud & Orientales", "url": "/collections/perfumes-con-oud"}}
+      },
+      "block_order": ["p1", "p2", "p3"],
+      "settings": {"accent_color": "#F2A88A"}
+    },
+    "brand_carousel": {
+      "type": "ed-brand-carousel",
+      "blocks": {
+        "b1": {"type": "brand", "settings": {"name": "LATTAFA", "url": "/collections/perfumes-lattafa"}},
+        "b2": {"type": "brand", "settings": {"name": "ARMAF", "url": "/collections/perfumes-armaf"}},
+        "b3": {"type": "brand", "settings": {"name": "AFNAN", "url": "/collections/perfumes-afnan"}},
+        "b4": {"type": "brand", "settings": {"name": "RASASI", "url": "/collections/perfumes-rasasi"}},
+        "b5": {"type": "brand", "settings": {"name": "MAISON ALHAMBRA", "url": "/collections/perfumes-maison-alhambra"}},
+        "b6": {"type": "brand", "settings": {"name": "AL HARAMAIN", "url": "/collections/perfumes-al-haramain"}},
+        "b7": {"type": "brand", "settings": {"name": "NUSUK", "url": "/collections/perfumes-nusuk"}},
+        "b8": {"type": "brand", "settings": {"name": "RIIFFS", "url": "/collections/perfumes-riiffs"}},
+        "b9": {"type": "brand", "settings": {"name": "FRAGRANCE WORLD", "url": "/collections/perfumes-fragrance-world"}},
+        "b10": {"type": "brand", "settings": {"name": "FRENCH AVENUE", "url": "/collections/perfumes-french-avenue"}}
       },
       "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"],
-      "settings": {"show_header": true, "eyebrow": "Nuestras Marcas", "title": "Más de 10 marcas árabes premium", "bg_color": "#ffffff", "speed": 45}
+      "settings": {"title": "Nuestras Marcas"}
     },
     "story": {
       "type": "ed-clean-story",
@@ -67,16 +87,6 @@
         "cta_url": "/pages/sobre-nosotros"
       }
     },
-    "lattafa_grid": {
-      "type": "ed-product-grid",
-      "settings": {
-        "eyebrow": "Marca destacada",
-        "title": "Colección LATTAFA",
-        "collection_handle": "perfumes-lattafa",
-        "cta_text": "Ver toda la colección",
-        "cta_url": "/collections/perfumes-lattafa"
-      }
-    },
     "newsletter": {
       "type": "ed-newsletter",
       "settings": {
@@ -89,12 +99,13 @@
     }
   },
   "order": [
+    "top_bar",
     "hero_mosaic",
     "circle_cats",
     "bestsellers",
-    "brand_strip",
+    "promo_asym",
+    "brand_carousel",
     "story",
-    "lattafa_grid",
     "newsletter"
   ]
 }

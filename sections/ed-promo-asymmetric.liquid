@@ -1,0 +1,123 @@
+<section class="epa-wrap" id="epa-{{ section.id }}">
+  <div class="epa-inner">
+    <div class="epa-grid">
+      {%- assign accent = section.settings.accent_color | default: '#F2A88A' -%}
+      {%- for block in section.blocks limit: 3 -%}
+        {%- assign idx = forloop.index -%}
+        <a class="epa-tile epa-tile--{{ idx }}" href="{{ block.settings.url | default: '/collections/all' }}" data-idx="{{ forloop.index0 }}" {{ block.shopify_attributes }} aria-label="{{ block.settings.title }}">
+          <div class="epa-tile__img-wrap">
+            {%- if block.settings.image != blank -%}
+              <img class="epa-tile__img" src="{{ block.settings.image | img_url: '1200x' }}" alt="{{ block.settings.title }}" loading="lazy" width="1200" height="900">
+            {%- else -%}
+              <div class="epa-tile__img epa-tile__img--ph"></div>
+            {%- endif -%}
+          </div>
+          {%- if block.settings.show_overlay -%}
+            <div class="epa-tile__content">
+              {%- if block.settings.eyebrow != blank -%}
+                <span class="epa-tile__eyebrow">{{ block.settings.eyebrow }}</span>
+              {%- endif -%}
+              {%- if block.settings.title != blank -%}
+                <h3 class="epa-tile__title">{{ block.settings.title }}</h3>
+              {%- endif -%}
+              {%- if block.settings.subtitle != blank -%}
+                <p class="epa-tile__sub">{{ block.settings.subtitle }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          <span class="epa-tile__arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+#epa-{{ section.id }} {background:#fff;padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#epa-{{ section.id }} .epa-inner {max-width:1440px;margin:0 auto;}
+#epa-{{ section.id }} .epa-grid {display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr;gap:16px;}
+#epa-{{ section.id }} .epa-tile {position:relative;display:block;text-decoration:none;overflow:hidden;border-radius:6px;background:#0a0a0a;opacity:0;transform:translateY(16px);transition:opacity 0.7s,transform 0.7s,box-shadow 0.4s;}
+#epa-{{ section.id }} .epa-tile.epa--visible {opacity:1;transform:translateY(0);}
+#epa-{{ section.id }} .epa-tile:hover {box-shadow:0 16px 40px rgba(0,0,0,0.15);}
+#epa-{{ section.id }} .epa-tile--1 {grid-column:1;grid-row:1 / 3;aspect-ratio:auto;}
+#epa-{{ section.id }} .epa-tile--2 {grid-column:2;grid-row:1;aspect-ratio:16/9;}
+#epa-{{ section.id }} .epa-tile--3 {grid-column:2;grid-row:2;aspect-ratio:16/9;}
+#epa-{{ section.id }} .epa-tile__img-wrap {position:absolute;inset:0;}
+#epa-{{ section.id }} .epa-tile__img {width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94);}
+#epa-{{ section.id }} .epa-tile:hover .epa-tile__img {transform:scale(1.04);}
+#epa-{{ section.id }} .epa-tile__img--ph {background:linear-gradient(135deg,#e8d8c4,#d4c4b0);}
+#epa-{{ section.id }} .epa-tile__content {position:absolute;top:24px;left:24px;right:24px;z-index:2;max-width:60%;}
+#epa-{{ section.id }} .epa-tile__eyebrow {display:block;font-size:0.7rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:#0a0a0a;margin-bottom:10px;}
+#epa-{{ section.id }} .epa-tile__title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.2rem,2.4vw,2rem);font-weight:400;color:#0a0a0a;margin:0 0 8px;letter-spacing:-0.02em;line-height:1.15;}
+#epa-{{ section.id }} .epa-tile__sub {font-size:0.86rem;color:#4a4a4a;margin:0;line-height:1.5;max-width:280px;}
+#epa-{{ section.id }} .epa-tile__arrow {position:absolute;right:20px;bottom:20px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:{{ accent }};color:#0a0a0a;border-radius:4px;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);z-index:3;}
+#epa-{{ section.id }} .epa-tile:hover .epa-tile__arrow {background:#fff;transform:translateX(4px);}
+#epa-{{ section.id }} .epa-tile__arrow svg {transition:transform 0.3s;}
+#epa-{{ section.id }} .epa-tile:hover .epa-tile__arrow svg {transform:translateX(2px);}
+@media(max-width:768px){
+#epa-{{ section.id }} {padding:14px 12px;}
+#epa-{{ section.id }} .epa-grid {grid-template-columns:1fr;grid-template-rows:auto;gap:12px;}
+#epa-{{ section.id }} .epa-tile--1 {grid-column:1;grid-row:auto;aspect-ratio:4/3;}
+#epa-{{ section.id }} .epa-tile--2, #epa-{{ section.id }} .epa-tile--3 {grid-column:1;grid-row:auto;}
+#epa-{{ section.id }} .epa-tile__content {top:18px;left:18px;right:18px;max-width:75%;}
+#epa-{{ section.id }} .epa-tile__arrow {right:14px;bottom:14px;width:32px;height:32px;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('epa-' + sid);
+  if (!wrap) return;
+  var tiles = wrap.querySelectorAll('.epa-tile');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        var t = e.target;
+        var idx = parseInt(t.getAttribute('data-idx'), 10) || 0;
+        setTimeout(function(){ t.classList.add('epa--visible'); }, idx * 100);
+        obs.unobserve(t);
+      }
+    });
+  }, { threshold: 0.1 });
+  tiles.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Promo Asymmetric",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 3,
+  "settings": [
+    {"type":"color","id":"accent_color","label":"Accent color (arrow buttons)","default":"#F2A88A"}
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {"type":"checkbox","id":"show_overlay","label":"Show text overlay on image","default":false},
+        {"type":"text","id":"eyebrow","label":"Eyebrow (only if overlay enabled)"},
+        {"type":"text","id":"title","label":"Title"},
+        {"type":"text","id":"subtitle","label":"Subtitle"},
+        {"type":"image_picker","id":"image","label":"Image"},
+        {"type":"url","id":"url","label":"Link URL"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Promo Asymmetric",
+      "blocks": [
+        {"type":"banner","settings":{"title":"Bestsellers LATTAFA","show_overlay":true,"eyebrow":"Marca destacada","subtitle":"Khamrah, Asad, Yara y más"}},
+        {"type":"banner","settings":{"title":"Sets de Regalo"}},
+        {"type":"banner","settings":{"title":"Oud & Orientales"}}
+      ]
+    }
+  ]
+}
+{% endschema %}
