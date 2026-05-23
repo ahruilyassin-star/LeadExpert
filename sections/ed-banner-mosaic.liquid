@@ -1,0 +1,127 @@
+<section class="ebm-wrap" id="ebm-{{ section.id }}">
+  <div class="ebm-inner">
+    <div class="ebm-grid">
+      {%- for block in section.blocks -%}
+        {%- assign idx = forloop.index -%}
+        <a class="ebm-tile ebm-tile--{{ idx }}" href="{{ block.settings.url | default: '/collections/all' }}" data-idx="{{ forloop.index0 }}" aria-label="{{ block.settings.title }}" {{ block.shopify_attributes }}>
+          <div class="ebm-tile__img-wrap">
+            {%- if block.settings.image != blank -%}
+              <img class="ebm-tile__img" src="{{ block.settings.image | img_url: '1200x' }}" alt="{{ block.settings.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" width="1200" height="800">
+            {%- else -%}
+              <div class="ebm-tile__img ebm-tile__img--ph"></div>
+            {%- endif -%}
+            <div class="ebm-tile__overlay"></div>
+          </div>
+          <div class="ebm-tile__content">
+            <div class="ebm-tile__label">
+              {%- if block.settings.eyebrow != blank -%}
+                <span class="ebm-tile__eyebrow">{{ block.settings.eyebrow }}</span>
+              {%- endif -%}
+              <h3 class="ebm-tile__title">{{ block.settings.title | default: 'Banner' }}</h3>
+            </div>
+            <span class="ebm-tile__arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+#ebm-{{ section.id }} {background:#fff;padding:32px 24px 16px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#ebm-{{ section.id }} .ebm-inner {max-width:1440px;margin:0 auto;}
+#ebm-{{ section.id }} .ebm-grid {display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:auto;gap:20px;}
+#ebm-{{ section.id }} .ebm-tile {position:relative;display:block;text-decoration:none;overflow:hidden;border-radius:6px;background:#0a0a0a;opacity:0;transform:translateY(16px);transition:opacity 0.7s,transform 0.7s,box-shadow 0.4s;}
+#ebm-{{ section.id }} .ebm-tile.ebm--visible {opacity:1;transform:translateY(0);}
+#ebm-{{ section.id }} .ebm-tile:hover {box-shadow:0 16px 40px rgba(0,0,0,0.15);}
+#ebm-{{ section.id }} .ebm-tile--1 {grid-column:1 / 4;grid-row:1;aspect-ratio:16/10;}
+#ebm-{{ section.id }} .ebm-tile--2 {grid-column:4 / 7;grid-row:1;aspect-ratio:16/10;}
+#ebm-{{ section.id }} .ebm-tile--3 {grid-column:1 / 3;grid-row:2;aspect-ratio:5/4;}
+#ebm-{{ section.id }} .ebm-tile--4 {grid-column:3 / 5;grid-row:2;aspect-ratio:5/4;}
+#ebm-{{ section.id }} .ebm-tile--5 {grid-column:5 / 7;grid-row:2;aspect-ratio:5/4;}
+#ebm-{{ section.id }} .ebm-tile__img-wrap {position:absolute;inset:0;}
+#ebm-{{ section.id }} .ebm-tile__img {width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ebm-{{ section.id }} .ebm-tile:hover .ebm-tile__img {transform:scale(1.05);}
+#ebm-{{ section.id }} .ebm-tile__img--ph {background:linear-gradient(135deg,#3a3a3a,#1a1a1a);}
+#ebm-{{ section.id }} .ebm-tile__overlay {position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.6) 100%);}
+#ebm-{{ section.id }} .ebm-tile__content {position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:18px 20px;z-index:2;}
+#ebm-{{ section.id }} .ebm-tile__label {flex:1;min-width:0;}
+#ebm-{{ section.id }} .ebm-tile__eyebrow {display:block;font-size:0.65rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.8);margin-bottom:4px;}
+#ebm-{{ section.id }} .ebm-tile__title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(1rem,1.6vw,1.35rem);font-weight:500;color:#fff;margin:0;letter-spacing:-0.01em;line-height:1.2;}
+#ebm-{{ section.id }} .ebm-tile__arrow {flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:42px;height:42px;background:{{ section.settings.accent_color | default: '#F2A88A' }};color:#0a0a0a;border-radius:4px;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ebm-{{ section.id }} .ebm-tile:hover .ebm-tile__arrow {background:#fff;transform:translateX(4px);}
+#ebm-{{ section.id }} .ebm-tile:hover .ebm-tile__arrow svg {transform:translateX(2px);}
+#ebm-{{ section.id }} .ebm-tile__arrow svg {transition:transform 0.3s;}
+@media(max-width:1024px){
+#ebm-{{ section.id }} .ebm-grid {grid-template-columns:repeat(2,1fr);gap:14px;}
+#ebm-{{ section.id }} .ebm-tile--1, #ebm-{{ section.id }} .ebm-tile--2 {grid-column:auto;grid-row:auto;aspect-ratio:4/3;}
+#ebm-{{ section.id }} .ebm-tile--3 {grid-column:1 / 2;grid-row:auto;}
+#ebm-{{ section.id }} .ebm-tile--4 {grid-column:2 / 3;grid-row:auto;}
+#ebm-{{ section.id }} .ebm-tile--5 {grid-column:1 / 3;grid-row:auto;aspect-ratio:16/9;}
+}
+@media(max-width:560px){
+#ebm-{{ section.id }} {padding:16px 12px;}
+#ebm-{{ section.id }} .ebm-grid {grid-template-columns:1fr;gap:12px;}
+#ebm-{{ section.id }} .ebm-tile--1, #ebm-{{ section.id }} .ebm-tile--2, #ebm-{{ section.id }} .ebm-tile--3, #ebm-{{ section.id }} .ebm-tile--4, #ebm-{{ section.id }} .ebm-tile--5 {grid-column:1;aspect-ratio:16/10;}
+#ebm-{{ section.id }} .ebm-tile__content {padding:14px 16px;}
+#ebm-{{ section.id }} .ebm-tile__arrow {width:36px;height:36px;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ebm-' + sid);
+  if (!wrap) return;
+  var tiles = wrap.querySelectorAll('.ebm-tile');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        var t = e.target;
+        var idx = parseInt(t.getAttribute('data-idx'), 10) || 0;
+        setTimeout(function(){ t.classList.add('ebm--visible'); }, idx * 80);
+        obs.unobserve(t);
+      }
+    });
+  }, { threshold: 0.05 });
+  tiles.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Banner Mosaic",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 5,
+  "settings": [
+    {"type":"color","id":"accent_color","label":"Accent color (arrow buttons)","default":"#F2A88A"}
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {"type":"text","id":"eyebrow","label":"Eyebrow (optional)"},
+        {"type":"text","id":"title","label":"Title","default":"Banner"},
+        {"type":"image_picker","id":"image","label":"Image"},
+        {"type":"url","id":"url","label":"Link URL"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Banner Mosaic",
+      "blocks": [
+        {"type":"banner","settings":{"title":"Wedding Season","eyebrow":"Edición especial"}},
+        {"type":"banner","settings":{"title":"Nuevos Sets de Regalo","eyebrow":"Recién llegado"}},
+        {"type":"banner","settings":{"title":"Nuevas Fragancias Mujer","eyebrow":"Mujer"}},
+        {"type":"banner","settings":{"title":"Nuevas Fragancias Hombre","eyebrow":"Hombre"}},
+        {"type":"banner","settings":{"title":"Oud & Orientales","eyebrow":"Bestsellers"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,55 +1,40 @@
 {
   "sections": {
-    "hero_slider": {
-      "type": "ed-hero-slider",
+    "hero_mosaic": {
+      "type": "ed-banner-mosaic",
       "blocks": {
-        "slide1": {
-          "type": "slide",
-          "settings": {
-            "eyebrow": "Perfumería Árabe · Anno 2026",
-            "title1": "Esencias",
-            "title2": "de Dubai",
-            "subtitle": "Fragancias auténticas del Oriente Medio, seleccionadas a mano en los zocos de Dubai. Envío gratis a partir de 49€.",
-            "cta1_text": "Comprar ahora",
-            "cta1_url": "/collections/all",
-            "cta2_text": "Descubrir Oud",
-            "cta2_url": "/collections/perfumes-con-oud",
-            "badge_text": "Nuevo · Anno 2026"
-          }
-        },
-        "slide2": {
-          "type": "slide",
-          "settings": {
-            "eyebrow": "Bestsellers",
-            "title1": "Los más",
-            "title2": "vendidos",
-            "subtitle": "Las fragancias que más enamoran. Club de Nuit Intense, Khamrah, Yara, Asad y muchos más.",
-            "cta1_text": "Ver bestsellers",
-            "cta1_url": "/collections/bestsellers-esencias-de-dubai",
-            "cta2_text": "Explorar todo",
-            "cta2_url": "/collections/all",
-            "badge_text": "Top ventas"
-          }
-        },
-        "slide3": {
-          "type": "slide",
-          "settings": {
-            "eyebrow": "Oferta especial",
-            "title1": "Sets de",
-            "title2": "regalo",
-            "subtitle": "El lujo árabe para regalar. Sets exclusivos con envoltorio de lujo y certificado de autenticidad.",
-            "cta1_text": "Ver sets",
-            "cta1_url": "/collections/sets-de-regalo-perfumes-arabes",
-            "cta2_text": "Más información",
-            "cta2_url": "/pages/sobre-nosotros",
-            "badge_text": "Edición Limitada"
-          }
-        }
+        "b1": {"type": "banner", "settings": {"eyebrow": "Edición especial", "title": "Wedding Season", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
+        "b2": {"type": "banner", "settings": {"eyebrow": "Recién llegado", "title": "Nuevos Sets de Regalo", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
+        "b3": {"type": "banner", "settings": {"eyebrow": "Mujer", "title": "Nuevas Fragancias Mujer", "url": "/collections/perfumes-mujer"}},
+        "b4": {"type": "banner", "settings": {"eyebrow": "Hombre", "title": "Nuevas Fragancias Hombre", "url": "/collections/perfumes-hombre"}},
+        "b5": {"type": "banner", "settings": {"eyebrow": "Bestsellers", "title": "Oud & Orientales", "url": "/collections/perfumes-con-oud"}}
       },
-      "block_order": ["slide1", "slide2", "slide3"],
+      "block_order": ["b1", "b2", "b3", "b4", "b5"],
+      "settings": {"accent_color": "#F2A88A"}
+    },
+    "circle_cats": {
+      "type": "ed-circle-categories",
+      "blocks": {
+        "c1": {"type": "circle", "settings": {"name": "Ofertas", "icon": "%", "bg_color": "#fbe7df", "url": "/collections/all"}},
+        "c2": {"type": "circle", "settings": {"name": "Mujer", "icon": "♀", "bg_color": "#fde4e4", "url": "/collections/perfumes-mujer"}},
+        "c3": {"type": "circle", "settings": {"name": "Hombre", "icon": "♂", "bg_color": "#e6f0f5", "url": "/collections/perfumes-hombre"}},
+        "c4": {"type": "circle", "settings": {"name": "Bestsellers", "icon": "★", "bg_color": "#fef0d9", "url": "/collections/bestsellers-esencias-de-dubai"}},
+        "c5": {"type": "circle", "settings": {"name": "Oud & Oriental", "icon": "◆", "bg_color": "#f0e4d4", "url": "/collections/perfumes-con-oud"}},
+        "c6": {"type": "circle", "settings": {"name": "Sets de Regalo", "icon": "🎁", "bg_color": "#e8f0e0", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
+        "c7": {"type": "circle", "settings": {"name": "Dulces", "icon": "♥", "bg_color": "#f5e4eb", "url": "/collections/perfumes-dulces-y-gourmand"}},
+        "c8": {"type": "circle", "settings": {"name": "Verano", "icon": "☀", "bg_color": "#fff4d6", "url": "/collections/perfumes-para-el-verano"}}
+      },
+      "block_order": ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"],
+      "settings": {"show_header": true, "title": "Categorías populares"}
+    },
+    "bestsellers": {
+      "type": "ed-product-grid",
       "settings": {
-        "autoplay": true,
-        "interval": 6500
+        "eyebrow": "Bestsellers",
+        "title": "Los más vendidos",
+        "collection_handle": "bestsellers-esencias-de-dubai",
+        "cta_text": "Ver todos los bestsellers",
+        "cta_url": "/collections/bestsellers-esencias-de-dubai"
       }
     },
     "brand_strip": {
@@ -67,42 +52,7 @@
         "b10": {"type": "brand", "settings": {"name": "FRENCH AVENUE", "logo_url": "/collections/perfumes-french-avenue"}}
       },
       "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"],
-      "settings": {
-        "show_header": true,
-        "eyebrow": "Nuestras Marcas",
-        "title": "Más de 10 marcas árabes premium",
-        "bg_color": "#ffffff",
-        "speed": 45
-      }
-    },
-    "bestsellers": {
-      "type": "ed-product-grid",
-      "settings": {
-        "eyebrow": "Bestsellers",
-        "title": "Los más vendidos",
-        "collection_handle": "bestsellers-esencias-de-dubai",
-        "cta_text": "Ver todos los bestsellers",
-        "cta_url": "/collections/bestsellers-esencias-de-dubai"
-      }
-    },
-    "categories": {
-      "type": "ed-category-grid",
-      "settings": {
-        "eyebrow": "Categorías",
-        "title": "Explora la colección",
-        "tile1_name": "Hombre",
-        "tile1_desc": "Fragancias potentes y elegantes",
-        "tile1_url": "/collections/perfumes-hombre",
-        "tile2_name": "Mujer",
-        "tile2_desc": "Esencias femeninas seductoras",
-        "tile2_url": "/collections/perfumes-mujer",
-        "tile3_name": "Oud & Orientales",
-        "tile3_desc": "El alma de la perfumería árabe",
-        "tile3_url": "/collections/perfumes-con-oud",
-        "tile4_name": "Sets & Regalos",
-        "tile4_desc": "Para regalar lujo árabe",
-        "tile4_url": "/collections/sets-de-regalo-perfumes-arabes"
-      }
+      "settings": {"show_header": true, "eyebrow": "Nuestras Marcas", "title": "Más de 10 marcas árabes premium", "bg_color": "#ffffff", "speed": 45}
     },
     "story": {
       "type": "ed-clean-story",
@@ -139,10 +89,10 @@
     }
   },
   "order": [
-    "hero_slider",
-    "brand_strip",
+    "hero_mosaic",
+    "circle_cats",
     "bestsellers",
-    "categories",
+    "brand_strip",
     "story",
     "lattafa_grid",
     "newsletter"
