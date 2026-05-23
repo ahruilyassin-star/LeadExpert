@@ -7,6 +7,8 @@
           <div class="ebm-tile__img-wrap">
             {%- if block.settings.image != blank -%}
               <img class="ebm-tile__img" src="{{ block.settings.image | img_url: '1200x' }}" alt="{{ block.settings.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" width="1200" height="800">
+            {%- elsif block.settings.image_url != blank -%}
+              <img class="ebm-tile__img" src="{{ block.settings.image_url }}" alt="{{ block.settings.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
             {%- else -%}
               <div class="ebm-tile__img ebm-tile__img--ph"></div>
             {%- endif -%}
@@ -107,6 +109,7 @@
         {"type":"text","id":"eyebrow","label":"Eyebrow (optional)"},
         {"type":"text","id":"title","label":"Title","default":"Banner"},
         {"type":"image_picker","id":"image","label":"Image"},
+        {"type":"text","id":"image_url","label":"Image URL (fallback if no image picked)"},
         {"type":"url","id":"url","label":"Link URL"}
       ]
     }

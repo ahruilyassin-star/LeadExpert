@@ -8,6 +8,8 @@
           <div class="epa-tile__img-wrap">
             {%- if block.settings.image != blank -%}
               <img class="epa-tile__img" src="{{ block.settings.image | img_url: '1200x' }}" alt="{{ block.settings.title }}" loading="lazy" width="1200" height="900">
+            {%- elsif block.settings.image_url != blank -%}
+              <img class="epa-tile__img" src="{{ block.settings.image_url }}" alt="{{ block.settings.title }}" loading="lazy">
             {%- else -%}
               <div class="epa-tile__img epa-tile__img--ph"></div>
             {%- endif -%}
@@ -105,6 +107,7 @@
         {"type":"text","id":"title","label":"Title"},
         {"type":"text","id":"subtitle","label":"Subtitle"},
         {"type":"image_picker","id":"image","label":"Image"},
+        {"type":"text","id":"image_url","label":"Image URL (fallback if no image picked)"},
         {"type":"url","id":"url","label":"Link URL"}
       ]
     }

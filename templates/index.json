@@ -13,11 +13,11 @@
     "hero_mosaic": {
       "type": "ed-banner-mosaic",
       "blocks": {
-        "b1": {"type": "banner", "settings": {"eyebrow": "Edición especial", "title": "Wedding Season", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
-        "b2": {"type": "banner", "settings": {"eyebrow": "Recién llegado", "title": "Nuevos Sets de Regalo", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
-        "b3": {"type": "banner", "settings": {"eyebrow": "Mujer", "title": "Nuevas Fragancias Mujer", "url": "/collections/perfumes-mujer"}},
-        "b4": {"type": "banner", "settings": {"eyebrow": "Hombre", "title": "Nuevas Fragancias Hombre", "url": "/collections/perfumes-hombre"}},
-        "b5": {"type": "banner", "settings": {"eyebrow": "Bestsellers", "title": "Oud & Orientales", "url": "/collections/perfumes-con-oud"}}
+        "b1": {"type": "banner", "settings": {"eyebrow": "Edición especial", "title": "Wedding Season", "url": "/collections/sets-de-regalo-perfumes-arabes", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/Gemini_Generated_Image_ah0zqdah0zqdah0z.png?v=1779427634"}},
+        "b2": {"type": "banner", "settings": {"eyebrow": "Recién llegado", "title": "Nuevos Sets de Regalo", "url": "/collections/sets-de-regalo-perfumes-arabes", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/Gemini_Generated_Image_s2gnums2gnums2gn.png?v=1779422932"}},
+        "b3": {"type": "banner", "settings": {"eyebrow": "Mujer", "title": "Nuevas Fragancias Mujer", "url": "/collections/perfumes-mujer", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.83513.jpg?v=1779490020"}},
+        "b4": {"type": "banner", "settings": {"eyebrow": "Hombre", "title": "Nuevas Fragancias Hombre", "url": "/collections/perfumes-hombre", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.40405.jpg?v=1779489973"}},
+        "b5": {"type": "banner", "settings": {"eyebrow": "Bestsellers", "title": "Oud & Orientales", "url": "/collections/perfumes-con-oud", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.51816_b9acdda6-86f2-4e7a-a291-7227ce925219.jpg?v=1779489801"}}
       },
       "block_order": ["b1", "b2", "b3", "b4", "b5"],
       "settings": {"accent_color": "#F2A88A"}
@@ -50,9 +50,9 @@
     "promo_asym": {
       "type": "ed-promo-asymmetric",
       "blocks": {
-        "p1": {"type": "banner", "settings": {"show_overlay": true, "eyebrow": "Marca destacada", "title": "Colección LATTAFA", "subtitle": "Khamrah, Asad, Yara y muchos más bestsellers.", "url": "/collections/perfumes-lattafa"}},
-        "p2": {"type": "banner", "settings": {"title": "Sets de Regalo", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
-        "p3": {"type": "banner", "settings": {"title": "Oud & Orientales", "url": "/collections/perfumes-con-oud"}}
+        "p1": {"type": "banner", "settings": {"show_overlay": true, "eyebrow": "Marca destacada", "title": "Colección LATTAFA", "subtitle": "Khamrah, Asad, Yara y muchos más bestsellers.", "url": "/collections/perfumes-lattafa", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.75805_d790016f-a245-4e4c-92c6-3f000828c1cc.jpg?v=1779380667"}},
+        "p2": {"type": "banner", "settings": {"title": "Sets de Regalo", "url": "/collections/sets-de-regalo-perfumes-arabes", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.76880_d839fc4d-ab52-4dab-a9f6-cead3b5022bf.jpg?v=1779380702"}},
+        "p3": {"type": "banner", "settings": {"title": "Oud & Orientales", "url": "/collections/perfumes-con-oud", "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.84403.jpg?v=1779490050"}}
       },
       "block_order": ["p1", "p2", "p3"],
       "settings": {"accent_color": "#F2A88A"}
