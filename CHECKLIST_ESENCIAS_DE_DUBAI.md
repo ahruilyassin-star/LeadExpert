@@ -5,6 +5,19 @@
 
 ---
 
+## 🆕 Últimas actualizaciones — Mayo 2026 (sesión homepage)
+
+- [x] **8 secciones custom `ed-` construidas** para la homepage (top bar, hero mosaic, circles, product grid, promo asym, brand carousel, story, newsletter)
+- [x] **Fallback `image_url`** añadido a `ed-banner-mosaic.liquid` y `ed-promo-asymmetric.liquid` — las imágenes ya se ven
+- [x] **`templates/index.json`** configurado con URLs de imágenes CDN para los 8 banners (5 en mosaic + 3 en promo)
+- [x] **Colección `bestsellers-esencias-de-dubai`** publicada en el canal Online Store — la cuadrícula de productos funciona
+- [x] **`assets/luxury.css` convertido de tema oscuro a tema claro** — body ahora `#fff!important`, todas las páginas (colecciones, productos, carrito) son blancas
+- [x] **`CLAUDE.md` creado** — documentación completa del proyecto para futuras sesiones
+- [x] **README.md actualizado** — ya no dice "Little Oummah"
+- [ ] **⚠️ ACCIÓN MANUAL REQUERIDA:** Publicar el tema "Esencias de Dubai – v2" (ID: 200702820694) en Shopify Admin → Online Store → Themes → Publish. TODOS los cambios de esta sesión están en ese borrador.
+
+---
+
 ## ✅ Hecho (automatizado vía Shopify Admin API)
 
 ### Catálogo
