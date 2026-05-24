@@ -1,0 +1,14 @@
+# Netlify-style redirects
+# Force HTTPS + canonical host
+http://webdesign.leadexpert.be/*   https://webdesign.leadexpert.be/:splat   301!
+https://www.webdesign.leadexpert.be/*   https://webdesign.leadexpert.be/:splat   301!
+
+# Common typos / nice URLs
+/home   /   301
+/index   /   301
+/services   /#diensten   301
+/pricing   /#prijzen   301
+/contact   /#audit   301
+
+# 404 fallback
+/*   /404.html   404

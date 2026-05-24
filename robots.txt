@@ -1,0 +1,23 @@
+# LeadExpert — webdesign.leadexpert.be
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /bedankt.html
+Disallow: /*?*
+
+# Specifieke AI-crawlers: explicit allow voor visibility in AI search
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://webdesign.leadexpert.be/sitemap.xml
