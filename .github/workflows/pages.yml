@@ -5,33 +5,53 @@ on:
     branches: [main, gh-pages, "claude/leadexpert-website-optimization-A5PMG"]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
+  # Step 1: Enable Pages via API (no `environment:` block — runs even on cold repos)
+  enable-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+    steps:
+      - name: Enable GitHub Pages (idempotent)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Attempting to enable GitHub Pages for $REPO …"
+          HTTP=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPO/pages" \
+            -d '{"build_type":"workflow"}')
+          echo "HTTP $HTTP"
+          cat /tmp/resp.json || true
+          # 201 = created, 409 = already enabled, 422 = already configured differently
+          if [ "$HTTP" = "201" ] || [ "$HTTP" = "409" ] || [ "$HTTP" = "422" ]; then
+            echo "Pages is configured (HTTP $HTTP)."
+          else
+            echo "::warning::Pages enable returned HTTP $HTTP. Will still attempt deploy in case it's already enabled."
+          fi
+
+  # Step 2: Build & deploy — depends on enable, runs in the github-pages environment
   deploy:
+    needs: enable-pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Enable GitHub Pages (idempotent)
-        run: |
-          curl -sS -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ github.repository }}/pages" \
-            -d '{"build_type":"workflow"}' || echo "Pages may already be enabled — continuing."
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -39,12 +59,15 @@ jobs:
       - name: Stage static site
         run: |
           mkdir -p _site
-          # Copy everything except .git, .github, node_modules, *.md
-          rsync -a --exclude='.git' --exclude='.github' --exclude='node_modules' \
-                --exclude='STRATEGIE.md' --exclude='README.md' \
-                ./ _site/
-          # Ensure CNAME exists for custom domain
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='STRATEGIE.md' \
+            --exclude='README.md' \
+            ./ _site/
           echo "webdesign.leadexpert.be" > _site/CNAME
+          echo "--- Staged files ---"
           ls -la _site/
 
       - name: Upload artifact
