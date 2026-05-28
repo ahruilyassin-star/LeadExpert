@@ -12,6 +12,15 @@ Werkrichtlijnen voor dit project. Doel: maximale outputkwaliteit tegen minimale 
 - **Markten:** NL, BE, FR, DE. Toon levertijden naar FR/DE duidelijk (EU-vertrouwen).
 - **SEO-focus 2026:** "Motor Skills" (bouwblokken) en "Alphabet Recognition" (magnetische Arabische letters); high-intent keywords.
 
+## Promptverwerking (altijd)
+
+Zet elk verzoek van de gebruiker eerst intern om naar de scherpst mogelijke opdracht vóór je uitvoert:
+- Bepaal het werkelijke doel achter de vraag, niet alleen de letterlijke tekst.
+- Vul ontbrekende details aan met verstandige defaults op basis van de projectcontext hieronder.
+- Maak vaag concreet: gewenst resultaat, scope, randvoorwaarden en doeltaal/-markt.
+- Stel alleen een gerichte vraag als je écht geblokkeerd bent; anders kies de beste aanname, benoem die kort en ga door.
+- Houd deze aanscherping intern en bondig (geen lange uitgeschreven "meta-prompt") — kwaliteit omhoog, tokens laag.
+
 ## Outputkwaliteit per vlak
 
 - **Code:** volg bestaande conventies; minimale, gerichte wijzigingen; geen ongevraagde refactors.
