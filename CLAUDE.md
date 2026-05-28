@@ -1,23 +1,29 @@
 # CLAUDE.md
 
-## Token-efficiëntie (altijd toepassen)
+Werkrichtlijnen voor dit project. Doel: maximale outputkwaliteit tegen minimale tokens.
 
-Verbruik in elke sessie zo min mogelijk tokens — extra streng bij dure modellen (Opus).
+## Projectcontext
 
-**Output**
-- Antwoord kort en direct; geen inleidingen, samenvattingen of herhaling van de vraag.
-- Geen opsomming van wat je gaat doen; doe het en meld alleen het resultaat.
+**Little Oummah** — webshop voor islamitisch educatief speelgoed, in internationale-expansiefase.
+
+- **Platform:** WordPress + WooCommerce.
+- **Vertaling:** TranslatePress (WPML is bewust verwijderd; niet opnieuw introduceren).
+- **Talen:** Primair Engels (globale SEO); hoge prioriteit Nederlands & Frans (Benelux); groei Duits (DACH).
+- **Markten:** NL, BE, FR, DE. Toon levertijden naar FR/DE duidelijk (EU-vertrouwen).
+- **SEO-focus 2026:** "Motor Skills" (bouwblokken) en "Alphabet Recognition" (magnetische Arabische letters); high-intent keywords.
+
+## Outputkwaliteit per vlak
+
+- **Code:** volg bestaande conventies; minimale, gerichte wijzigingen; geen ongevraagde refactors.
+- **SEO/content:** keyword-gericht maar natuurlijk leesbaar; titels + meta's afgestemd op de doelmarkt en -taal; geen keyword-stuffing.
+- **Commits/PR's:** kleine, logische commits; bondige maar duidelijke berichten die het *waarom* benoemen.
+- **Communicatie:** standaard in het Nederlands met de gebruiker. Wees concreet; benoem onzekerheden en aannames expliciet i.p.v. te gokken.
+
+## Token-efficiëntie (altijd, extra streng bij Opus)
+
+- Antwoord kort en direct; geen inleiding, samenvatting of herhaling van de vraag.
+- Doe het werk en meld het resultaat; geen vooraankondiging van stappen.
 - Toon alleen relevante code/diff-fragmenten, niet hele bestanden.
-
-**Modelkeuze**
-- Gebruik standaard het goedkoopst passende model. Reserveer Opus voor taken die echt diepe redenering vereisen; gebruik Sonnet/Haiku voor routine- en zoekwerk.
-
-**Tools & context**
-- Lees gericht: alleen de benodigde regels/bestanden, niet de hele boom.
-- Geef zoek-/leeswerk dat veel bestanden raakt door aan een subagent (Explore/Plan) en houd alleen de conclusie vast.
-- Voer onafhankelijke tool-calls samen (parallel) uit in één bericht.
-- Vermijd het opnieuw lezen van net bewerkte bestanden ter verificatie.
-
-**Algemeen**
-- Geen werk speculatief vooruitlopen; doe alleen wat gevraagd is.
-- Geef bondige commit-berichten en PR-teksten.
+- Lees gericht (alleen benodigde regels); delegeer breed zoekwerk aan een subagent en houd enkel de conclusie.
+- Combineer onafhankelijke tool-calls parallel in één bericht.
+- Standaard goedkoopst passende model; reserveer Opus voor taken die echt diepe redenering vereisen.
