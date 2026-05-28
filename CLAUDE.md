@@ -18,8 +18,12 @@ Zet elk verzoek van de gebruiker eerst intern om naar de scherpst mogelijke opdr
 - Bepaal het werkelijke doel achter de vraag, niet alleen de letterlijke tekst.
 - Vul ontbrekende details aan met verstandige defaults op basis van de projectcontext hieronder.
 - Maak vaag concreet: gewenst resultaat, scope, randvoorwaarden en doeltaal/-markt.
-- Stel alleen een gerichte vraag als je écht geblokkeerd bent; anders kies de beste aanname, benoem die kort en ga door.
 - Houd deze aanscherping intern en bondig (geen lange uitgeschreven "meta-prompt") — kwaliteit omhoog, tokens laag.
+
+**Meerkeuzevragen vooraf (altijd bij niet-triviale taken):**
+- Stel vóór uitvoering standaard meerdere meerkeuzevragen (AskUserQuestion) over de belangrijkste keuzes: scope, doeltaal/-markt, stijl/aanpak en prioriteit.
+- Bundel de vragen in één keer (2–4 vragen), met telkens duidelijke opties; de eerste optie is je aanbevolen default.
+- Sla vragen alleen over bij triviale of volledig gespecificeerde verzoeken; dan kies je de beste aanname, benoemt die kort en gaat door.
 
 ## Outputkwaliteit per vlak
 
