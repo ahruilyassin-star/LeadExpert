@@ -70,16 +70,18 @@ Avenue / Fragrance World) hebben een echte prijs (€ 24,95).
 CSV). Op dat moment kunnen prijzen + eventuele compare-at (kortingsweergave) in
 bulk worden gezet. *Bewust niet aangepast in deze ronde op verzoek.*
 
-### B. Dubbele EAN/barcode (GTIN-conflict) — breekt Google Shopping
-- `Armaf Odyssey Aqua Edition` en `Armaf Odyssey Mandarin Sky` delen beide
-  barcode **`6294015149371`**.
-- Eén is onjuist. De correcte EAN voor Mandarin Sky kon niet betrouwbaar worden
-  vastgesteld; een verkeerde GTIN is voor Google Shopping even schadelijk als
-  een dubbele, daarom bewust niet gegokt.
+### B. Dubbele EAN/barcode (GTIN-conflict) — ✅ OPGELOST
+- `Armaf Odyssey Aqua Edition` en `Armaf Odyssey Mandarin Sky` deelden beide
+  barcode `6294015149371`.
+- Via online verificatie (Jomashop, Walmart, upcindex, GiftExpress, ModeSens)
+  bevestigd dat `6294015149371` correct toebehoort aan **Mandarin Sky**. De
+  **Aqua Edition** had de foute (gekopieerde) barcode en is gecorrigeerd naar de
+  juiste EAN **`6294015166132`** (3.4 oz / 100 ml).
+- Volledige catalogusscan uitgevoerd: **alle ~159 barcodes zijn nu uniek**, geen
+  resterende GTIN-conflicten.
 
-➡️ **Actie klant:** lever de juiste EAN van Armaf Odyssey Mandarin Sky 100 ml
-aan, dan wordt deze gecorrigeerd. (Daarnaast: de meeste varianten hebben géén
-SKU — overweeg SKU's toe te voegen voor voorraadbeheer.)
+➡️ **Resterende aanbeveling:** de meeste varianten hebben géén SKU — overweeg
+SKU's toe te voegen voor voorraadbeheer en een nettere productfeed.
 
 ### C. Gearchiveerd product met voorraad
 - `Afnan 9AM Dive` staat op **ARCHIVED** maar heeft 100 stuks voorraad en wordt
