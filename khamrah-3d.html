@@ -1,408 +1,332 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khamrah Lattafa – 3D Parfum Viewer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khamrah Lattafa – 3D Parfum</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: radial-gradient(ellipse at 50% 30%, #1e0838 0%, #0a0312 100%);
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #ffffff;
       overflow: hidden;
-      font-family: 'Georgia', serif;
+      font-family: Georgia, serif;
+      -webkit-user-select: none;
+      user-select: none;
     }
-
-    canvas { display: block; }
-
-    #hint {
-      position: fixed;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: rgba(255, 210, 120, 0.55);
-      font-size: 0.65rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      pointer-events: none;
-      transition: opacity 1.5s ease;
-      white-space: nowrap;
+    #stage {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: grab;
     }
-    #hint.fade { opacity: 0; }
+    #stage:active { cursor: grabbing; }
+    .scene { perspective: 900px; }
+    #bg {
+      position: relative; width: 0; height: 0;
+      transform-style: preserve-3d;
+    }
+    .part { position: absolute; transform-style: preserve-3d; }
+    .face { position: absolute; }
 
     #ui {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
+      position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%);
-      text-align: center;
-      pointer-events: none;
+      text-align: center; pointer-events: none;
     }
     #ui h1 {
-      color: rgba(255, 215, 120, 0.9);
-      font-size: 1.25rem;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      font-weight: normal;
+      color: rgba(120,80,10,.9); font-size: 1.2rem;
+      letter-spacing: 5px; font-weight: normal; text-transform: uppercase;
     }
-    #ui .arabic {
-      color: rgba(255, 215, 120, 0.6);
-      font-size: 1.1rem;
-      margin-top: 2px;
-    }
+    #ui .ar { color: rgba(140,90,10,.6); font-size: 1.05rem; margin-top: 3px; }
     #ui p {
-      color: rgba(255, 210, 120, 0.35);
-      font-size: 0.6rem;
-      letter-spacing: 3px;
-      margin-top: 8px;
-      text-transform: uppercase;
+      color: rgba(100,70,10,.4); font-size: .58rem;
+      letter-spacing: 3px; margin-top: 7px; text-transform: uppercase;
     }
-
-    #rotate-btn {
-      position: fixed;
-      bottom: 32px;
-      right: 24px;
-      background: rgba(212, 160, 48, 0.15);
-      border: 1px solid rgba(212, 160, 48, 0.4);
-      color: rgba(255, 215, 120, 0.8);
-      font-size: 0.6rem;
-      letter-spacing: 2px;
-      padding: 9px 16px;
-      cursor: pointer;
-      text-transform: uppercase;
-      border-radius: 2px;
-      transition: background 0.3s;
+    #hint {
+      position: fixed; top: 18px; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(100,70,10,.45); font-size: .6rem;
+      letter-spacing: 3px; text-transform: uppercase;
+      pointer-events: none; white-space: nowrap;
+      transition: opacity 1.5s;
     }
-    #rotate-btn:hover { background: rgba(212, 160, 48, 0.3); }
-
-    #error {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: rgba(255,180,80,0.9);
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      text-align: center;
-      line-height: 1.8;
+    #hint.gone { opacity: 0; }
+    #btn {
+      position: fixed; bottom: 26px; right: 18px;
+      background: rgba(180,130,20,.1);
+      border: 1px solid rgba(160,110,20,.35);
+      color: rgba(100,65,5,.8); font-size: .58rem;
+      letter-spacing: 2px; padding: 8px 14px;
+      cursor: pointer; text-transform: uppercase; border-radius: 2px;
     }
+    #btn:hover { background: rgba(180,130,20,.2); }
   </style>
 </head>
 <body>
-
+<div id="stage"><div class="scene"><div id="bg"></div></div></div>
 <div id="hint">Sleep om te draaien &nbsp;·&nbsp; Scroll om in te zoomen</div>
 <div id="ui">
   <h1>Khamrah &nbsp;·&nbsp; Lattafa</h1>
-  <div class="arabic">خمرة</div>
+  <div class="ar">خمرة</div>
   <p>For Women &amp; Men &nbsp;·&nbsp; Eau de Parfum</p>
 </div>
-<button id="rotate-btn">⟳ Auto-rotatie</button>
-<div id="error"></div>
-
-<!-- Three.js via traditional script tags (max browser compatibility) -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/js/environments/RoomEnvironment.js"></script>
+<button id="btn">⟳ Auto-rotatie</button>
 
 <script>
-(function () {
-  try {
+// ── Label canvas ──────────────────────────────────────────────────────────────
+const lc = document.createElement('canvas');
+lc.width = 300; lc.height = 190;
+const lx = lc.getContext('2d');
+const grad = lx.createLinearGradient(0, 0, 300, 190);
+grad.addColorStop(0,   '#5a3e08');
+grad.addColorStop(0.2, '#b87e18');
+grad.addColorStop(0.5, '#e8bc42');
+grad.addColorStop(0.8, '#b87e18');
+grad.addColorStop(1,   '#5a3e08');
+lx.fillStyle = grad;
+lx.fillRect(0, 0, 300, 190);
+lx.strokeStyle = '#ffe880'; lx.lineWidth = 5;
+lx.strokeRect(7, 7, 286, 176);
+lx.lineWidth = 1.5;
+lx.strokeRect(13, 13, 274, 164);
+lx.fillStyle = '#140700';
+lx.textAlign = 'center'; lx.textBaseline = 'middle';
+lx.font = 'bold 64px serif'; lx.fillText('خمرة', 150, 72);
+lx.font = 'bold 26px serif'; lx.fillText('KHAMRAH', 150, 128);
+lx.font = '15px serif';      lx.fillText('Lattafa Perfumes', 150, 162);
+const LSRC = lc.toDataURL();
 
-    // ─── RENDERER ─────────────────────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    if (renderer.outputColorSpace !== undefined)
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
-    document.body.appendChild(renderer.domElement);
+// ── Bottle dimensions ─────────────────────────────────────────────────────────
+const W = 120, D = 120;
+const HZ = D / 2; // = 60, used for left/right/front/back translateZ
 
-    // ─── SCENE & CAMERA ───────────────────────────────────────────────────────
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.01, 50);
-    camera.position.set(0, 0.6, 5);
+// Face style helpers
+const CUT = (hi) =>
+  `background:
+    repeating-linear-gradient(45deg,
+      rgba(255,255,255,${hi ? 0.22 : 0.14}) 0,
+      rgba(255,255,255,${hi ? 0.22 : 0.14}) 1px,
+      transparent 1px, transparent 18px),
+    repeating-linear-gradient(-45deg,
+      rgba(255,255,255,${hi ? 0.22 : 0.14}) 0,
+      rgba(255,255,255,${hi ? 0.22 : 0.14}) 1px,
+      transparent 1px, transparent 18px),
+    linear-gradient(180deg, rgba(228,240,255,0.27) 0%, rgba(190,215,255,0.14) 100%);
+  border:1px solid rgba(200,225,255,0.3);
+  ${hi ? 'box-shadow:inset 14px 0 22px rgba(255,255,255,0.09),inset -7px 0 12px rgba(255,255,255,0.05);' : ''}`;
 
-    // ─── ENVIRONMENT ──────────────────────────────────────────────────────────
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    pmrem.compileEquirectangularShader();
-    const envTex = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-    scene.environment = envTex;
+const CLR = (hi) =>
+  `background:linear-gradient(180deg,rgba(215,232,255,0.17) 0%,rgba(185,210,255,0.09) 100%);
+  border:1px solid rgba(200,225,255,0.2);
+  ${hi ? 'box-shadow:inset 10px 0 16px rgba(255,255,255,0.07);' : ''}`;
 
-    // ─── CONTROLS ─────────────────────────────────────────────────────────────
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
-    controls.minDistance = 2.5;
-    controls.maxDistance = 9;
-    controls.target.set(0, 0.35, 0);
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 1.5;
+const AMBER =
+  `background:linear-gradient(180deg,rgba(195,98,0,0.82) 0%,rgba(148,60,0,0.9) 100%);`;
 
-    controls.addEventListener('start', () => {
-      controls.autoRotate = false;
-      document.getElementById('rotate-btn').textContent = '⟳ Auto-rotatie';
-    });
+const GOLD =
+  `background:linear-gradient(135deg,#9a6e10 0%,#e8b838 35%,#c08828 65%,#6e5012 100%);
+  border:1px solid rgba(255,215,80,0.3);`;
 
-    document.getElementById('rotate-btn').addEventListener('click', () => {
-      controls.autoRotate = !controls.autoRotate;
-      document.getElementById('rotate-btn').textContent =
-        controls.autoRotate ? '⏸ Stoppen' : '⟳ Auto-rotatie';
-    });
+const CAPG = (hi) =>
+  `background:linear-gradient(180deg,rgba(228,240,255,0.28) 0%,rgba(200,220,255,0.15) 100%);
+  border:1px solid rgba(200,225,255,0.25);
+  ${hi ? 'box-shadow:inset 7px 0 13px rgba(255,255,255,0.09);' : ''}`;
 
-    setTimeout(() => document.getElementById('hint').classList.add('fade'), 4000);
+// ── Build a 3D box part ────────────────────────────────────────────────────────
+// yTop: CSS top relative to bg center (0,0)
+// w/h/d: dimensions; for this bottle w=d=120 always
+function makePart(yTop, w, h, d, fs) {
+  const el = document.createElement('div');
+  el.className = 'part';
+  el.style.cssText =
+    `width:${w}px;height:${h}px;left:${-w / 2}px;top:${yTop}px;`;
 
-    // ─── LIGHTS ───────────────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0xfff0d0, 0.6));
+  // [key, transform, face-width, face-height, face-left-offset, face-top-offset]
+  const defs = [
+    ['front', `translateZ(${d / 2}px)`,                 w, h, 0,         0],
+    ['back',  `rotateY(180deg) translateZ(${d / 2}px)`, w, h, 0,         0],
+    ['right', `rotateY(90deg) translateZ(${w / 2}px)`,  d, h, (w - d)/2, 0],
+    ['left',  `rotateY(-90deg) translateZ(${w / 2}px)`, d, h, (w - d)/2, 0],
+    ['top',   `rotateX(90deg) translateZ(${h / 2}px)`,  w, d, 0,         (h - d)/2],
+    ['bot',   `rotateX(-90deg) translateZ(${h / 2}px)`, w, d, 0,         (h - d)/2],
+  ];
 
-    const key = new THREE.DirectionalLight(0xffffff, 3);
-    key.position.set(4, 6, 4);
-    key.castShadow = true;
-    key.shadow.mapSize.setScalar(1024);
-    scene.add(key);
+  defs.forEach(([key, t, fw, fh, fl, ft]) => {
+    const f = document.createElement('div');
+    f.className = 'face';
+    f.style.cssText =
+      `width:${fw}px;height:${fh}px;left:${fl}px;top:${ft}px;transform:${t};`;
+    f.style.cssText += fs[key] || fs['*'] || '';
+    el.appendChild(f);
+  });
+  return el;
+}
 
-    const fill = new THREE.DirectionalLight(0xffe0a0, 1.2);
-    fill.position.set(-4, 2, -2);
-    scene.add(fill);
+// ── Part heights & y-positions ────────────────────────────────────────────────
+// cap=65, collar=8, upper=161, divider=7, lower=145, base=7  → total=393
+const TOTAL = 393;
+const MID = -TOTAL / 2; // top of cap relative to bg center
 
-    const rim = new THREE.DirectionalLight(0xc8a0ff, 2);
-    rim.position.set(0, -3, -5);
-    scene.add(rim);
+const capY  = MID;           // top of cap
+const colY  = MID +  65;     // top of collar
+const upY   = MID +  73;     // top of upper body
+const divY  = MID + 234;     // top of divider
+const lowY  = MID + 241;     // top of lower body
+const baseY = MID + 386;     // top of base
 
-    const amberGlow = new THREE.PointLight(0xff7a00, 3, 4);
-    amberGlow.position.set(0, -0.4, 0.3);
-    scene.add(amberGlow);
+// ── Assemble bottle (back-to-front for painter's order) ──────────────────────
+const bg = document.getElementById('bg');
 
-    const spot = new THREE.SpotLight(0xfff0d0, 4, 8, Math.PI / 7, 0.4, 1.5);
-    spot.position.set(0, 6, 1);
-    scene.add(spot);
-    scene.add(spot.target);
+// Base gold
+bg.appendChild(makePart(baseY, W + 4, 7, D + 4, { '*': GOLD }));
 
-    // ─── NORMAL MAP (cut-glass diamond pattern) ────────────────────────────────
-    const nc = document.createElement('canvas');
-    nc.width = nc.height = 512;
-    const nctx = nc.getContext('2d');
-    nctx.fillStyle = '#8080ff';
-    nctx.fillRect(0, 0, 512, 512);
-    nctx.lineWidth = 2.5;
-    nctx.strokeStyle = '#4a5aaa';
-    for (let i = -512; i < 1024; i += 36) {
-      nctx.beginPath(); nctx.moveTo(i, 0);   nctx.lineTo(i + 512, 512); nctx.stroke();
-      nctx.beginPath(); nctx.moveTo(i, 512); nctx.lineTo(i + 512, 0);   nctx.stroke();
-    }
-    nctx.lineWidth = 1.5;
-    nctx.strokeStyle = '#6060cc';
-    for (let i = 0; i < 512; i += 72) {
-      nctx.beginPath(); nctx.moveTo(0, i); nctx.lineTo(512, i); nctx.stroke();
-    }
-    const cutNormal = new THREE.CanvasTexture(nc);
-    cutNormal.wrapS = cutNormal.wrapT = THREE.RepeatWrapping;
-    cutNormal.repeat.set(3, 5);
+// Amber liquid (inner box inside lower body)
+bg.appendChild(makePart(lowY + 4, W - 10, 137, D - 10, {
+  front: AMBER, back: AMBER, left: AMBER, right: AMBER,
+  top: `background:radial-gradient(ellipse,rgba(210,120,0,0.4) 0%,rgba(160,75,0,0.3) 100%);`,
+  bot: `background:rgba(80,30,0,0.95);`,
+}));
 
-    // ─── LABEL TEXTURE ────────────────────────────────────────────────────────
-    const lc = document.createElement('canvas');
-    lc.width = 512; lc.height = 256;
-    const lctx = lc.getContext('2d');
-    const lg = lctx.createLinearGradient(0, 0, 512, 256);
-    lg.addColorStop(0,   '#6b4e0a');
-    lg.addColorStop(0.2, '#c8921e');
-    lg.addColorStop(0.5, '#f0c84a');
-    lg.addColorStop(0.8, '#c8921e');
-    lg.addColorStop(1,   '#6b4e0a');
-    lctx.fillStyle = lg;
-    lctx.fillRect(0, 0, 512, 256);
-    lctx.strokeStyle = '#fff0a0';
-    lctx.lineWidth = 7;
-    lctx.strokeRect(10, 10, 492, 236);
-    lctx.lineWidth = 2;
-    lctx.strokeRect(18, 18, 476, 220);
-    lctx.fillStyle = '#180a00';
-    lctx.textAlign = 'center';
-    lctx.textBaseline = 'middle';
-    lctx.font = 'bold 78px serif';
-    lctx.fillText('خمرة', 256, 95);
-    lctx.font = 'bold 30px serif';
-    lctx.fillText('KHAMRAH', 256, 163);
-    lctx.font = '18px serif';
-    lctx.fillText('Lattafa Perfumes', 256, 200);
-    const labelTex = new THREE.CanvasTexture(lc);
+// Lower glass shell
+bg.appendChild(makePart(lowY, W, 145, D, {
+  front: CLR(true), back: CLR(false), left: CLR(false), right: CLR(false),
+  top: `background:rgba(215,232,255,0.13);`,
+  bot: `background:rgba(215,232,255,0.08);`,
+}));
 
-    // ─── MATERIALS ────────────────────────────────────────────────────────────
-    const cutGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe0ecff,
-      roughness: 0.05,
-      transmission: 0.88,
-      thickness: 0.6,
-      ior: 1.55,
-      transparent: true,
-      opacity: 0.45,
-      normalMap: cutNormal,
-      normalScale: new THREE.Vector2(2.5, 2.5),
-      envMapIntensity: 3,
-      side: THREE.DoubleSide,
-    });
+// Label front
+const mkLabel = (front) => {
+  const f = document.createElement('div');
+  const lw = 96, lh = 68;
+  const tz = D / 2 + 1;
+  const tr = front
+    ? `translateZ(${tz}px)`
+    : `rotateY(180deg) translateZ(${tz}px)`;
+  f.style.cssText =
+    `position:absolute;width:${lw}px;height:${lh}px;` +
+    `left:${-lw / 2}px;top:${lowY + (145 - lh) / 2 + 8}px;` +
+    `transform:${tr};` +
+    `background:url('${LSRC}') center/cover no-repeat;border-radius:1px;`;
+  return f;
+};
+bg.appendChild(mkLabel(true));
+bg.appendChild(mkLabel(false));
 
-    const glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xdde8f8,
-      roughness: 0.04,
-      transmission: 0.92,
-      thickness: 0.5,
-      ior: 1.5,
-      transparent: true,
-      opacity: 0.4,
-      envMapIntensity: 2,
-      side: THREE.DoubleSide,
-    });
+// Gold divider ring
+bg.appendChild(makePart(divY, W + 4, 7, D + 4, { '*': GOLD }));
 
-    const liquidMat = new THREE.MeshPhysicalMaterial({
-      color: 0xb05800,
-      emissive: new THREE.Color(0x300800),
-      emissiveIntensity: 0.3,
-      roughness: 0.08,
-      transmission: 0.72,
-      thickness: 1.2,
-      ior: 1.42,
-      transparent: true,
-      opacity: 0.92,
-    });
+// Upper cut-glass body
+bg.appendChild(makePart(upY, W, 161, D, {
+  front: CUT(true), back: CUT(false), left: CUT(false), right: CUT(false),
+  top: `background:rgba(220,235,255,0.15);`,
+  bot: `background:rgba(220,235,255,0.1);`,
+}));
 
-    const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a030,
-      emissive: new THREE.Color(0x301500),
-      emissiveIntensity: 0.15,
-      metalness: 1.0,
-      roughness: 0.18,
-      envMapIntensity: 2,
-    });
+// Gold collar
+bg.appendChild(makePart(colY, W + 4, 8, D + 4, { '*': GOLD }));
 
-    const labelMat = new THREE.MeshStandardMaterial({
-      map: labelTex,
-      metalness: 0.7,
-      roughness: 0.25,
-      envMapIntensity: 1.5,
-    });
+// Cap
+bg.appendChild(makePart(capY, W - 12, 65, D - 12, {
+  front: CAPG(true), back: CAPG(false), left: CAPG(false), right: CAPG(false),
+  top: GOLD,
+  bot: `background:rgba(220,235,255,0.1);`,
+}));
 
-    const capGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xd8e8f8,
-      roughness: 0.04,
-      transmission: 0.90,
-      thickness: 0.35,
-      ior: 1.5,
-      transparent: true,
-      opacity: 0.45,
-      envMapIntensity: 2.5,
-      side: THREE.DoubleSide,
-    });
+// ── Interaction ───────────────────────────────────────────────────────────────
+// Scale bottle to fit viewport
+const initZoom = Math.min(window.innerHeight / 520, window.innerWidth / 360, 1.6);
+let rotY = 20, rotX = -10, zoom = initZoom;
+let dragging = false, lastX = 0, lastY = 0, velY = 0;
+let autoOn = true, raf = 0, prevT = 0;
 
-    // ─── BOTTLE ───────────────────────────────────────────────────────────────
-    const bottle = new THREE.Group();
-    scene.add(bottle);
+function applyT() {
+  bg.style.transform =
+    `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${zoom})`;
+}
+applyT();
 
-    const W = 0.78, D = 0.78;
-    const TH = 1.0, BH = 0.9;
+function loopFn(t) {
+  const dt = Math.min(t - prevT, 50);
+  prevT = t;
+  rotY += dt * 0.035;
+  applyT();
+  raf = requestAnimationFrame(loopFn);
+}
+function startAuto() {
+  autoOn = true;
+  document.getElementById('btn').textContent = '⏸ Stoppen';
+  prevT = performance.now();
+  raf = requestAnimationFrame(loopFn);
+}
+function stopAuto() {
+  autoOn = false;
+  cancelAnimationFrame(raf);
+  document.getElementById('btn').textContent = '⟳ Auto-rotatie';
+}
+startAuto();
 
-    // Helper: rounded box via BoxGeometry (fallback without addon)
-    function box(w, h, d) {
-      return new THREE.BoxGeometry(w, h, d);
-    }
+function onDown(x, y) { dragging = true; stopAuto(); velY = 0; lastX = x; lastY = y; }
+function onMove(x, y) {
+  if (!dragging) return;
+  velY = (x - lastX) * 0.55;
+  rotY += velY;
+  rotX = Math.max(-35, Math.min(15, rotX + (y - lastY) * 0.22));
+  lastX = x; lastY = y;
+  applyT();
+}
+function onUp() {
+  if (!dragging) return; dragging = false;
+  (function coast() {
+    velY *= 0.92; rotY += velY; applyT();
+    if (Math.abs(velY) > 0.06) requestAnimationFrame(coast);
+  })();
+}
 
-    // Upper cut-glass body
-    const upperMesh = new THREE.Mesh(box(W, TH, D), cutGlassMat);
-    upperMesh.position.y = BH / 2 + TH / 2;
-    upperMesh.castShadow = true;
-    bottle.add(upperMesh);
+const stage = document.getElementById('stage');
+stage.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
+window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+window.addEventListener('mouseup', onUp);
+stage.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) onDown(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+window.addEventListener('touchmove', e => {
+  if (dragging && e.touches.length === 1)
+    onMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+window.addEventListener('touchend', onUp);
 
-    // Lower clear body
-    const lowerMesh = new THREE.Mesh(box(W, BH, D), glassMat);
-    lowerMesh.position.y = -(TH / 2 - BH / 2) - 0.02;
-    lowerMesh.castShadow = true;
-    bottle.add(lowerMesh);
+window.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoom = Math.max(0.3, Math.min(3, zoom * (1 - e.deltaY * 0.001)));
+  applyT();
+}, { passive: false });
 
-    // Amber liquid
-    const liquidMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(W * 0.87, BH * 0.94, D * 0.87),
-      liquidMat
+let p0d = 0, p0z = 1;
+window.addEventListener('touchstart', e => {
+  if (e.touches.length === 2) {
+    dragging = false;
+    p0d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
     );
-    liquidMesh.position.y = lowerMesh.position.y;
-    bottle.add(liquidMesh);
-
-    // Gold divider
-    const divider = new THREE.Mesh(new THREE.BoxGeometry(W + 0.02, 0.04, D + 0.02), goldMat);
-    divider.position.y = BH / 2 - TH / 2 + 0.02;
-    bottle.add(divider);
-
-    // Label front
-    const labelFront = new THREE.Mesh(new THREE.PlaneGeometry(W * 0.78, BH * 0.46), labelMat);
-    labelFront.position.set(0, lowerMesh.position.y + 0.04, D / 2 + 0.003);
-    bottle.add(labelFront);
-
-    // Label back
-    const labelBack = new THREE.Mesh(new THREE.PlaneGeometry(W * 0.78, BH * 0.46), labelMat);
-    labelBack.position.set(0, lowerMesh.position.y + 0.04, -(D / 2 + 0.003));
-    labelBack.rotation.y = Math.PI;
-    bottle.add(labelBack);
-
-    // Neck collar
-    const collar = new THREE.Mesh(new THREE.BoxGeometry(W * 0.92, 0.06, D * 0.92), goldMat);
-    collar.position.y = BH / 2 + TH + 0.03;
-    bottle.add(collar);
-
-    // Cap body
-    const capMesh = new THREE.Mesh(box(W * 0.72, 0.42, D * 0.72), capGlassMat);
-    capMesh.position.y = BH / 2 + TH + 0.06 + 0.21;
-    capMesh.castShadow = true;
-    bottle.add(capMesh);
-
-    // Cap top plate
-    const capTop = new THREE.Mesh(new THREE.BoxGeometry(W * 0.72, 0.035, D * 0.72), goldMat);
-    capTop.position.y = BH / 2 + TH + 0.06 + 0.42 + 0.018;
-    bottle.add(capTop);
-
-    // Base trim
-    const base = new THREE.Mesh(new THREE.BoxGeometry(W + 0.06, 0.05, D + 0.06), goldMat);
-    base.position.y = -(BH / 2 + TH / 2 - BH / 2) - BH / 2 - 0.015;
-    bottle.add(base);
-
-    bottle.position.y = 0.1;
-
-    // ─── GROUND ───────────────────────────────────────────────────────────────
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(12, 12),
-      new THREE.MeshStandardMaterial({ color: 0x0a0310, metalness: 0.9, roughness: 0.15 })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = bottle.position.y - (BH + 0.5);
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    scene.fog = new THREE.FogExp2(0x080210, 0.055);
-
-    // ─── RESIZE ───────────────────────────────────────────────────────────────
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // ─── ANIMATE ──────────────────────────────────────────────────────────────
-    const clock = new THREE.Clock();
-    (function animate() {
-      requestAnimationFrame(animate);
-      amberGlow.intensity = 2.5 + Math.sin(clock.getElapsedTime() * 1.4) * 0.7;
-      controls.update();
-      renderer.render(scene, camera);
-    })();
-
-  } catch (err) {
-    const el = document.getElementById('error');
-    el.style.display = 'block';
-    el.innerHTML = 'WebGL kon niet laden.<br>Probeer in Chrome of Safari.';
-    console.error(err);
+    p0z = zoom;
   }
-})();
+}, { passive: true });
+window.addEventListener('touchmove', e => {
+  if (e.touches.length === 2) {
+    const d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    zoom = Math.max(0.3, Math.min(3, p0z * (d / p0d)));
+    applyT();
+  }
+}, { passive: true });
+
+document.getElementById('btn').addEventListener('click', () =>
+  autoOn ? stopAuto() : startAuto()
+);
+setTimeout(() => document.getElementById('hint').classList.add('gone'), 4000);
 </script>
 </body>
 </html>
