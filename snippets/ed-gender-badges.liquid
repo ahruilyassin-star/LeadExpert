@@ -1,0 +1,81 @@
+<style>
+.ed-gender-badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  font-size:9px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:3px;
+  z-index:10;
+  letter-spacing:2px;
+  pointer-events:none;
+  text-transform:uppercase;
+  line-height:1.4;
+  background:rgba(10,10,18,0.75);
+  color:#e8d8b8;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(201,169,110,0.2);
+}
+.ed-gender-badge--hombre{border-left:2px solid #7aafd4;}
+.ed-gender-badge--mujer{border-left:2px solid #d4a4b8;}
+.ed-gender-badge--unisex{border-left:2px solid #C9A96E;}
+.ed-gender-badge--set{border-left:2px solid #e8b574;}
+</style>
+<script>
+(function(){
+  var TAGS={
+    Hombre:{cls:'hombre',label:'Hombre'},
+    Mujer:{cls:'mujer',label:'Mujer'},
+    Unisex:{cls:'unisex',label:'Unisex'},
+    'Pack de Regalo':{cls:'set',label:'Regalo'},
+    Colección:{cls:'set',label:'Set'},
+    Anniversary:{cls:'set',label:'Set'}
+  };
+  var tagsMap={};
+  var done=false;
+  function getBadge(tags){
+    if(!tags||!tags.length)return null;
+    if(tags.indexOf('Pack de Regalo')>-1||tags.indexOf('Colección')>-1||tags.indexOf('Anniversary')>-1)return TAGS['Pack de Regalo'];
+    if(tags.indexOf('Hombre')>-1&&tags.indexOf('Mujer')<0&&tags.indexOf('Unisex')<0)return TAGS.Hombre;
+    if(tags.indexOf('Mujer')>-1&&tags.indexOf('Hombre')<0&&tags.indexOf('Unisex')<0)return TAGS.Mujer;
+    if(tags.indexOf('Unisex')>-1)return TAGS.Unisex;
+    return null;
+  }
+  function injectBadges(){
+    document.querySelectorAll('a[href*="/products/"]').forEach(function(link){
+      var parts=link.href.split('/products/');
+      if(parts.length<2)return;
+      var handle=parts[1].split('?')[0].split('#')[0].split('/')[0];
+      if(!handle)return;
+      var card=link.closest('[class*="card"],[class*="product-item"],[class*="product_item"],article,li.grid__item');
+      if(!card||card.dataset.edBadge)return;
+      card.dataset.edBadge='1';
+      if(getComputedStyle(card).position==='static')card.style.position='relative';
+      var tags=tagsMap[handle];
+      var badge=getBadge(tags);
+      if(!badge)return;
+      var el=document.createElement('span');
+      el.className='ed-gender-badge ed-gender-badge--'+badge.cls;
+      el.textContent=badge.label;
+      card.appendChild(el);
+    });
+  }
+  async function loadTags(){
+    if(done)return;
+    try{
+      var m=location.pathname.match(/\/collections\/([^\/?#]+)/);
+      var url=m?'/collections/'+m[1]+'/products.json?limit=250':'/products.json?limit=250';
+      var r=await fetch(url);
+      var d=await r.json();
+      (d.products||[]).forEach(function(p){tagsMap[p.handle]=p.tags;});
+      done=true;
+      injectBadges();
+    }catch(e){}
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',loadTags);}else{loadTags();}
+  var ob=new MutationObserver(function(){clearTimeout(ob._t);ob._t=setTimeout(injectBadges,400);});
+  ob.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
