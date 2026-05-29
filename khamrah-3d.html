@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khamrah Lattafa – 3D Parfum Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: radial-gradient(ellipse at 50% 30%, #1e0838 0%, #0a0312 100%);
+      overflow: hidden;
+      font-family: 'Georgia', serif;
+    }
+
+    canvas { display: block; }
+
+    #hint {
+      position: fixed;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 210, 120, 0.55);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+    #hint.fade { opacity: 0; }
+
+    #ui {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    #ui h1 {
+      color: rgba(255, 215, 120, 0.9);
+      font-size: 1.25rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      font-weight: normal;
+    }
+    #ui .arabic {
+      color: rgba(255, 215, 120, 0.6);
+      font-size: 1.1rem;
+      margin-top: 2px;
+      direction: rtl;
+    }
+    #ui p {
+      color: rgba(255, 210, 120, 0.35);
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    #rotate-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: rgba(212, 160, 48, 0.15);
+      border: 1px solid rgba(212, 160, 48, 0.4);
+      color: rgba(255, 215, 120, 0.8);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      padding: 8px 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    #rotate-btn:hover { background: rgba(212, 160, 48, 0.3); }
+  </style>
+</head>
+<body>
+
+<div id="hint">Sleep om te draaien &nbsp;·&nbsp; Scroll om in te zoomen</div>
+<div id="ui">
+  <h1>Khamrah &nbsp;·&nbsp; Lattafa</h1>
+  <div class="arabic">خمرة</div>
+  <p>For Women &amp; Men &nbsp;·&nbsp; Eau de Parfum</p>
+</div>
+<button id="rotate-btn" id="rotate-btn">⟳ Auto-rotatie</button>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+// ─── RENDERER ───────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.3;
+document.body.appendChild(renderer.domElement);
+
+// ─── SCENE & CAMERA ─────────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.01, 50);
+camera.position.set(0, 0.6, 5);
+
+// ─── CONTROLS ────────────────────────────────────────────────────────────────
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 2.5;
+controls.maxDistance = 9;
+controls.target.set(0, 0.35, 0);
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.2;
+
+let userInteracted = false;
+controls.addEventListener('start', () => {
+  userInteracted = true;
+  controls.autoRotate = false;
+  document.getElementById('rotate-btn').textContent = '⟳ Auto-rotatie';
+});
+
+document.getElementById('rotate-btn').addEventListener('click', () => {
+  controls.autoRotate = !controls.autoRotate;
+  document.getElementById('rotate-btn').textContent =
+    controls.autoRotate ? '⏸ Stoppen' : '⟳ Auto-rotatie';
+});
+
+// Fade hint after 4s
+setTimeout(() => document.getElementById('hint').classList.add('fade'), 4000);
+
+// ─── LIGHTS ──────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xfff0d0, 0.5));
+
+const keyLight = new THREE.DirectionalLight(0xffffff, 3);
+keyLight.position.set(4, 6, 4);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.setScalar(2048);
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0xffe0a0, 1.2);
+fillLight.position.set(-4, 2, -2);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xc8a0ff, 2);
+rimLight.position.set(0, -3, -5);
+scene.add(rimLight);
+
+const amberGlow = new THREE.PointLight(0xff7a00, 3, 4);
+amberGlow.position.set(0, -0.4, 0.3);
+scene.add(amberGlow);
+
+const topSpot = new THREE.SpotLight(0xfff0d0, 4, 8, Math.PI / 7, 0.4, 1.5);
+topSpot.position.set(0, 6, 1);
+topSpot.target.position.set(0, 0, 0);
+scene.add(topSpot);
+scene.add(topSpot.target);
+
+// ─── ENVIRONMENT (simple color environment for reflections) ──────────────────
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+const envScene = new THREE.RoomEnvironment();
+const envTexture = pmremGenerator.fromScene(envScene, 0.04).texture;
+scene.environment = envTexture;
+
+// ─── MATERIALS ───────────────────────────────────────────────────────────────
+
+// Cut glass upper body
+const cutNormalCanvas = document.createElement('canvas');
+cutNormalCanvas.width = 512;
+cutNormalCanvas.height = 512;
+const cn = cutNormalCanvas.getContext('2d');
+cn.fillStyle = '#8080ff';
+cn.fillRect(0, 0, 512, 512);
+// Diagonal diamond lines
+const drawLine = (x1, y1, x2, y2, color, w) => {
+  cn.strokeStyle = color; cn.lineWidth = w;
+  cn.beginPath(); cn.moveTo(x1, y1); cn.lineTo(x2, y2); cn.stroke();
+};
+for (let i = -512; i < 1024; i += 36) {
+  drawLine(i, 0, i + 512, 512, '#4a5aaa', 2.5);
+  drawLine(i, 512, i + 512, 0, '#4a5aaa', 2.5);
+}
+// Horizontal dividers
+for (let i = 0; i < 512; i += 72) {
+  drawLine(0, i, 512, i, '#6060cc', 1.5);
+}
+const cutNormal = new THREE.CanvasTexture(cutNormalCanvas);
+cutNormal.wrapS = cutNormal.wrapT = THREE.RepeatWrapping;
+cutNormal.repeat.set(3, 5);
+
+const cutGlassMat = new THREE.MeshPhysicalMaterial({
+  color: 0xe0ecff,
+  metalness: 0.0,
+  roughness: 0.04,
+  transmission: 0.88,
+  thickness: 0.6,
+  ior: 1.55,
+  transparent: true,
+  opacity: 0.42,
+  normalMap: cutNormal,
+  normalScale: new THREE.Vector2(2.5, 2.5),
+  envMapIntensity: 3,
+  side: THREE.DoubleSide,
+  attenuationColor: new THREE.Color(0xd8e8ff),
+  attenuationDistance: 1.5,
+});
+
+// Clear glass lower
+const glassMat = new THREE.MeshPhysicalMaterial({
+  color: 0xdde8f8,
+  metalness: 0.0,
+  roughness: 0.04,
+  transmission: 0.92,
+  thickness: 0.5,
+  ior: 1.5,
+  transparent: true,
+  opacity: 0.38,
+  envMapIntensity: 2,
+  side: THREE.DoubleSide,
+});
+
+// Amber liquid
+const liquidMat = new THREE.MeshPhysicalMaterial({
+  color: 0xb05800,
+  emissive: 0x300800,
+  emissiveIntensity: 0.3,
+  metalness: 0.0,
+  roughness: 0.08,
+  transmission: 0.72,
+  thickness: 1.2,
+  ior: 1.42,
+  transparent: true,
+  opacity: 0.9,
+  attenuationColor: new THREE.Color(0xff6600),
+  attenuationDistance: 0.5,
+});
+
+// Gold
+const goldMat = new THREE.MeshStandardMaterial({
+  color: 0xd4a030,
+  emissive: 0x301500,
+  emissiveIntensity: 0.1,
+  metalness: 1.0,
+  roughness: 0.18,
+  envMapIntensity: 2,
+});
+
+// ─── LABEL TEXTURE ───────────────────────────────────────────────────────────
+const lc = document.createElement('canvas');
+lc.width = 512; lc.height = 256;
+const lctx = lc.getContext('2d');
+
+const lg = lctx.createLinearGradient(0, 0, 512, 256);
+lg.addColorStop(0,   '#6b4e0a');
+lg.addColorStop(0.2, '#c8921e');
+lg.addColorStop(0.5, '#f0c84a');
+lg.addColorStop(0.8, '#c8921e');
+lg.addColorStop(1,   '#6b4e0a');
+lctx.fillStyle = lg;
+lctx.fillRect(0, 0, 512, 256);
+
+// Outer border
+lctx.strokeStyle = '#fff0a0';
+lctx.lineWidth = 7;
+lctx.strokeRect(10, 10, 492, 236);
+lctx.lineWidth = 2;
+lctx.strokeRect(18, 18, 476, 220);
+
+// Arabic name
+lctx.fillStyle = '#180a00';
+lctx.font = 'bold 78px serif';
+lctx.textAlign = 'center';
+lctx.textBaseline = 'middle';
+lctx.fillText('خمرة', 256, 95);
+
+// Latin name
+lctx.font = 'bold 30px serif';
+lctx.fillText('KHAMRAH', 256, 163);
+lctx.font = '18px serif';
+lctx.letterSpacing = '4px';
+lctx.fillText('Lattafa Perfumes', 256, 200);
+
+const labelTex = new THREE.CanvasTexture(lc);
+const labelMat = new THREE.MeshStandardMaterial({
+  map: labelTex,
+  metalness: 0.7,
+  roughness: 0.25,
+  envMapIntensity: 1.5,
+});
+
+// Cap glass
+const capGlassMat = new THREE.MeshPhysicalMaterial({
+  color: 0xd8e8f8,
+  metalness: 0.0,
+  roughness: 0.04,
+  transmission: 0.90,
+  thickness: 0.35,
+  ior: 1.5,
+  transparent: true,
+  opacity: 0.45,
+  envMapIntensity: 2.5,
+  side: THREE.DoubleSide,
+});
+
+// ─── BOTTLE GROUP ─────────────────────────────────────────────────────────────
+const bottle = new THREE.Group();
+scene.add(bottle);
+
+const W = 0.78, D = 0.78; // width / depth
+const TH = 1.0;            // top (cut glass) half height
+const BH = 0.9;            // bottom (clear glass) half height
+const totalH = TH + BH;
+
+// Upper cut-glass body
+const upperMesh = new THREE.Mesh(
+  new RoundedBoxGeometry(W, TH, D, 6, 0.015),
+  cutGlassMat
+);
+upperMesh.position.y = BH / 2 + TH / 2;
+upperMesh.castShadow = true;
+bottle.add(upperMesh);
+
+// Lower clear body
+const lowerMesh = new THREE.Mesh(
+  new RoundedBoxGeometry(W, BH, D, 6, 0.015),
+  glassMat
+);
+lowerMesh.position.y = -TH / 2 + BH / 2 - 0.02;
+lowerMesh.castShadow = true;
+bottle.add(lowerMesh);
+
+// Amber liquid inside lower
+const liquidMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(W * 0.87, BH * 0.94, D * 0.87),
+  liquidMat
+);
+liquidMesh.position.y = lowerMesh.position.y;
+bottle.add(liquidMesh);
+
+// Horizontal gold divider ring where upper meets lower
+const dividerGeo = new THREE.BoxGeometry(W + 0.02, 0.04, D + 0.02);
+const divider = new THREE.Mesh(dividerGeo, goldMat);
+divider.position.y = BH / 2 - TH / 2 + 0.02;
+bottle.add(divider);
+
+// Label — front
+const labelFront = new THREE.Mesh(
+  new THREE.PlaneGeometry(W * 0.78, BH * 0.46),
+  labelMat
+);
+labelFront.position.set(0, lowerMesh.position.y + 0.04, D / 2 + 0.003);
+bottle.add(labelFront);
+
+// Label — back
+const labelBack = new THREE.Mesh(
+  new THREE.PlaneGeometry(W * 0.78, BH * 0.46),
+  labelMat
+);
+labelBack.position.set(0, lowerMesh.position.y + 0.04, -(D / 2 + 0.003));
+labelBack.rotation.y = Math.PI;
+bottle.add(labelBack);
+
+// Neck collar (thin gold rectangle where body meets cap)
+const collarGeo = new THREE.BoxGeometry(W * 0.92, 0.06, D * 0.92);
+const collar = new THREE.Mesh(collarGeo, goldMat);
+collar.position.y = BH / 2 + TH + 0.03;
+bottle.add(collar);
+
+// Cap body (clear rectangular)
+const capMesh = new THREE.Mesh(
+  new RoundedBoxGeometry(W * 0.72, 0.42, D * 0.72, 5, 0.015),
+  capGlassMat
+);
+capMesh.position.y = BH / 2 + TH + 0.06 + 0.21;
+capMesh.castShadow = true;
+bottle.add(capMesh);
+
+// Cap top gold plate
+const capTop = new THREE.Mesh(
+  new THREE.BoxGeometry(W * 0.72, 0.035, D * 0.72),
+  goldMat
+);
+capTop.position.y = BH / 2 + TH + 0.06 + 0.42 + 0.018;
+bottle.add(capTop);
+
+// Bottom gold base
+const baseGeo = new THREE.BoxGeometry(W + 0.06, 0.05, D + 0.06);
+const baseMesh = new THREE.Mesh(baseGeo, goldMat);
+baseMesh.position.y = -(BH / 2 + TH / 2 - BH / 2) - BH / 2 - 0.015;
+bottle.add(baseMesh);
+
+// Reposition whole bottle to sit on "table"
+bottle.position.y = 0.1;
+
+// ─── REFLECTIVE GROUND PLANE ─────────────────────────────────────────────────
+const groundMesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(12, 12),
+  new THREE.MeshStandardMaterial({
+    color: 0x0a0310,
+    metalness: 0.9,
+    roughness: 0.15,
+    envMapIntensity: 0.8,
+  })
+);
+groundMesh.rotation.x = -Math.PI / 2;
+groundMesh.position.y = bottle.position.y - (BH + 0.5);
+groundMesh.receiveShadow = true;
+scene.add(groundMesh);
+
+// Subtle fog
+scene.fog = new THREE.FogExp2(0x080210, 0.055);
+
+// ─── RESIZE ──────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ─── ANIMATE ─────────────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+(function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  amberGlow.intensity = 2.5 + Math.sin(t * 1.4) * 0.7;
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>
