@@ -71,9 +71,43 @@ Focusing on high-growth segments: **Motor Skills** (Building blocks) and **Alpha
 - 5-step quiz: recipient → gender → olfactory family → occasion → budget
 - Routes to matching collection (10 collection mappings)
 
+## ✅ Top-5 Webshop Upgrades (Session 3)
+
+### Navigation
+- "Test tu Perfume" quiz link added to main menu (between Sets & Muestras and Blog)
+- All existing menu items preserved with correct sub-menus
+
+### Homepage
+- `templates/index.json` collection tiles URLs fixed on unpublished theme:
+  - Hombre → /collections/perfumes-hombre
+  - Mujer → /collections/perfumes-mujer
+  - Sets de Regalo → /collections/sets-de-regalo-perfumes-arabes
+  - Oud → /collections/perfumes-con-oud
+
+### Discount Codes
+- `BIENVENIDO10` (10% off) — confirmed active (matches announcement bar + popup)
+- `BIENVENIDA10`, `REGALO15`, `VERANO20` — previously created
+
+### Product Metafields — Olfactory Pyramid (60+ products)
+All products populated with: `inspirado_en`, `notas_top`, `notas_corazon`, `notas_fondo`, `intensidad`, `ocasion`
+
+**Armaf:** Odyssey Aqua Edition, Homme, Homme White Edition, Mandarin Sky, Artisto, Bahamas, Go Mango, Li'chi Lush, Marshmallow, Pink Pop, CDN Intense Man, CDN Urban Man Elixir, CDN Sillage, CDN Oud, CDN Lionheart Man
+
+**Afnan:** 9AM Dive, 9PM, 9PM Elixir, 9PM Night Out, Supremacy Collector's, Supremacy Noir
+
+**Lattafa:** Asad, Asad Zanzibar, Asad Elixir, Asad Bourbon, His Confession, Bade'e Al Oud Amethyst, Bade'e Al Oud Honor & Glory, Bade'e Al Oud Sublime, Bade'e Al Oud Noble Blush, Fakhar Black, Fakhar Gold, Hayaati, Maahir Honor, Musamam White Intense, Musamam Black Intense, Blue Oud, Qaed Al Fursan, Qaed Al Fursan Unlimited, Qaed Al Fursan Untamed, Teriaq, Teriaq Intense, Yara, Yara Moi, Yara Candy, Yara Elixir, Yara Tous, Ameerat Al Arab, Ameerat Al Arab Sugar Crown, Atheeri, Afeef, Ana Abiyedh Coral
+
+**Rasasi:** Hawas For Him, Hawas For Her, Hawas Black, Hawas Elixir, Hawas Ice, Hawas Fire, Hawas Malibu, Hawas Pink, Hawas Kobra, Hawas Viper, Hawas Atlantis, Hawas Tropical, Hawas For Her Eclat, Hawas London
+
+**Al Haramain:** Amber Oud Gold Edition, Amber Oud Ruby Edition, Amber Oud Aqua Dubai
+
+**Fragrance World:** Champion G.O.A.T., Invicto
+
+**French Avenue:** Royal Blend, Ravine Ginger, Ravine Ice
+
 ## ⚙️ Manual Steps Required
 1. **Primary language:** Shopify Admin → Settings → Languages → set Español as primary
 2. **Abandoned cart email:** Marketing → Automations → activate "Abandoned checkout"
 3. **Publish theme preview:** Theme "ED – Optimizada / fixes (preview)" contains all hook 2/5/6 code — publish to make live
 4. **Real prices:** Update product prices from €10 placeholder to real prices, then set compare_at_price for Hook 4
-5. **Add quiz to navigation:** Shopify Admin → Navigation → add `/pages/quiz-encuentra-tu-perfume`
+5. **Sales Pop app:** Install from Shopify App Store for Hook 9 (social proof notifications)
