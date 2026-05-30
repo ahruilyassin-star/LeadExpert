@@ -6,6 +6,12 @@
 - [x] WPML Conflict Neutralized (Replaced with TranslatePress)
 - [x] Technical Health: Clean Dashboard & No Database Errors
 - [x] GitHub Repo setup for Project Tracking
+- [x] Hostinger management toolkit (DNS / domains / VPS) — see [`tools/`](./tools/README.md)
+
+## 🔌 Infrastructure Tooling
+A stdlib-only CLI to manage **domains, DNS and VPS** via the Hostinger API lives
+in [`tools/hostinger.py`](./tools/hostinger.py). Setup (network policy + API
+token secret) and usage are documented in [`tools/README.md`](./tools/README.md).
 
 ## 🚀 Immediate Action Plan (SEO & Content)
 - [ ] Set **English** as Default Language in TranslatePress.
