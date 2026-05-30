@@ -170,6 +170,7 @@
           "settings": {
             "name": "Hombre",
             "icon": "Hombre",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/al-haramain-amber-oud-aqua-dubai-perfume-arabe-unisex-edp-60ml-esencias-de-dubai.jpg?v=1780083006",
             "bg_color": "#eaecf2",
             "url": "/collections/perfumes-hombre"
           }
@@ -179,6 +180,7 @@
           "settings": {
             "name": "Mujer",
             "icon": "Mujer",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/french-avenue-veneno-scarlet-perfume-arabe-mujer-edp-100ml-esencias-de-dubai.jpg?v=1780083113",
             "bg_color": "#f2eaea",
             "url": "/collections/perfumes-mujer"
           }
@@ -188,6 +190,7 @@
           "settings": {
             "name": "Unisex",
             "icon": "Unisex",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/falak-perfume-arabe-unisex-edp-100ml-esencias-de-dubai.jpg?v=1780083007",
             "bg_color": "#eaf0ea",
             "url": "/collections/perfumes-unisex"
           }
