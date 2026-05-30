@@ -1,0 +1,381 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "top_bar": {
+      "type": "ed-top-bar",
+      "blocks": {
+        "u1": {
+          "type": "usp",
+          "settings": {
+            "text": "Envío gratis a partir de 60€"
+          }
+        },
+        "u2": {
+          "type": "usp",
+          "settings": {
+            "text": "<strong>Entrega 24-48h</strong> en toda España"
+          }
+        },
+        "u3": {
+          "type": "usp",
+          "settings": {
+            "text": "<strong>Devolución gratuita</strong> en 14 días"
+          }
+        }
+      },
+      "block_order": ["u1","u2","u3"],
+      "settings": {
+        "bg_color": "#f1e5df",
+        "show_trustpilot": true,
+        "review_count": "5K reviews",
+        "trustpilot_url": ""
+      }
+    },
+    "hero_mosaic": {
+      "type": "ed-banner-mosaic",
+      "blocks": {
+        "b1": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Edición especial",
+            "title": "Wedding Season",
+            "image": "shopify://shop_images/Gemini_Generated_Image_ah0zqdah0zqdah0z_794029d9-54b6-4c40-9965-0f872cab3b5c.png",
+            "image_url": "",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "b2": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Recién llegado",
+            "title": "Nuevos Sets de Regalo",
+            "image": "shopify://shop_images/banner_mujer.jpg",
+            "image_url": "",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "b4": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Hombre",
+            "title": "Nuevas Fragancias Hombre",
+            "image": "shopify://shop_images/Buy_Armaf_Club_De_Nuit_Intense_Online_1920x_crop_center_59a1b3cb-2d64-4257-9d93-4b3728d61f77.webp",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/banner-fragancias-hombre.png?v=1779553308",
+            "url": "/collections/perfumes-hombre"
+          }
+        },
+        "banner_NMAa7x": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "COLECCIÓN MUJER",
+            "title": "Perfumes para Ella",
+            "image": "shopify://shop_images/best-sellers-emirates-oud_d3e37314-f619-4304-a1d4-17847dcf1e2b.webp",
+            "image_url": "",
+            "url": "shopify://collections/perfumes-mujer"
+          }
+        },
+        "banner_8jnVmX": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "PARA TODOS",
+            "title": "Perfumes Unisex",
+            "image": "shopify://shop_images/guide-to-lattafa-660e5fe4c9f2f_af912cd7-b29e-4fb5-8deb-252319b28ee5.webp",
+            "image_url": "",
+            "url": "shopify://collections/perfumes-unisex"
+          }
+        }
+      },
+      "block_order": ["b1","b2","b4","banner_NMAa7x","banner_8jnVmX"],
+      "settings": {
+        "accent_color": "#e4855e"
+      }
+    },
+    "178012741159ea63d8": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_140c7ae_hJnawU": {
+          "type": "ai_gen_block_140c7ae",
+          "settings": {
+            "product_1": "supremacy-collectors-edition-pour-homme",
+            "product_2": "club-de-nuit-woman-eau-de-parfum",
+            "product_3": "armaf-odyssey-artisto-eau-de-parfum",
+            "product_4": "aromatix-x-french-avenue-royal-taboo",
+            "product_5": "afeef",
+            "product_6": "my-yara-collection-5-ml-x4",
+            "slider_height": 600,
+            "slide_width": 300,
+            "slide_height": 450,
+            "perspective": 1700,
+            "vertical_padding": 20,
+            "auto_rotate": true,
+            "rotation_speed": 3000,
+            "desktop_width_percent": 100,
+            "background_color": "#ffffff",
+            "card_background": "#FFFFFF",
+            "image_background": "#FFFFFF",
+            "card_border_radius": 16,
+            "text_color": "#131313",
+            "title_size": 18,
+            "price_color": "#C9A961",
+            "price_size": 16,
+            "button_background": "#FFFFFF",
+            "button_hover_background": "#ffffff",
+            "button_icon_color": "#131313"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": ["ai_gen_block_140c7ae_hJnawU"],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "ed_circle_cats": {
+      "type": "ed-circle-categories",
+      "blocks": {
+        "cat_h": {
+          "type": "circle",
+          "settings": {
+            "name": "Hombre",
+            "icon": "Hombre",
+            "bg_color": "#eaecf2",
+            "url": "/collections/perfumes-hombre"
+          }
+        },
+        "cat_m": {
+          "type": "circle",
+          "settings": {
+            "name": "Mujer",
+            "icon": "Mujer",
+            "bg_color": "#f2eaea",
+            "url": "/collections/perfumes-mujer"
+          }
+        },
+        "cat_u": {
+          "type": "circle",
+          "settings": {
+            "name": "Unisex",
+            "icon": "Unisex",
+            "bg_color": "#eaf0ea",
+            "url": "/collections/perfumes-unisex"
+          }
+        },
+        "cat_o": {
+          "type": "circle",
+          "settings": {
+            "name": "Oud",
+            "icon": "Oud",
+            "bg_color": "#ede8e0",
+            "url": "/collections/perfumes-con-oud"
+          }
+        },
+        "cat_s": {
+          "type": "circle",
+          "settings": {
+            "name": "Sets Regalo",
+            "icon": "Regalo",
+            "bg_color": "#e8ecf2",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "cat_of": {
+          "type": "circle",
+          "settings": {
+            "name": "Ofertas",
+            "icon": "Oferta",
+            "bg_color": "#f2ede5",
+            "url": "/collections/all"
+          }
+        }
+      },
+      "block_order": ["cat_h","cat_m","cat_u","cat_o","cat_s","cat_of"],
+      "settings": {
+        "show_header": true,
+        "title": "Explora por categoría"
+      }
+    },
+    "brand_carousel": {
+      "type": "ed-brand-carousel",
+      "blocks": {
+        "b1": {"type": "brand","settings": {"name": "LATTAFA","url": "/collections/perfumes-lattafa"}},
+        "b2": {"type": "brand","settings": {"name": "ARMAF","url": "/collections/perfumes-armaf"}},
+        "b3": {"type": "brand","settings": {"name": "AFNAN","url": "/collections/perfumes-afnan"}},
+        "b4": {"type": "brand","settings": {"name": "RASASI","url": "/collections/perfumes-rasasi"}},
+        "b5": {"type": "brand","settings": {"name": "MAISON ALHAMBRA","url": "/collections/perfumes-maison-alhambra"}},
+        "b6": {"type": "brand","settings": {"name": "AL HARAMAIN","url": "/collections/perfumes-al-haramain"}},
+        "b7": {"type": "brand","settings": {"name": "NUSUK","url": "/collections/perfumes-nusuk"}},
+        "b8": {"type": "brand","settings": {"name": "RIIFFS","url": "/collections/perfumes-riiffs"}},
+        "b9": {"type": "brand","settings": {"name": "FRAGRANCE WORLD","url": "/collections/perfumes-fragrance-world"}},
+        "b10": {"type": "brand","settings": {"name": "FRENCH AVENUE","url": "/collections/perfumes-french-avenue"}}
+      },
+      "block_order": ["b1","b2","b3","b4","b5","b6","b7","b8","b9","b10"],
+      "settings": {"title": "Nuestras Marcas"}
+    },
+    "ed_collection_tiles_nthemt": {
+      "type": "ed-collection-tiles",
+      "name": "ED - Collection Tiles",
+      "settings": {
+        "eyebrow": "Nuestras Colecciones",
+        "title": "Descubre Tu Fragancia",
+        "tile1_name": "Hombre",
+        "tile1_desc": "Fragancias masculinas con oud y ambar",
+        "tile1_url": "/collections/perfumes-hombre",
+        "tile2_name": "Mujer",
+        "tile2_desc": "Rosas, jazmín y almizcle oriental",
+        "tile2_url": "/collections/perfumes-mujer",
+        "tile3_name": "Sets de Regalo",
+        "tile3_desc": "El regalo perfecto para cada ocasión",
+        "tile3_url": "/collections/sets-de-regalo-perfumes-arabes",
+        "tile4_name": "Oud",
+        "tile4_desc": "La madera más preciada de Arabia",
+        "tile4_url": "/collections/perfumes-con-oud"
+      }
+    },
+    "ed_marquee_ticker_Fn4bXD": {
+      "type": "ed-marquee-ticker",
+      "name": "Ticker",
+      "settings": {}
+    },
+    "ed_hero_slider_4Wz94g": {
+      "type": "ed-hero-slider",
+      "name": "ED - Hero Slider",
+      "settings": {
+        "autoplay": true,
+        "interval": 6000
+      }
+    },
+    "bestsellers": {
+      "type": "ed-product-grid",
+      "settings": {
+        "eyebrow": "Bestsellers",
+        "title": "Los más vendidos",
+        "collection_handle": "bestsellers-esencias-de-dubai",
+        "cta_text": "Ver todos los bestsellers",
+        "cta_url": "/collections/bestsellers-esencias-de-dubai"
+      }
+    },
+    "promo_asym": {
+      "type": "ed-promo-asymmetric",
+      "blocks": {
+        "p1": {
+          "type": "banner",
+          "settings": {
+            "show_overlay": true,
+            "eyebrow": "",
+            "title": "",
+            "subtitle": "",
+            "image": "shopify://shop_images/armaf-odyssey-mandarin-sky-limited-edition-edp-perfume-cologne-602837.webp",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/banner-coleccion-lattafa.png?v=1779553309",
+            "url": "/collections/perfumes-lattafa"
+          }
+        },
+        "p2": {
+          "type": "banner",
+          "settings": {
+            "show_overlay": false,
+            "eyebrow": "",
+            "title": "Sets de Regalo",
+            "subtitle": "",
+            "image": "shopify://shop_images/lattafa-his-confession-100ml-ltaf-aaatrafh-2849650.webp",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/banner-sets-de-regalo.png?v=1779553308",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "p3": {
+          "type": "banner",
+          "settings": {
+            "show_overlay": false,
+            "eyebrow": "",
+            "title": "Oud & Orientales",
+            "subtitle": "",
+            "image": "shopify://shop_images/Look-Alyfe-Lattafa-Fakhar-Black-Eau-de-Parfum-100m-4490.webp",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/banner-oud-orientales-promo.png?v=1779553309",
+            "url": "/collections/perfumes-con-oud"
+          }
+        }
+      },
+      "block_order": ["p1","p2","p3"],
+      "settings": {"accent_color": "#f2a88a"}
+    },
+    "ed_testimonials": {
+      "type": "ed-testimonials",
+      "settings": {}
+    },
+    "ed_why_us": {
+      "type": "ed-why-us",
+      "settings": {}
+    },
+    "story": {
+      "type": "ed-clean-story",
+      "settings": {
+        "eyebrow": "Nuestra Historia",
+        "title": "El alma de Dubai, en cada frasco",
+        "text1": "Nacimos del amor por los aromas del Oriente Medio. Desde los zocos de Dubai hasta tu hogar, traemos las fragancias más exclusivas del mundo árabe con autenticidad garantizada.",
+        "text2": "Cada perfume está seleccionado directamente de los mejores maestros perfumeros de Emiratos, Arabia Saudí y Egipto — una experiencia olfativa sin igual.",
+        "image": "shopify://shop_images/Green_Blue_and_White_Modern_Parfume_Promotion_Instagram_Post.jpg",
+        "stat_number": "5.000+",
+        "stat_label": "Clientes satisfechos",
+        "cta_text": "Conocer nuestra historia",
+        "cta_url": "/pages/sobre-nosotros"
+      }
+    },
+    "newsletter": {
+      "type": "ed-newsletter",
+      "settings": {
+        "eyebrow": "Newsletter",
+        "title": "Recibe las novedades antes que nadie",
+        "subtitle": "Suscríbete y consigue un 10% de descuento en tu primer pedido, además de acceso anticipado a nuevos lanzamientos exclusivos.",
+        "placeholder": "Tu correo electrónico",
+        "button_text": "Suscribirme"
+      }
+    }
+  },
+  "order": [
+    "top_bar",
+    "hero_mosaic",
+    "178012741159ea63d8",
+    "ed_circle_cats",
+    "brand_carousel",
+    "ed_collection_tiles_nthemt",
+    "ed_marquee_ticker_Fn4bXD",
+    "ed_hero_slider_4Wz94g",
+    "bestsellers",
+    "promo_asym",
+    "ed_testimonials",
+    "ed_why_us",
+    "story",
+    "newsletter"
+  ]
+}
