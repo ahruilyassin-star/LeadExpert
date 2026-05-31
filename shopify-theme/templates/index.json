@@ -200,6 +200,7 @@
           "settings": {
             "name": "Oud",
             "icon": "Oud",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/al-haramain-amber-oud-gold-edition-perfume-arabe-unisex-edp-60ml-esencias-de-dubai.jpg?v=1780083006",
             "bg_color": "#ede8e0",
             "url": "/collections/perfumes-con-oud"
           }
@@ -209,6 +210,7 @@
           "settings": {
             "name": "Sets Regalo",
             "icon": "Regalo",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/dot-made-050625._027.jpg?v=1779994109",
             "bg_color": "#e8ecf2",
             "url": "/collections/sets-de-regalo-perfumes-arabes"
           }
@@ -218,6 +220,7 @@
           "settings": {
             "name": "Ofertas",
             "icon": "Oferta",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/al-haramain-hawas-for-him-perfume-arabe-hombre-edp-100ml-esencias-de-dubai.jpg?v=1780082890",
             "bg_color": "#f2ede5",
             "url": "/collections/all"
           }
