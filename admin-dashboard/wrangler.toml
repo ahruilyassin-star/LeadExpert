@@ -1,0 +1,21 @@
+name = "esencias-admin"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# ── Public, non-secret configuration ────────────────────────────────
+# The Shopify store domain (myshopify domain works best for the Admin API).
+[vars]
+SHOPIFY_STORE = "esencias-de-dubai-2.myshopify.com"
+SHOPIFY_API_VERSION = "2024-10"
+STORE_NAME = "ESENCIAS DE DUBAI"
+
+# ── Secrets (NEVER commit these) ────────────────────────────────────
+# Set them once with wrangler, they are stored encrypted by Cloudflare:
+#
+#   wrangler secret put SHOPIFY_ADMIN_TOKEN   # shpat_xxx Admin API access token
+#   wrangler secret put ADMIN_USERNAME        # login user, e.g. admin
+#   wrangler secret put ADMIN_PASSWORD        # login password
+#   wrangler secret put SESSION_SECRET        # any long random string
+#
+# Until SHOPIFY_ADMIN_TOKEN is set the dashboard runs in a safe DEMO mode
+# with sample data, so you can preview the UI without touching the store.

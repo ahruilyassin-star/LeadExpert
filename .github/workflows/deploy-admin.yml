@@ -1,0 +1,41 @@
+name: Deploy admin dashboard
+
+# Deploys the ESENCIAS DE DUBAI admin Worker to Cloudflare.
+# Runs automatically when the dashboard code changes on main, and can be
+# triggered by hand from the Actions tab ("Run workflow").
+#
+# One-time setup — add two repository secrets
+# (Settings → Secrets and variables → Actions → New repository secret):
+#   CLOUDFLARE_API_TOKEN   token with the "Edit Cloudflare Workers" template
+#   CLOUDFLARE_ACCOUNT_ID  your Cloudflare account id
+#
+# The Worker's own runtime secrets (SHOPIFY_ADMIN_TOKEN, ADMIN_USERNAME,
+# ADMIN_PASSWORD, SESSION_SECRET) are set once with `wrangler secret put`
+# and are NOT needed here. Without SHOPIFY_ADMIN_TOKEN the dashboard simply
+# runs in demo mode, so a deploy always produces a working site.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "admin-dashboard/**"
+      - ".github/workflows/deploy-admin.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: admin-dashboard
+          command: deploy
