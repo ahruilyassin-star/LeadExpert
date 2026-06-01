@@ -26,13 +26,26 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check Cloudflare secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Despliegue omitido: faltan los secretos CLOUDFLARE_API_TOKEN y/o CLOUDFLARE_ACCOUNT_ID. Añádelos en Settings → Secrets → Actions (ver admin-dashboard/DEPLOY.md)."
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
 
       - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
         with:
           node-version: 20
 
       - name: Deploy to Cloudflare Workers
+        if: steps.check.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
