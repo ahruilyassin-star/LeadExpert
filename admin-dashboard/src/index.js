@@ -118,8 +118,10 @@ async function handleApi(pathname, request, env) {
 
     case "products":
       if (request.method === "GET" && !id) return json(await listProducts(env, new URL(request.url)));
+      if (request.method === "POST" && !id) return json(await createProduct(env, await request.json()));
       if (request.method === "GET" && id) return json(await getProduct(env, id));
       if (request.method === "PUT" && id) return json(await updateProduct(env, id, await request.json()));
+      if (request.method === "DELETE" && id) return json(await deleteProduct(env, id));
       break;
 
     case "orders":
@@ -203,7 +205,54 @@ async function updateProduct(env, id, body) {
   }
 
   const updated = await shopify(env, "PUT", `products/${id}.json`, { product });
-  return { ok: true, product: mapProduct(updated.product) };
+
+  // Inventory lives on the inventory level, not the product record.
+  if (body.inventory != null && body.inventory !== "") {
+    await setInventory(env, updated.product, body.inventory).catch(() => {});
+  }
+
+  const fresh = await shopify(env, "GET", `products/${id}.json`);
+  return { ok: true, product: mapProduct(fresh.product) };
+}
+
+async function createProduct(env, body) {
+  if (!isShopifyConfigured(env)) {
+    return { ok: true, demo: true, message: "Modo demo: el producto no se crea en la tienda." };
+  }
+  const product = {
+    title: body.title || "Nuevo producto",
+    body_html: body.body_html || "",
+    status: body.status || "draft",
+    tags: body.tags || "",
+    variants: [{ price: String(body.price || "0.00"), compare_at_price: body.compare_at_price ? String(body.compare_at_price) : null }],
+  };
+  const created = await shopify(env, "POST", "products.json", { product });
+  if (body.inventory != null && body.inventory !== "") {
+    await setInventory(env, created.product, body.inventory).catch(() => {});
+  }
+  return { ok: true, product: mapProduct(created.product) };
+}
+
+async function deleteProduct(env, id) {
+  if (!isShopifyConfigured(env)) {
+    return { ok: true, demo: true, message: "Modo demo: el producto no se elimina de la tienda." };
+  }
+  await shopify(env, "DELETE", `products/${id}.json`);
+  return { ok: true };
+}
+
+// Set the available stock for a product's first variant at the primary location.
+async function setInventory(env, product, quantity) {
+  const variant = product?.variants?.[0];
+  if (!variant?.inventory_item_id) return;
+  const locations = await shopify(env, "GET", "locations.json");
+  const locationId = locations.locations?.[0]?.id;
+  if (!locationId) return;
+  await shopify(env, "POST", "inventory_levels/set.json", {
+    location_id: locationId,
+    inventory_item_id: variant.inventory_item_id,
+    available: Number(quantity),
+  });
 }
 
 async function listOrders(env) {
