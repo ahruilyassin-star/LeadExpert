@@ -1,0 +1,14 @@
+{
+  "name": "esencias-admin",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Modern admin dashboard for ESENCIAS DE DUBAI (Cloudflare Worker + Shopify Admin API)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}
