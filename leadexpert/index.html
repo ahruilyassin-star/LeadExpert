@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professionele Website Laten Maken | LeadExpert Webdesign België</title>
+  <meta name="description" content="Laat een professionele, snelle website maken die klanten aantrekt. Gratis adviesgesprek voor Belgische KMO's. Resultaten binnen 14 dagen. ✓ SEO ✓ Mobiel ✓ Leads">
+  <meta name="keywords" content="website laten maken België, webdesign KMO, professionele website, webshop maken, SEO website België, website Antwerpen, website Brussel, website Gent">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Professionele Website Die Klanten Aantrekt | LeadExpert">
+  <meta property="og:description" content="Gratis adviesgesprek — wij bouwen websites die leads genereren voor Belgische KMO's.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://webdesign.leadexpert.be">
+  <meta property="og:locale" content="nl_BE">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://webdesign.leadexpert.be">
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "LeadExpert Webdesign",
+    "url": "https://webdesign.leadexpert.be",
+    "description": "Professionele websites en webshops voor Belgische KMO's die meer klanten aantrekken.",
+    "areaServed": "BE",
+    "serviceType": "Webdesign",
+    "priceRange": "€€"
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a56db;
+      --primary-dark: #1341b0;
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --text: #111827;
+      --muted: #6b7280;
+      --bg: #f9fafb;
+      --white: #ffffff;
+      --success: #10b981;
+      --border: #e5e7eb;
+      --shadow: 0 4px 24px rgba(0,0,0,0.10);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    }
+    .nav-logo { font-size: 1.25rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent); color: var(--white); font-weight: 700;
+      padding: 10px 22px; border-radius: 8px; text-decoration: none;
+      font-size: 0.95rem; transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: var(--accent-dark); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1a56db 100%);
+      color: var(--white);
+      padding: 80px 24px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.5);
+      color: var(--accent); font-size: 0.85rem; font-weight: 600;
+      padding: 6px 16px; border-radius: 99px; margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 20px;
+      max-width: 800px; margin-left: auto; margin-right: auto;
+    }
+    .hero h1 .highlight { color: var(--accent); }
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      opacity: 0.9; max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    /* HERO FORM */
+    .hero-form {
+      background: var(--white); color: var(--text);
+      border-radius: var(--radius); padding: 32px;
+      max-width: 520px; margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .hero-form h2 {
+      font-size: 1.3rem; font-weight: 800;
+      margin-bottom: 8px; color: var(--text);
+    }
+    .hero-form .form-subline {
+      font-size: 0.9rem; color: var(--muted); margin-bottom: 20px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block; font-size: 0.85rem; font-weight: 600;
+      margin-bottom: 5px; color: var(--text);
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 1rem; color: var(--text);
+      transition: border-color 0.2s;
+      background: var(--white);
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none; border-color: var(--primary);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-submit {
+      width: 100%; padding: 15px;
+      background: var(--accent); color: var(--white);
+      font-size: 1.1rem; font-weight: 800;
+      border: none; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px; letter-spacing: 0.3px;
+    }
+    .btn-submit:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+    .form-privacy {
+      font-size: 0.78rem; color: var(--muted);
+      text-align: center; margin-top: 10px;
+    }
+
+    /* TRUST BAR */
+    .trust-bar {
+      background: #f1f5f9; border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 24px; align-items: center;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.9rem; font-weight: 600; color: #374151;
+    }
+    .trust-item .icon { font-size: 1.1rem; }
+
+    /* SECTION */
+    section { padding: 80px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 900; margin-bottom: 16px; line-height: 1.2;
+    }
+    .section-sub { font-size: 1.05rem; color: var(--muted); max-width: 600px; }
+
+    /* PAIN SECTION */
+    .pain-section { background: var(--bg); }
+    .pain-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px; margin-top: 48px;
+    }
+    .pain-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 28px; border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+    }
+    .pain-card .pain-icon { font-size: 2rem; margin-bottom: 14px; }
+    .pain-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .pain-card p { font-size: 0.9rem; color: var(--muted); }
+
+    /* HOW IT WORKS */
+    .steps { display: flex; flex-direction: column; gap: 32px; margin-top: 48px; }
+    .step { display: flex; gap: 24px; align-items: flex-start; }
+    .step-num {
+      flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--primary); color: var(--white);
+      font-size: 1.2rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-content h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .step-content p { font-size: 0.95rem; color: var(--muted); }
+
+    /* SERVICES */
+    .services-section { background: var(--bg); }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; margin-top: 48px;
+    }
+    .service-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 32px; border: 1px solid var(--border);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .service-card:hover { box-shadow: var(--shadow); transform: translateY(-4px); }
+    .service-icon { font-size: 2.5rem; margin-bottom: 18px; }
+    .service-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 10px; }
+    .service-card p { font-size: 0.92rem; color: var(--muted); margin-bottom: 16px; }
+    .service-price {
+      font-size: 0.85rem; font-weight: 700; color: var(--primary);
+      background: #eff6ff; padding: 6px 12px; border-radius: 6px;
+      display: inline-block;
+    }
+
+    /* SOCIAL PROOF */
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px; margin-top: 48px;
+    }
+    .testimonial {
+      background: var(--bg); border-radius: var(--radius);
+      padding: 28px; border: 1px solid var(--border);
+    }
+    .stars { color: var(--accent); font-size: 1.1rem; margin-bottom: 12px; }
+    .testimonial p { font-size: 0.95rem; color: var(--text); margin-bottom: 16px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--primary); color: var(--white);
+      font-weight: 700; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; flex-shrink: 0;
+    }
+    .author-name { font-weight: 700; font-size: 0.9rem; }
+    .author-company { font-size: 0.8rem; color: var(--muted); }
+
+    /* STATS */
+    .stats-section {
+      background: linear-gradient(135deg, #1e3a8a, #1a56db);
+      color: var(--white); text-align: center;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 40px; margin-top: 48px;
+    }
+    .stat-item .stat-num {
+      font-size: 3rem; font-weight: 900; color: var(--accent);
+      line-height: 1;
+    }
+    .stat-item .stat-label { font-size: 0.9rem; opacity: 0.85; margin-top: 6px; }
+
+    /* LEAD MAGNET */
+    .lead-magnet {
+      background: #fffbeb; border: 2px solid var(--accent);
+      border-radius: var(--radius); padding: 40px;
+      text-align: center; max-width: 700px; margin: 48px auto 0;
+    }
+    .lead-magnet h3 { font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
+    .lead-magnet p { color: var(--muted); margin-bottom: 24px; }
+    .lead-magnet-form {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    }
+    .lead-magnet-form input {
+      flex: 1; min-width: 220px; padding: 13px 16px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 1rem;
+    }
+    .lead-magnet-form input:focus { outline: none; border-color: var(--primary); }
+    .lead-magnet-form button {
+      padding: 13px 28px; background: var(--primary); color: var(--white);
+      font-weight: 700; font-size: 1rem; border: none; border-radius: 8px;
+      cursor: pointer; white-space: nowrap; transition: background 0.2s;
+    }
+    .lead-magnet-form button:hover { background: var(--primary-dark); }
+
+    /* FAQ */
+    .faq-list { margin-top: 48px; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .faq-question {
+      width: 100%; text-align: left; padding: 18px 24px;
+      background: var(--white); border: none; cursor: pointer;
+      font-size: 1rem; font-weight: 600; color: var(--text);
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.15s;
+    }
+    .faq-question:hover { background: var(--bg); }
+    .faq-question .arrow { font-size: 1.2rem; transition: transform 0.2s; }
+    .faq-answer {
+      display: none; padding: 0 24px 18px;
+      font-size: 0.95rem; color: var(--muted); line-height: 1.7;
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .arrow { transform: rotate(180deg); }
+
+    /* FINAL CTA */
+    .final-cta {
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: var(--white); text-align: center; padding: 80px 24px;
+    }
+    .final-cta h2 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; margin-bottom: 16px; }
+    .final-cta p { opacity: 0.85; font-size: 1.1rem; margin-bottom: 36px; max-width: 550px; margin-left: auto; margin-right: auto; }
+    .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 16px 36px; background: var(--accent); color: var(--white);
+      font-weight: 800; font-size: 1.1rem; border-radius: 10px;
+      text-decoration: none; transition: background 0.2s, transform 0.1s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); }
+    .btn-secondary {
+      padding: 16px 36px; background: transparent; color: var(--white);
+      font-weight: 700; font-size: 1.1rem; border-radius: 10px;
+      text-decoration: none; border: 2px solid rgba(255,255,255,0.4);
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
+
+    /* FOOTER */
+    footer {
+      background: #0f172a; color: #94a3b8;
+      padding: 40px 24px; text-align: center;
+      font-size: 0.9rem;
+    }
+    footer a { color: #94a3b8; text-decoration: none; }
+    footer a:hover { color: var(--white); }
+
+    /* STICKY BOTTOM BAR (mobile) */
+    .sticky-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--primary); color: var(--white);
+      padding: 14px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 200; gap: 12px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+    }
+    .sticky-bar p { font-size: 0.9rem; font-weight: 600; }
+    .sticky-bar a {
+      background: var(--accent); color: var(--white);
+      padding: 10px 20px; border-radius: 8px;
+      font-weight: 700; font-size: 0.9rem; text-decoration: none;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* SUCCESS STATE */
+    .form-success {
+      display: none; text-align: center; padding: 20px;
+    }
+    .form-success .success-icon { font-size: 3rem; margin-bottom: 12px; }
+    .form-success h3 { font-size: 1.3rem; font-weight: 800; color: var(--success); margin-bottom: 8px; }
+    .form-success p { font-size: 0.95rem; color: var(--muted); }
+
+    /* WHATSAPP FLOAT */
+    .whatsapp-float {
+      position: fixed; bottom: 80px; right: 20px; z-index: 199;
+      background: #25d366; color: var(--white);
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; box-shadow: 0 4px 16px rgba(37,211,102,0.5);
+      text-decoration: none; transition: transform 0.2s;
+    }
+    .whatsapp-float:hover { transform: scale(1.1); }
+
+    @media (max-width: 640px) {
+      .hero { padding: 60px 16px 40px; }
+      .hero-form { padding: 24px 18px; }
+      .form-row { grid-template-columns: 1fr; }
+      section { padding: 60px 16px; }
+      .trust-bar { gap: 14px; }
+      .step { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="#" class="nav-logo">Lead<span>Expert</span></a>
+  <a href="#contact" class="nav-cta">Gratis Gesprek</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🇧🇪 Specialist voor Belgische KMO's</div>
+  <h1>Een website die <span class="highlight">echt klanten</span> aantrekt</h1>
+  <p>Professionele websites & webshops die hogere omzet genereren — geoptimaliseerd voor Google, mobiel en conversie.</p>
+
+  <div class="hero-form" id="contact">
+    <h2>Vraag je gratis website-audit aan</h2>
+    <p class="form-subline">Wij analyseren je huidige situatie & geven concrete aanbevelingen — 100% gratis, geen verplichtingen.</p>
+
+    <div class="form-success" id="formSuccess">
+      <div class="success-icon">✅</div>
+      <h3>Aanvraag ontvangen!</h3>
+      <p>We nemen binnen 24 uur contact met je op. Check ook je spam-folder.</p>
+    </div>
+
+    <form id="leadForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="naam">Voornaam *</label>
+          <input type="text" id="naam" name="naam" placeholder="Jan" required>
+        </div>
+        <div class="form-group">
+          <label for="bedrijf">Bedrijfsnaam</label>
+          <input type="text" id="bedrijf" name="bedrijf" placeholder="Mijn BV">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">E-mailadres *</label>
+        <input type="email" id="email" name="email" placeholder="jan@bedrijf.be" required>
+      </div>
+      <div class="form-group">
+        <label for="tel">Telefoonnummer</label>
+        <input type="tel" id="tel" name="tel" placeholder="+32 4XX XX XX XX">
+      </div>
+      <div class="form-group">
+        <label for="behoefte">Wat heb je nodig? *</label>
+        <select id="behoefte" name="behoefte" required>
+          <option value="">-- Kies een optie --</option>
+          <option>Nieuwe website laten maken</option>
+          <option>Bestaande website verbeteren</option>
+          <option>Webshop / e-commerce</option>
+          <option>SEO & meer bezoekers</option>
+          <option>Website audit & advies</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-submit">🚀 Stuur mijn gratis audit-aanvraag</button>
+      <p class="form-privacy">🔒 Privacy gegarandeerd. Geen spam, nooit doorverkoop van gegevens.</p>
+    </form>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="icon">⭐</span> 4.9/5 beoordeling</div>
+  <div class="trust-item"><span class="icon">✅</span> +120 websites opgeleverd</div>
+  <div class="trust-item"><span class="icon">⚡</span> Resultaten binnen 14 dagen</div>
+  <div class="trust-item"><span class="icon">🇧🇪</span> 100% Belgisch bedrijf</div>
+  <div class="trust-item"><span class="icon">🔒</span> GDPR-conform</div>
+</div>
+
+<!-- PAIN POINTS -->
+<section class="pain-section">
+  <div class="container">
+    <p class="section-label">Herken jij dit?</p>
+    <h2 class="section-title">Waarom levert je huidige website geen klanten op?</h2>
+    <p class="section-sub">De meeste websites zijn digitale brochures. Wij bouwen machines die leads genereren.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">😰</div>
+        <h3>Onvindbaar in Google</h3>
+        <p>Potentiële klanten zoeken online, maar vinden jou niet. Ze vinden je concurrenten.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📱</div>
+        <h3>Slecht op mobiel</h3>
+        <p>Meer dan 70% van bezoekers surft op smartphone. Een trage of lelijke mobiele site kost je klanten.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">💸</div>
+        <h3>Hoge advertentiekosten</h3>
+        <p>Je geeft geld uit aan Google/Facebook-advertenties maar je website converteert ze niet naar leads.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🤷</div>
+        <h3>Geen idee wat werkt</h3>
+        <p>Je hebt geen inzicht in wie je website bezoekt, waar ze afhaken en waarom ze niet bellen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="container">
+    <p class="section-label">Hoe het werkt</p>
+    <h2 class="section-title">Van aanvraag tot live website in 3 stappen</h2>
+    <p class="section-sub">Een eenvoudig, transparant proces — zonder verrassingen.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Gratis Strategiegesprek (30 min)</h3>
+          <p>We bespreken jouw doelen, doelgroep en concurrenten. Je ontvangt direct een eerlijk advies — ook als je bij ons niet verder gaat.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Design & Ontwikkeling op maat</h3>
+          <p>Op basis van jouw briefing bouwen we een snelle, SEO-geoptimaliseerde website. Jij geeft feedback, wij passen aan. Volledig Belgisch team.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Live — en klanten beginnen te bellen</h3>
+          <p>We plaatsen je site live, koppelen analytics, zorgen voor een Google My Business-optimalisatie en begeleiden je de eerste maand gratis.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services-section">
+  <div class="container">
+    <p class="section-label">Onze diensten</p>
+    <h2 class="section-title">Wat wij voor jou doen</h2>
+    <p class="section-sub">Van eenvoudige visitekaartje-website tot complexe webshop — alles op maat.</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">🌐</div>
+        <h3>Business Website</h3>
+        <p>Een professionele, snelle website die je bedrijf sterk presenteert en bezoekers omzet in contacten.</p>
+        <span class="service-price">Vanaf €795</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🛒</div>
+        <h3>Webshop / E-commerce</h3>
+        <p>WooCommerce of Shopify webshop met kassaflow geoptimaliseerd voor hogere conversie en minder verlaten winkelwagens.</p>
+        <span class="service-price">Vanaf €1.495</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔍</div>
+        <h3>SEO & Google-zichtbaarheid</h3>
+        <p>Technische SEO, lokale SEO en content strategie zodat jouw klanten jou vinden — zonder te betalen per klik.</p>
+        <span class="service-price">Vanaf €295/maand</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">⚡</div>
+        <h3>Website Renovatie</h3>
+        <p>Je bestaande website sneller, mooier en converterender maken zonder alles opnieuw te moeten bouwen.</p>
+        <span class="service-price">Vanaf €495</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">📊</div>
+        <h3>Gratis Website Audit</h3>
+        <p>We analyseren je huidige website op snelheid, SEO, mobiel gebruik en conversiepunten. Je ontvangt een PDF-rapport.</p>
+        <span class="service-price">100% Gratis</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔧</div>
+        <h3>Website Onderhoud & Hosting</h3>
+        <p>Zorgeloos pakket: beveiligingsupdates, backups, hostingbeheer en technische ondersteuning.</p>
+        <span class="service-price">Vanaf €59/maand</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <p class="section-label" style="color:rgba(255,255,255,0.6)">Onze resultaten</p>
+    <h2 class="section-title">Cijfers die spreken</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">Websites opgeleverd in België</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Gemiddelde klanttevredenheid</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">+68%</div>
+        <div class="stat-label">Gemiddelde stijging in websiteleads</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">14</div>
+        <div class="stat-label">Dagen gemiddelde doorlooptijd</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="container">
+    <p class="section-label">Wat klanten zeggen</p>
+    <h2 class="section-title">Belgische ondernemers over hun nieuwe website</h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p>"Binnen 3 weken na de nieuwe website belden er al nieuwe klanten. Mijn Google-positie is enorm verbeterd. Absolute aanrader voor elke Belgische zelfstandige."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">SV</div>
+          <div>
+            <div class="author-name">Sarah V.</div>
+            <div class="author-company">Kinesitherapie, Gent</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p>"Onze webshop had lage conversie. Na de renovatie steeg ons conversiepercentage van 0.8% naar 2.4%. Dat is bijna 3x zoveel omzet uit hetzelfde advertentiebudget."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">MK</div>
+          <div>
+            <div class="author-name">Mohammed K.</div>
+            <div class="author-company">E-commerce, Antwerpen</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p>"Professioneel, snel en transparant over de kosten. Geen verborgen kosten, geen lange wachttijden. Ze deden wat ze beloofden. Dat is zeldzaam."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">NL</div>
+          <div>
+            <div class="author-name">Nathalie L.</div>
+            <div class="author-company">Bouwbedrijf, Brussel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD MAGNET -->
+<section style="background: var(--bg); padding: 60px 24px;">
+  <div class="container">
+    <div class="lead-magnet">
+      <div style="font-size:2.5rem; margin-bottom:12px;">🎁</div>
+      <h3>Gratis: "10 Redenen Waarom Jouw Website Geen Klanten Binnenhaalt"</h3>
+      <p>Ontvang onze checklist per e-mail — direct toepasbaar, zonder technische kennis.</p>
+      <form class="lead-magnet-form" id="magnetForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <input type="hidden" name="type" value="lead-magnet">
+        <input type="email" name="email" placeholder="jouw@email.be" required>
+        <button type="submit">Stuur mij de checklist →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="container">
+    <p class="section-label">Veelgestelde vragen</p>
+    <h2 class="section-title">Jouw vragen, eerlijk beantwoord</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">Hoeveel kost een website? <span class="arrow">▾</span></button>
+        <div class="faq-answer">Een eenvoudige business website begint bij €795. Een webshop vanaf €1.495. We hanteren vaste prijzen zonder verrassingen achteraf — alles staat in het contract.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Hoe lang duurt het om een website te bouwen? <span class="arrow">▾</span></button>
+        <div class="faq-answer">Gemiddeld 10 tot 21 werkdagen na het eerste gesprek. Spoedprojecten zijn mogelijk. De doorlooptijd hangt af van hoe snel jij feedback geeft en content aanlevert.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Moet ik zelf content (teksten & foto's) aanleveren? <span class="arrow">▾</span></button>
+        <div class="faq-answer">Nee — wij kunnen teksten schrijven (copywriting) en stockfoto's voorzien. Als je eigen foto's hebt, gebruiken we die. We werken altijd samen om de beste inhoud te bekomen.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Kan ik mijn website zelf beheren nadien? <span class="arrow">▾</span></button>
+        <div class="faq-answer">Ja. We bouwen op WordPress of Shopify zodat je zelf teksten en foto's kan aanpassen. We geven ook een persoonlijke opleiding zodat je zelfstandig aan de slag kan.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Werken jullie ook met kleine zelfstandigen? <span class="arrow">▾</span></button>
+        <div class="faq-answer">Absoluut. We werken zowel met eenmanszaken als grotere KMO's. Voor kleinere budgetten hebben we aangepaste formules — vraag ernaar in het gratis gesprek.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Is de gratis audit echt gratis? <span class="arrow">▾</span></button>
+        <div class="faq-answer">100% gratis, zonder verplichtingen. Je ontvangt een concreet PDF-rapport met aanbevelingen. Wij hopen uiteraard dat je daarna kiest om met ons samen te werken — maar dat is jouw keuze.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="final-cta">
+  <div class="container">
+    <h2>Klaar om meer klanten aan te trekken?</h2>
+    <p>Plan vandaag nog een gratis strategiegesprek. Geen verplichtingen, wel concrete inzichten.</p>
+    <div class="cta-buttons">
+      <a href="#contact" class="btn-primary">🚀 Gratis Gesprek Inplannen</a>
+      <a href="https://wa.me/32XXXXXXXXX?text=Hallo%2C%20ik%20wil%20graag%20meer%20info%20over%20een%20nieuwe%20website." class="btn-secondary" target="_blank" rel="noopener">
+        <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp ons
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 LeadExpert Webdesign · <a href="#">Privacy</a> · <a href="#">Algemene Voorwaarden</a> · BTW-plichtig Belgisch bedrijf</p>
+  <p style="margin-top:8px; font-size:0.8rem;">Webdesign & SEO voor Belgische KMO's in Antwerpen, Gent, Brussel, Leuven, Brugge en heel België.</p>
+</footer>
+
+<!-- STICKY BOTTOM BAR -->
+<div class="sticky-bar" id="stickyBar">
+  <p>Gratis website-audit aanvragen?</p>
+  <a href="#contact">Ja, gratis starten →</a>
+</div>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/32XXXXXXXXX?text=Hallo%2C%20ik%20wil%20graag%20meer%20info%20over%20een%20nieuwe%20website." class="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // Hide sticky bar when hero form is visible
+  const heroForm = document.getElementById('contact');
+  const stickyBar = document.getElementById('stickyBar');
+  const observer = new IntersectionObserver(entries => {
+    stickyBar.style.display = entries[0].isIntersecting ? 'none' : 'flex';
+  }, { threshold: 0.1 });
+  observer.observe(heroForm);
+
+  // Lead form submission
+  const leadForm = document.getElementById('leadForm');
+  leadForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = leadForm.querySelector('.btn-submit');
+    btn.textContent = 'Bezig met verzenden...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(leadForm.action, {
+        method: 'POST',
+        body: new FormData(leadForm),
+        headers: { Accept: 'application/json' }
+      });
+      if (res.ok) {
+        leadForm.style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+        // Track conversion
+        if (typeof gtag !== 'undefined') gtag('event', 'conversion', { event_category: 'lead', event_label: 'hero_form' });
+      } else {
+        btn.textContent = 'Probeer opnieuw';
+        btn.disabled = false;
+      }
+    } catch {
+      btn.textContent = 'Probeer opnieuw';
+      btn.disabled = false;
+    }
+  });
+
+  // Lead magnet form
+  const magnetForm = document.getElementById('magnetForm');
+  if (magnetForm) {
+    magnetForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = magnetForm.querySelector('button');
+      btn.textContent = 'Verzonden! ✅';
+      btn.disabled = true;
+      fetch(magnetForm.action, {
+        method: 'POST',
+        body: new FormData(magnetForm),
+        headers: { Accept: 'application/json' }
+      });
+    });
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+
+<!-- Google Analytics (vervang G-XXXXXXX met jouw ID) -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXX');</script> -->
+
+</body>
+</html>
