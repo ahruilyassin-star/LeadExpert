@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Webdesign Intent-Leads — leadexpert.be</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23667eea'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='60' font-family='Arial' fill='white'%3E◆%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-deep: #050810;
+    --bg: #0a0e1a;
+    --panel: rgba(20, 25, 40, 0.6);
+    --panel-solid: #141928;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --text: #f0f3f8;
+    --text-dim: #a4adbf;
+    --muted: #6b7280;
+    --brand: #667eea;
+    --brand-2: #764ba2;
+    --accent: #4ade80;
+    --warn: #fbbf24;
+    --hot: #fb7185;
+    --info: #38bdf8;
+    --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-hot: linear-gradient(135deg, #fb7185 0%, #fbbf24 100%);
+    --gradient-cool: linear-gradient(135deg, #38bdf8 0%, #4ade80 100%);
+    --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+    --shadow-glow: 0 0 40px rgba(102, 126, 234, 0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(56, 189, 248, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+    animation: bgShift 30s ease-in-out infinite;
+  }
+
+  @keyframes bgShift {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(2deg); }
+  }
+
+  .container {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding: 20px 24px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .brand-icon {
+    width: 44px; height: 44px;
+    background: var(--gradient);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: var(--shadow-glow);
+  }
+  .brand-text h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+  .brand-text p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .header-meta {
+    display: flex; align-items: center; gap: 20px; font-size: 13px;
+  }
+  .live-indicator {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 999px;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+  .meta-text { color: var(--text-dim); }
+  .meta-text strong { color: var(--text); font-weight: 600; }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    position: relative;
+    padding: 22px 24px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gradient);
+    opacity: 0.6;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .stat-value {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-top: 6px;
+    line-height: 1;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .stat-delta.up { background: rgba(74, 222, 128, 0.12); color: var(--accent); }
+  .stat-delta.down { background: rgba(251, 113, 133, 0.12); color: var(--hot); }
+  .stat-delta.flat { background: rgba(107, 114, 128, 0.15); color: var(--muted); }
+
+  /* CHARTS */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1000px) { .charts-grid { grid-template-columns: 1fr; } }
+  .card {
+    padding: 22px 24px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .card-badge {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .chart-wrap { position: relative; height: 240px; }
+
+  /* HEATMAP */
+  .heatmap {
+    margin-bottom: 24px;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 4px;
+  }
+  .heatmap-cell {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    transition: transform 0.15s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  .heatmap-cell:hover { transform: scale(1.4); z-index: 2; }
+  .heatmap-cell[data-intensity="1"] { background: rgba(102, 126, 234, 0.25); }
+  .heatmap-cell[data-intensity="2"] { background: rgba(102, 126, 234, 0.5); }
+  .heatmap-cell[data-intensity="3"] { background: rgba(102, 126, 234, 0.75); }
+  .heatmap-cell[data-intensity="4"] { background: var(--brand); box-shadow: 0 0 8px rgba(102, 126, 234, 0.6); }
+  .heatmap-cell[data-intensity="5"] {
+    background: var(--gradient);
+    box-shadow: 0 0 12px rgba(118, 75, 162, 0.8);
+  }
+  .heatmap-legend {
+    display: flex; align-items: center; gap: 8px; margin-top: 14px;
+    font-size: 11px; color: var(--text-dim);
+  }
+  .legend-cells { display: flex; gap: 3px; }
+  .legend-cells .heatmap-cell { width: 12px; }
+
+  /* SOURCES BREAKDOWN */
+  .sources-list {
+    margin-bottom: 24px;
+  }
+  .source-row {
+    display: grid;
+    grid-template-columns: minmax(140px, auto) 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .source-row:last-child { border-bottom: none; }
+  .source-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .source-name strong { color: var(--text); font-weight: 600; }
+  .sparkline { height: 24px; width: 100%; }
+  .source-count { font-weight: 700; font-size: 14px; }
+  .source-pct {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 42px;
+    text-align: right;
+  }
+
+  /* FILTERS */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .input, .select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .input:focus, .select:focus {
+    outline: none;
+    border-color: var(--brand);
+    background: rgba(102, 126, 234, 0.08);
+  }
+  .input[type="search"] { min-width: 220px; flex: 1; }
+  .toolbar label {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text-dim); font-size: 13px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-left: auto;
+  }
+  .pill strong { color: var(--text); font-weight: 700; }
+
+  /* LEAD CARDS */
+  .leads-stack {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .lead-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    padding: 18px 22px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    animation: slideIn 0.4s ease backwards;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .lead-card:hover {
+    border-color: var(--border-strong);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-card);
+  }
+  .lead-card.is-new {
+    border-color: rgba(74, 222, 128, 0.4);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.4), 0 0 20px rgba(74, 222, 128, 0.15);
+    animation: newGlow 2s ease 0.4s 1 forwards, slideIn 0.4s ease backwards;
+  }
+  @keyframes newGlow {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.4), 0 0 20px rgba(74, 222, 128, 0.15); }
+    50% { box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.6), 0 0 30px rgba(74, 222, 128, 0.3); }
+  }
+
+  .score-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+  }
+  .score-badge.s-hot { background: var(--gradient-hot); color: white; border-color: transparent; }
+  .score-badge.s-high { background: var(--gradient); color: white; border-color: transparent; }
+  .score-badge.s-mid { background: rgba(56, 189, 248, 0.15); color: var(--info); border-color: rgba(56, 189, 248, 0.3); }
+  .score-badge.s-low { color: var(--text-dim); }
+  .score-badge small { font-size: 9px; font-weight: 600; opacity: 0.8; text-transform: uppercase; margin-top: 2px; }
+
+  .lead-body { min-width: 0; }
+  .lead-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .lead-title a { color: inherit; text-decoration: none; }
+  .lead-title a:hover { color: var(--brand); }
+  .lead-excerpt {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .lead-meta {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .meta-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .meta-tag.lang { color: var(--info); }
+  .meta-tag.fresh { background: rgba(74, 222, 128, 0.1); color: var(--accent); }
+  .meta-tag.hot { background: rgba(251, 113, 133, 0.1); color: var(--hot); }
+
+  .lead-side {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    color: var(--text-dim);
+    font-size: 11px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .lead-side .age { font-weight: 600; color: var(--text); font-size: 13px; }
+
+  /* EMPTY */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dim);
+  }
+  .empty-icon { font-size: 56px; opacity: 0.5; margin-bottom: 16px; }
+  .empty h3 { color: var(--text); font-weight: 600; margin-bottom: 8px; }
+  .empty p { font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+  .empty code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 32px;
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  footer code {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+  }
+  footer a { color: var(--brand); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ACCESSIBILITY */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* LIGHT MODE */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg-deep: #f8fafc;
+      --bg: #ffffff;
+      --panel: rgba(255, 255, 255, 0.7);
+      --panel-solid: #ffffff;
+      --border: rgba(15, 23, 42, 0.08);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --text: #0f172a;
+      --text-dim: #475569;
+      --muted: #94a3b8;
+    }
+    body::before {
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.06) 0%, transparent 50%);
+    }
+    .heatmap-cell { background: rgba(15, 23, 42, 0.04); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .container { padding: 16px; }
+    .stat-value { font-size: 34px; }
+    .lead-card { grid-template-columns: 1fr; gap: 12px; padding: 16px; }
+    .score-badge { width: 44px; height: 44px; font-size: 18px; }
+    .lead-side { align-items: flex-start; text-align: left; }
+    .heatmap-grid { grid-template-columns: repeat(15, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">◆</div>
+      <div class="brand-text">
+        <h1>Webdesign Intent-Leads</h1>
+        <p>webdesign.leadexpert.be · 10 bronnen actief</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span id="live-status">LIVE</span>
+      </div>
+      <div class="meta-text">
+        Bijgewerkt <strong id="meta-time">…</strong>
+      </div>
+      <div class="meta-text">
+        <span id="next-refresh">auto-refresh elke 5 min</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="stats-grid" id="stats-grid"></section>
+
+  <section class="charts-grid">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Activity Timeline</div>
+        <div class="card-badge">30 dagen</div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-timeline"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Bronnen</div>
+        <div class="card-badge" id="sources-badge">0</div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-sources"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Talen</div>
+        <div class="card-badge" id="langs-badge">0</div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-languages"></canvas></div>
+    </div>
+  </section>
+
+  <section class="card heatmap">
+    <div class="card-header">
+      <div class="card-title">Heatmap — Last 30 days</div>
+      <div class="card-badge" id="heatmap-total">0 leads</div>
+    </div>
+    <div class="heatmap-grid" id="heatmap-grid"></div>
+    <div class="heatmap-legend">
+      <span>Less</span>
+      <div class="legend-cells">
+        <div class="heatmap-cell" data-intensity="0"></div>
+        <div class="heatmap-cell" data-intensity="1"></div>
+        <div class="heatmap-cell" data-intensity="2"></div>
+        <div class="heatmap-cell" data-intensity="3"></div>
+        <div class="heatmap-cell" data-intensity="4"></div>
+        <div class="heatmap-cell" data-intensity="5"></div>
+      </div>
+      <span>More</span>
+    </div>
+  </section>
+
+  <section class="card sources-list">
+    <div class="card-header">
+      <div class="card-title">Source Performance — last 14 days</div>
+    </div>
+    <div id="sources-rows"></div>
+  </section>
+
+  <section class="toolbar">
+    <input type="search" id="filter-search" class="input" placeholder="Zoek titel of excerpt…">
+    <select id="filter-source" class="select"><option value="">Alle bronnen</option></select>
+    <select id="filter-language" class="select">
+      <option value="">Alle talen</option>
+      <option value="NL">NL</option><option value="FR">FR</option><option value="EN">EN</option>
+    </select>
+    <label>Min score
+      <input type="number" id="filter-score" class="input" min="5" max="20" value="5" style="width: 64px;">
+    </label>
+    <select id="filter-age" class="select">
+      <option value="">Alle leeftijden</option>
+      <option value="1">≤ 24u</option>
+      <option value="7">≤ 7 dagen</option>
+      <option value="30">≤ 30 dagen</option>
+    </select>
+    <span class="pill"><strong id="filter-count">0</strong> leads</span>
+  </section>
+
+  <section class="leads-stack" id="leads-stack"></section>
+  <div class="empty" id="empty-state" style="display: none;">
+    <div class="empty-icon">◇</div>
+    <h3>Nog geen leads</h3>
+    <p>De Action heeft nog niet gedraaid, of de filters zijn te streng.
+       Setup-instructies staan in <code>leads/README.md</code>.</p>
+  </div>
+
+  <footer>
+    Data: <code>dashboard/data.json</code> · Pipeline: <code>scripts/daily.py</code> ·
+    Refresh: dagelijks 07:00 Brussels via GitHub Action ·
+    <a href="https://webdesign.leadexpert.be" target="_blank">leadexpert.be</a>
+  </footer>
+</div>
+
+<script>
+const PALETTE = ['#667eea', '#764ba2', '#4ade80', '#38bdf8', '#fb7185', '#fbbf24', '#a78bfa', '#22d3ee', '#fb923c', '#f472b6'];
+const REFRESH_MS = 5 * 60 * 1000;
+let RAW = null;
+let CHARTS = {};
+let LAST_KNOWN_URLS = new Set();
+
+async function load(isInitial = true) {
+  try {
+    const resp = await fetch('data.json?cb=' + Date.now(), { cache: 'no-store' });
+    const fresh = await resp.json();
+    if (!isInitial && RAW) {
+      // detecteer nieuwe leads
+      const knownUrls = new Set(RAW.leads.map(l => l.url));
+      fresh.leads.forEach(l => l._isNew = !knownUrls.has(l.url));
+    }
+    RAW = fresh;
+    render();
+  } catch (e) {
+    console.error('Load failed', e);
+    if (isInitial) showEmpty();
+  }
+}
+
+function showEmpty() {
+  document.getElementById('empty-state').style.display = 'block';
+  document.getElementById('leads-stack').innerHTML = '';
+}
+
+function render() {
+  renderMeta();
+  renderStats();
+  renderCharts();
+  renderHeatmap();
+  renderSourceRows();
+  populateSourceFilter();
+  renderTable();
+}
+
+function renderMeta() {
+  const t = new Date(RAW.generated_at);
+  document.getElementById('meta-time').textContent =
+    t.toLocaleString('nl-BE', { dateStyle: 'medium', timeStyle: 'short' });
+  const srcs = Object.keys(RAW.stats.by_source).length;
+  document.getElementById('sources-badge').textContent = srcs + ' actief';
+  document.getElementById('langs-badge').textContent = Object.keys(RAW.stats.by_language).length + ' talen';
+  document.getElementById('heatmap-total').textContent = RAW.stats.last_30_days + ' leads';
+}
+
+function delta(curr, prev) {
+  if (prev === 0 && curr === 0) return { cls: 'flat', txt: '—' };
+  if (prev === 0) return { cls: 'up', txt: '+' + curr };
+  const diff = curr - prev;
+  if (diff > 0) return { cls: 'up', txt: '↑ +' + diff };
+  if (diff < 0) return { cls: 'down', txt: '↓ ' + diff };
+  return { cls: 'flat', txt: '— 0' };
+}
+
+function renderStats() {
+  const s = RAW.stats;
+  const todayDelta = delta(s.today, s.yesterday || 0);
+  const weekDelta = delta(s.last_7_days, s.last_7_days_prev || 0);
+  const cards = [
+    { label: 'Vandaag', value: s.today, delta: todayDelta, sub: 'vs gisteren' },
+    { label: 'Last 7 days', value: s.last_7_days, delta: weekDelta, sub: 'vs vorige week' },
+    { label: 'Last 30 days', value: s.last_30_days, delta: { cls: 'flat', txt: 'window' }, sub: 'sliding' },
+    { label: 'Totaal', value: s.total, delta: { cls: 'flat', txt: 'all-time' }, sub: 'sinds start' },
+  ];
+  document.getElementById('stats-grid').innerHTML = cards.map(c => `
+    <div class="stat-card">
+      <div class="stat-label">${c.label}</div>
+      <div class="stat-value">${c.value}</div>
+      <span class="stat-delta ${c.delta.cls}">${c.delta.txt}</span>
+      <span style="font-size: 11px; color: var(--muted); margin-left: 8px;">${c.sub}</span>
+    </div>
+  `).join('');
+}
+
+function chartDefaults() {
+  Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim();
+  Chart.defaults.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim();
+  Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+  Chart.defaults.font.size = 11;
+}
+
+function renderCharts() {
+  chartDefaults();
+  // Destroy oude charts (voor refresh)
+  Object.values(CHARTS).forEach(c => c.destroy());
+  CHARTS = {};
+
+  // Timeline gradient
+  const ctx1 = document.getElementById('chart-timeline').getContext('2d');
+  const grad = ctx1.createLinearGradient(0, 0, 0, 220);
+  grad.addColorStop(0, 'rgba(102, 126, 234, 0.5)');
+  grad.addColorStop(1, 'rgba(102, 126, 234, 0)');
+
+  CHARTS.timeline = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: RAW.stats.timeline_30d.map(d => d.date.slice(5)),
+      datasets: [{
+        data: RAW.stats.timeline_30d.map(d => d.count),
+        borderColor: PALETTE[0],
+        backgroundColor: grad,
+        borderWidth: 2,
+        tension: 0.35,
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointBackgroundColor: PALETTE[0],
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { intersect: false, mode: 'index' } },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 18 } },
+        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+      },
+    },
+  });
+
+  CHARTS.sources = new Chart(document.getElementById('chart-sources'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(RAW.stats.by_source),
+      datasets: [{
+        data: Object.values(RAW.stats.by_source),
+        backgroundColor: PALETTE,
+        borderWidth: 0,
+        spacing: 2,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '68%',
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, padding: 8, font: { size: 11 } } } },
+    },
+  });
+
+  CHARTS.langs = new Chart(document.getElementById('chart-languages'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(RAW.stats.by_language),
+      datasets: [{
+        data: Object.values(RAW.stats.by_language),
+        backgroundColor: PALETTE.slice(2),
+        borderWidth: 0,
+        spacing: 2,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '68%',
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, padding: 8, font: { size: 11 } } } },
+    },
+  });
+}
+
+function renderHeatmap() {
+  const grid = document.getElementById('heatmap-grid');
+  const tl = RAW.stats.timeline_30d;
+  const max = Math.max(1, ...tl.map(d => d.count));
+  grid.innerHTML = tl.map(d => {
+    const intensity = d.count === 0 ? 0 : Math.min(5, Math.ceil((d.count / max) * 5));
+    return `<div class="heatmap-cell" data-intensity="${intensity}" title="${d.date}: ${d.count} lead${d.count===1?'':'s'}"></div>`;
+  }).join('');
+}
+
+function renderSourceRows() {
+  const wrap = document.getElementById('sources-rows');
+  const total = Math.max(1, RAW.stats.total);
+  const rows = Object.entries(RAW.stats.by_source).map(([src, count]) => {
+    const pct = ((count / total) * 100).toFixed(0);
+    const sparkData = RAW.stats.sparkline_per_source[src] || [];
+    return `
+      <div class="source-row">
+        <div class="source-name"><strong>${escapeHtml(src)}</strong></div>
+        <svg class="sparkline" viewBox="0 0 100 24" preserveAspectRatio="none">
+          ${renderSparkline(sparkData, 100, 24)}
+        </svg>
+        <div class="source-count">${count}</div>
+        <div class="source-pct">${pct}%</div>
+      </div>
+    `;
+  });
+  wrap.innerHTML = rows.length ? rows.join('') :
+    '<div style="color: var(--text-dim); font-size: 13px; padding: 12px 0;">Geen data — wachten op eerste Action-run.</div>';
+}
+
+function renderSparkline(data, w, h) {
+  if (!data.length) return '';
+  const max = Math.max(1, ...data);
+  const step = w / Math.max(1, data.length - 1);
+  const points = data.map((v, i) => `${(i * step).toFixed(1)},${(h - (v / max) * h).toFixed(1)}`).join(' ');
+  return `<polyline fill="none" stroke="${PALETTE[0]}" stroke-width="1.5" points="${points}"/>` +
+         `<polyline fill="${PALETTE[0]}22" stroke="none" points="0,${h} ${points} ${w},${h}"/>`;
+}
+
+function populateSourceFilter() {
+  const select = document.getElementById('filter-source');
+  const existing = new Set(Array.from(select.options).map(o => o.value));
+  Object.keys(RAW.stats.by_source).forEach(src => {
+    if (existing.has(src)) return;
+    const opt = document.createElement('option');
+    opt.value = src; opt.textContent = `${src} (${RAW.stats.by_source[src]})`;
+    select.appendChild(opt);
+  });
+}
+
+function hookFilters() {
+  ['filter-search', 'filter-source', 'filter-language', 'filter-score', 'filter-age']
+    .forEach(id => document.getElementById(id).addEventListener('input', renderTable));
+}
+
+function scoreBucket(s) {
+  if (s >= 10) return { cls: 's-hot', label: 'HOT' };
+  if (s >= 8) return { cls: 's-high', label: 'HIGH' };
+  if (s >= 6) return { cls: 's-mid', label: 'MED' };
+  return { cls: 's-low', label: '' };
+}
+
+function ageString(fileDate) {
+  if (!fileDate) return '';
+  const ms = Date.now() - Date.parse(fileDate + 'T12:00:00Z');
+  const days = Math.floor(ms / 86400000);
+  if (days <= 0) return 'vandaag';
+  if (days === 1) return 'gisteren';
+  if (days < 7) return `${days}d geleden`;
+  if (days < 30) return `${Math.floor(days/7)}w geleden`;
+  return `${Math.floor(days/30)}mnd geleden`;
+}
+
+function renderTable() {
+  const q = document.getElementById('filter-search').value.toLowerCase();
+  const src = document.getElementById('filter-source').value;
+  const lang = document.getElementById('filter-language').value;
+  const minScore = parseInt(document.getElementById('filter-score').value || '5', 10);
+  const ageDays = parseInt(document.getElementById('filter-age').value || '0', 10);
+  const cutoff = ageDays ? Date.now() - ageDays * 86400 * 1000 : 0;
+
+  const filtered = RAW.leads.filter(l => {
+    if (l.intent_score < minScore) return false;
+    if (src && l.source !== src) return false;
+    if (lang && l.language !== lang) return false;
+    if (q && !((l.title || '').toLowerCase().includes(q) || (l.excerpt || '').toLowerCase().includes(q))) return false;
+    if (ageDays && Date.parse(l.file_date + 'T00:00:00Z') < cutoff) return false;
+    return true;
+  });
+
+  document.getElementById('filter-count').textContent = filtered.length;
+  document.getElementById('empty-state').style.display = filtered.length ? 'none' : 'block';
+
+  const stack = document.getElementById('leads-stack');
+  if (!filtered.length) { stack.innerHTML = ''; return; }
+
+  stack.innerHTML = filtered.slice(0, 200).map((l, i) => {
+    const sb = scoreBucket(l.intent_score);
+    const age = ageString(l.file_date);
+    const isFresh = ageDays === 0 ? false : age === 'vandaag';
+    const isHot = l.intent_score >= 10;
+    const isNew = l._isNew;
+    return `
+      <div class="lead-card ${isNew ? 'is-new' : ''}" style="animation-delay: ${Math.min(i * 30, 600)}ms" onclick="window.open('${escapeAttr(l.url)}', '_blank')">
+        <div class="score-badge ${sb.cls}">
+          ${l.intent_score}
+          ${sb.label ? `<small>${sb.label}</small>` : ''}
+        </div>
+        <div class="lead-body">
+          <div class="lead-title"><a href="${escapeAttr(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.title)}</a></div>
+          <div class="lead-excerpt">${escapeHtml(l.excerpt || '')}</div>
+          <div class="lead-meta">
+            <span class="meta-tag">${escapeHtml(l.source)}</span>
+            <span class="meta-tag lang">${escapeHtml(l.language || '?')}</span>
+            <span class="meta-tag">${escapeHtml(l.author || '')}</span>
+            <span class="meta-tag">↳ matched: ${escapeHtml(l.matched_keyword || '—')}</span>
+            ${isFresh ? '<span class="meta-tag fresh">● FRESH</span>' : ''}
+            ${isHot ? '<span class="meta-tag hot">● HOT</span>' : ''}
+            ${isNew ? '<span class="meta-tag fresh">● NEW</span>' : ''}
+          </div>
+        </div>
+        <div class="lead-side">
+          <div class="age">${age}</div>
+          <div>${escapeHtml(l.created_utc || l.file_date)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+// Init
+hookFilters();
+load(true);
+
+// Auto-refresh every 5 min
+let refreshTimer = setInterval(() => load(false), REFRESH_MS);
+
+// Pause refresh when tab is hidden
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(refreshTimer);
+    document.getElementById('live-status').textContent = 'PAUSED';
+  } else {
+    load(false);
+    refreshTimer = setInterval(() => load(false), REFRESH_MS);
+    document.getElementById('live-status').textContent = 'LIVE';
+  }
+});
+
+// PWA service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

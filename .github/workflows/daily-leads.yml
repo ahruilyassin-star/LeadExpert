@@ -1,0 +1,67 @@
+name: Daily webdesign intent-leads
+
+on:
+  schedule:
+    # 07:00 Brussels-tijd ≈ 06:00 UTC (zomer) / 06:00 UTC (winter dichter bij 07:00 BE)
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  fetch-leads:
+    runs-on: ubuntu-latest
+    outputs:
+      lead_count: ${{ steps.fetch.outputs.lead_count }}
+      raw_count: ${{ steps.fetch.outputs.raw_count }}
+      date: ${{ steps.fetch.outputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/daily-webdesign-leads-Le4c5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch intent-leads from all sources
+        id: fetch
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+        run: python scripts/daily.py
+
+      - name: Commit and push
+        run: |
+          git config user.name  "leads-bot"
+          git config user.email "leads-bot@users.noreply.github.com"
+          git add leads/ dashboard/data.json
+          if git diff --staged --quiet; then
+            echo "No new leads today — skipping commit."
+            exit 0
+          fi
+          git commit -m "Daily intent-leads ${{ steps.fetch.outputs.date }} (${{ steps.fetch.outputs.lead_count }} qualified / ${{ steps.fetch.outputs.raw_count }} raw)"
+          git push origin claude/daily-webdesign-leads-Le4c5
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard
+
+  deploy-dashboard:
+    needs: fetch-leads
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
