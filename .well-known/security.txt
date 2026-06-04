@@ -1,0 +1,5 @@
+Contact: mailto:security@leadexpert.be
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: nl, fr, en
+Canonical: https://webdesign.leadexpert.be/.well-known/security.txt
+Policy: https://webdesign.leadexpert.be/security-policy.html

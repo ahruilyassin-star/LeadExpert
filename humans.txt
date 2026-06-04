@@ -1,0 +1,11 @@
+/* TEAM */
+LeadExpert — Webdesign & Leadgeneratie voor Belgische KMO's
+Locatie: Antwerpen, België
+Site: https://webdesign.leadexpert.be/
+Contact: hallo@leadexpert.be
+
+/* SITE */
+Last update: 2026/05/24
+Standards: HTML5, CSS3, ES2020, JSON-LD, WCAG 2.1 AA
+Components: Vanilla JS (geen framework, geen bloat)
+Software: Static site, gehost op edge CDN

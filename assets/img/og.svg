@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B0B1A"/>
+      <stop offset="100%" stop-color="#171738"/>
+    </linearGradient>
+    <linearGradient id="hi" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="55%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="80%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity=".4"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Logo -->
+  <g transform="translate(80,80)">
+    <rect width="64" height="64" rx="16" fill="url(#hi)"/>
+    <path d="M18 18v28h28" stroke="#0B0B1A" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <circle cx="46" cy="18" r="6" fill="#FACC15"/>
+    <text x="84" y="46" font-family="-apple-system, Segoe UI, sans-serif" font-size="32" font-weight="500" fill="#F8FAFC">Lead<tspan font-weight="800">Expert</tspan></text>
+  </g>
+
+  <!-- Headline -->
+  <text x="80" y="260" font-family="-apple-system, Segoe UI, sans-serif" font-size="72" font-weight="800" fill="#F8FAFC" letter-spacing="-2">Websites die elke maand</text>
+  <text x="80" y="350" font-family="-apple-system, Segoe UI, sans-serif" font-size="84" font-weight="800" fill="url(#hi)" letter-spacing="-2.5">30+ nieuwe klanten</text>
+  <text x="80" y="430" font-family="-apple-system, Segoe UI, sans-serif" font-size="72" font-weight="800" fill="#F8FAFC" letter-spacing="-2">opleveren.</text>
+
+  <!-- Sub -->
+  <text x="80" y="495" font-family="-apple-system, Segoe UI, sans-serif" font-size="28" font-weight="500" fill="#CBD5E1">+247% meer aanvragen · Belgische KMO's · 90-dagen garantie</text>
+
+  <!-- Proof badges -->
+  <g transform="translate(80,540)">
+    <rect width="200" height="50" rx="25" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)"/>
+    <text x="100" y="32" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="18" font-weight="600" fill="#F8FAFC">★ 4.9 · 89 reviews</text>
+  </g>
+  <g transform="translate(300,540)">
+    <rect width="220" height="50" rx="25" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)"/>
+    <text x="110" y="32" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="18" font-weight="600" fill="#F8FAFC">127 Belgische klanten</text>
+  </g>
+  <g transform="translate(540,540)">
+    <rect width="240" height="50" rx="25" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)"/>
+    <text x="120" y="32" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="18" font-weight="600" fill="#F8FAFC">€1.2M+ omzet gegenereerd</text>
+  </g>
+
+  <!-- URL -->
+  <text x="1120" y="595" text-anchor="end" font-family="ui-monospace, monospace" font-size="22" fill="#94A3B8">webdesign.leadexpert.be</text>
+</svg>
