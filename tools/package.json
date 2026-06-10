@@ -1,0 +1,13 @@
+{
+  "name": "leadexpert-tools",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "LeadExpert Tools — tools.leadexpert.be",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}
