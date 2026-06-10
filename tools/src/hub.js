@@ -12,8 +12,19 @@ export const TOOLS = [
     featured: true,
     badge: 'Nieuw',
   },
-  // Add future tools here:
-  // { id: 'vastgoed', title: 'Vastgoed Zoeker', ... },
+  {
+    id: 'webdesign',
+    title: 'Webdesign LeadExpert',
+    description: 'Professionele websites voor Belgische bedrijven. Webdesign op maat, SEO, webshops en digitale tools — snel geleverd, vaste prijs.',
+    icon: '🎨',
+    path: 'https://webdesign.leadexpert.be',
+    color: '#7c3aed',
+    gradient: 'linear-gradient(135deg,#4c1d95,#7c3aed)',
+    tags: ['Webdesign', 'SEO', 'België'],
+    featured: true,
+    badge: 'Online',
+    external: true,
+  },
 ];
 
 export function renderHub() {
@@ -185,7 +196,7 @@ function renderToolCard(t) {
     <div class="tool-tags">${(t.tags || []).map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
   </div>
   <div class="tool-footer">
-    <a href="${esc(t.path)}">
+    <a href="${esc(t.path)}"${t.external ? ' target="_blank" rel="noopener"' : ''}>
       <button class="btn-tool" style="background:${t.color}">
         ${t.icon} ${esc(t.title)} openen <span class="arrow">→</span>
       </button>
