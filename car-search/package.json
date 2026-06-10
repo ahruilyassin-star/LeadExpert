@@ -1,0 +1,13 @@
+{
+  "name": "car-search-belgium",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Belgian car search aggregator — searches AutoScout24, 2dehands, Autovidal and more",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}
