@@ -1,0 +1,50 @@
+name: Deploy LeadExpert Tools
+
+# Deploys the tools.leadexpert.be Worker to Cloudflare.
+# Triggers on pushes to main that touch the tools/ directory, or manually.
+#
+# Required repository secrets (Settings → Secrets → Actions):
+#   CLOUDFLARE_API_TOKEN   — token with "Edit Cloudflare Workers" permission
+#   CLOUDFLARE_ACCOUNT_ID  — your Cloudflare account ID
+#
+# After the first deploy, add the custom domain tools.leadexpert.be in the
+# Cloudflare dashboard → Workers → leadexpert-tools → Settings → Domains.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/**"
+      - ".github/workflows/deploy-tools.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Cloudflare secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Deploy overgeslagen: CLOUDFLARE_API_TOKEN en/of CLOUDFLARE_ACCOUNT_ID ontbreken. Voeg ze toe via Settings → Secrets → Actions."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 20
+
+      - name: Deploy LeadExpert Tools to Cloudflare Workers
+        if: steps.check.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: tools
+          command: deploy
