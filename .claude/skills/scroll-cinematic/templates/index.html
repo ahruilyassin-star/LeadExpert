@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{BRAND}} — Cinematic</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader"><div id="loader-bar"></div></div>
+
+  <!-- HERO: sticky canvas scrubbed by scroll -->
+  <section class="scroll-stage" style="--scroll-len: 400vh">
+    <div class="sticky-canvas">
+      <canvas data-frames="assets/frames/hero" data-count="120"></canvas>
+      <div class="overlay">
+        <h1>{{HEADLINE}}</h1>
+        <p>{{SUBHEAD}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="content">
+    <div class="grid">
+      <article><h3>{{FEATURE_1_TITLE}}</h3><p>{{FEATURE_1_BODY}}</p></article>
+      <article><h3>{{FEATURE_2_TITLE}}</h3><p>{{FEATURE_2_BODY}}</p></article>
+      <article><h3>{{FEATURE_3_TITLE}}</h3><p>{{FEATURE_3_BODY}}</p></article>
+    </div>
+  </section>
+
+  <!-- SHOWCASE: second scroll-scrubbed clip -->
+  <section class="scroll-stage" style="--scroll-len: 300vh">
+    <div class="sticky-canvas">
+      <canvas data-frames="assets/frames/showcase1" data-count="90"></canvas>
+      <div class="overlay left">
+        <h2>{{SHOWCASE_TITLE}}</h2>
+        <p>{{SHOWCASE_BODY}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>{{CTA_TITLE}}</h2>
+    <a class="btn" href="{{CTA_HREF}}">{{CTA_LABEL}}</a>
+  </section>
+
+  <footer>
+    <p>© <span id="year"></span> {{BRAND}}. All rights reserved.</p>
+  </footer>
+
+  <script src="scroll-frames.js"></script>
+</body>
+</html>
