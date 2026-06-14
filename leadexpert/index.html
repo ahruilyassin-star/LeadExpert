@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadExpert — B2B Leads die converteren</title>
+  <meta name="description" content="LeadExpert.be — Belgisch leadgeneratie- & salesbureau. Wij vullen je pipeline met gekwalificeerde B2B-leads die converteren." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader"><div id="loader-bar"></div></div>
+
+  <!-- Top nav -->
+  <header class="nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark"></span>
+      Lead<strong>Expert</strong><span class="be">.be</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#diensten">Diensten</a>
+      <a href="#proces">Proces</a>
+      <a href="#cijfers">Resultaten</a>
+      <a class="nav-cta" href="#contact">Plan een gesprek</a>
+    </nav>
+  </header>
+
+  <!-- HERO: scroll-driven 3D node network -->
+  <section id="top" class="scroll-stage hero" style="--scroll-len: 320vh">
+    <div class="sticky-canvas">
+      <canvas id="scene-hero"></canvas>
+      <div class="overlay">
+        <p class="eyebrow">B2B Leadgeneratie · België &amp; Benelux</p>
+        <h1>Wij vullen je pipeline met<br><span class="grad">leads die converteren.</span></h1>
+        <p class="lede">LeadExpert bouwt voorspelbare salesmachines — van eerste touchpoint tot getekend contract.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#contact">Plan een strategiegesprek</a>
+          <a class="btn ghost" href="#proces">Bekijk ons proces</a>
+        </div>
+        <div class="scroll-hint" aria-hidden="true"><span></span>Scroll</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="cijfers" class="content stats reveal">
+    <div class="stat"><b data-count="3200">0</b><span>Gekwalificeerde leads / jaar</span></div>
+    <div class="stat"><b data-count="38">0</b><span>% gem. afspraakratio</span></div>
+    <div class="stat"><b data-count="120">0</b><span>B2B-klanten in de Benelux</span></div>
+    <div class="stat"><b data-count="4">0</b><span>Talen: NL · FR · EN · DE</span></div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="diensten" class="content services">
+    <header class="section-head reveal">
+      <p class="eyebrow">Wat we doen</p>
+      <h2>Eén partner voor je volledige <span class="grad">salesfunnel</span>.</h2>
+    </header>
+    <div class="grid">
+      <article class="card reveal">
+        <div class="card-ico">◇</div>
+        <h3>Outbound Prospectie</h3>
+        <p>Multichannel campagnes via e-mail, LinkedIn en telefoon — strak getarget op jouw ideale klantprofiel.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card-ico">◈</div>
+        <h3>Lead Kwalificatie</h3>
+        <p>Wij filteren ruis weg en leveren enkel sales-ready afspraken met échte beslissers.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card-ico">◆</div>
+        <h3>Sales Enablement</h3>
+        <p>CRM-opzet, scripts en opvolgflows zodat je team elke lead omzet in omzet.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SHOWCASE: scroll-driven funnel scene -->
+  <section id="proces" class="scroll-stage showcase" style="--scroll-len: 300vh">
+    <div class="sticky-canvas">
+      <canvas id="scene-funnel"></canvas>
+      <div class="overlay left">
+        <p class="eyebrow">Het proces</p>
+        <h2>Van koude data naar<br><span class="grad">getekend contract.</span></h2>
+        <ul class="steps">
+          <li data-step="0"><b>01</b> Data &amp; targeting — we bouwen je ideale leadlijst.</li>
+          <li data-step="1"><b>02</b> Outreach — multichannel campagnes die opvallen.</li>
+          <li data-step="2"><b>03</b> Kwalificatie — enkel warme, sales-ready afspraken.</li>
+          <li data-step="3"><b>04</b> Closing — wij ondersteunen tot de deal rond is.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS / TRUST -->
+  <section class="content trust reveal">
+    <p class="eyebrow center">Vertrouwd door groeiende B2B-teams in de Benelux</p>
+    <div class="logos">
+      <span>NORDIC</span><span>Veltra</span><span>BrightPath</span><span>Kuro&amp;Co</span><span>Maelstrom</span>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contact" class="cta reveal">
+    <h2>Klaar om je <span class="grad">pipeline te vullen?</span></h2>
+    <p>Plan een vrijblijvend strategiegesprek van 30 minuten. We tonen exact hoe we jouw funnel laten groeien.</p>
+    <a class="btn primary big" href="mailto:hallo@leadexpert.be">Plan een gesprek →</a>
+  </section>
+
+  <footer>
+    <div class="foot-brand">Lead<strong>Expert</strong><span class="be">.be</span></div>
+    <p>© <span id="year"></span> LeadExpert — B2B Leadgeneratie · Gent, België · hallo@leadexpert.be</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
