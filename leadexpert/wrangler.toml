@@ -5,5 +5,6 @@ compatibility_date = "2024-09-23"
 # folder. Deployed in CI via .github/workflows/deploy-leadexpert-cf.yml using
 # the existing CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets.
 # Live at: https://leadexpert-scroll.<your-subdomain>.workers.dev
+# Re-trigger deploy: 2026-06-14
 [assets]
 directory = "."
