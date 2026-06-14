@@ -1,0 +1,49 @@
+name: Deploy LeadExpert Scroll-Cinematic (Pages)
+
+# Publishes the leadexpert/ scroll-cinematic landing page to GitHub Pages.
+# Runs on pushes to main that touch leadexpert/, or manually via "Run workflow".
+# No secrets required — GitHub builds and hosts it.
+#
+# Live URL after first successful run:
+#   https://ahruilyassin-star.github.io/Little-Oummah-Webshop/
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "leadexpert/**"
+      - ".github/workflows/deploy-leadexpert-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment, cancel in-progress runs.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload leadexpert site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: leadexpert
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
