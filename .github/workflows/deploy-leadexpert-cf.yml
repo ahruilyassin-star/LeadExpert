@@ -1,0 +1,51 @@
+name: Deploy LeadExpert Scroll-Cinematic (Cloudflare)
+
+# Deploys the leadexpert/ scroll-cinematic site as a static-asset Cloudflare
+# Worker. Runs in GitHub CI (which has network access), so it works even though
+# the dev sandbox can't reach Cloudflare directly.
+#
+# Reuses the same secrets as deploy-tools.yml:
+#   CLOUDFLARE_API_TOKEN   — token with "Edit Cloudflare Workers" permission
+#   CLOUDFLARE_ACCOUNT_ID  — your Cloudflare account ID
+#
+# Live URL after first deploy: https://leadexpert-scroll.<subdomain>.workers.dev
+# (the exact URL is printed in the deploy step logs).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "leadexpert/**"
+      - ".github/workflows/deploy-leadexpert-cf.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Cloudflare secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Deploy overgeslagen: CLOUDFLARE_API_TOKEN en/of CLOUDFLARE_ACCOUNT_ID ontbreken. Voeg ze toe via Settings → Secrets → Actions."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 20
+
+      - name: Deploy LeadExpert scroll site to Cloudflare Workers
+        if: steps.check.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: leadexpert
+          command: deploy
