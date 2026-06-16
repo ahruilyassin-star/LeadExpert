@@ -2,6 +2,9 @@ name: Setup Cloudflare DNS for leadexpert.be
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/setup-cloudflare-dns.yml'
 
 jobs:
   setup-dns:
