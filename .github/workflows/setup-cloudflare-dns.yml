@@ -2,29 +2,23 @@ name: Setup Cloudflare DNS for leadexpert.be
 
 on:
   workflow_dispatch:
-    inputs:
-      cloudflare_token:
-        description: 'Cloudflare API Token'
-        required: true
-        type: string
 
 jobs:
   setup-dns:
     runs-on: ubuntu-latest
     steps:
-      - name: Mask token
-        run: echo "::add-mask::${{ github.event.inputs.cloudflare_token }}"
-
       - name: Set DNS A records and CNAME
         env:
-          CF_TOKEN: ${{ github.event.inputs.cloudflare_token }}
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         run: |
           set -e
 
-          # Mask in logs
-          echo "::add-mask::$CF_TOKEN"
+          if [ -z "$CF_TOKEN" ]; then
+            echo "ERROR: CLOUDFLARE_TOKEN secret not set in repo settings"
+            exit 1
+          fi
 
-          # Get zone ID
+          # Get zone ID for leadexpert.be
           ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=leadexpert.be" \
             -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" | jq -r '.result[0].id')
@@ -33,15 +27,15 @@ jobs:
             echo "ERROR: Zone leadexpert.be not found. Check token permissions."
             exit 1
           fi
-          echo "Zone ID: $ZONE_ID"
+          echo "Zone ID found: $ZONE_ID"
 
           # Remove existing A records for @
           EXISTING_IDS=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=A&name=leadexpert.be" \
             -H "Authorization: Bearer $CF_TOKEN" | jq -r '.result[].id')
           for id in $EXISTING_IDS; do
             curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$id" \
-              -H "Authorization: Bearer $CF_TOKEN" | jq -r '.success'
-            echo "Deleted A record $id"
+              -H "Authorization: Bearer $CF_TOKEN" > /dev/null
+            echo "Deleted old A record $id"
           done
 
           # Add GitHub Pages A records
@@ -50,7 +44,7 @@ jobs:
               -H "Authorization: Bearer $CF_TOKEN" \
               -H "Content-Type: application/json" \
               --data "{\"type\":\"A\",\"name\":\"@\",\"content\":\"$IP\",\"ttl\":1,\"proxied\":false}")
-            echo "A $IP: $(echo $RESULT | jq -r '.success')"
+            echo "A $IP → $(echo $RESULT | jq -r '.success')"
           done
 
           # Remove existing CNAME www
@@ -58,15 +52,15 @@ jobs:
             -H "Authorization: Bearer $CF_TOKEN" | jq -r '.result[0].id')
           if [ -n "$CNAME_ID" ] && [ "$CNAME_ID" != "null" ]; then
             curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$CNAME_ID" \
-              -H "Authorization: Bearer $CF_TOKEN" | jq -r '.success'
-            echo "Deleted CNAME www"
+              -H "Authorization: Bearer $CF_TOKEN" > /dev/null
+            echo "Deleted old CNAME www"
           fi
 
-          # Add CNAME www -> ahruilyassin-star.github.io
+          # Add CNAME www → ahruilyassin-star.github.io
           RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
             -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
             --data '{"type":"CNAME","name":"www","content":"ahruilyassin-star.github.io","ttl":1,"proxied":false}')
-          echo "CNAME www: $(echo $RESULT | jq -r '.success')"
+          echo "CNAME www → $(echo $RESULT | jq -r '.success')"
 
-          echo "DNS setup complete for leadexpert.be!"
+          echo "Done! DNS for leadexpert.be is live."
