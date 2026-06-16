@@ -1,0 +1,23 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - claude/new-session-fva7gp
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Deploy to Netlify
+        run: |
+          npx -y @netlify/mcp@latest --site-id 697c0428-b554-432b-8466-f1ec92f3a00b --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..PvxY6jEwte0Ua_dG.gM3pvXAxUvrejD514EHbaC2eLPQfzFln3o9EGYLbWI_xSXttfiw153YP6Gzmw6fI15aCKq1MnefN3EWiXoN8q1ZBdU-SqMCCrl8uTr15c_vM2jTlyZU8LCQn2EoYaXYnDKvXv7--knwBXZqO_bXF-lWHcLquJZBHUmtENJUuP-TR803zkS2Bem97dEb1ZvS0j5Ia6dpsSSdDcAIA0ltsrQcgdRFnFDEaFIPQdr_r-MT2hTyuA5karBp95dJrJh5PqTcQnLIeLawd_Ug2BQvbcoEqhVsFstIJTMGRcUrzI_Fh8ocxv0gD0lLLxoBxkL7xI5Hnoa6J8fD6kID3AfGGzTaldnzhhYCBa2CgnqNYqYxEeFw6pHZjYeCtZBqe9WryqA4dLFfc.ilFyuI6b_4yMLsThOswrlg"
+        timeout-minutes: 10
