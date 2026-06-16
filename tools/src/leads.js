@@ -79,6 +79,20 @@ export async function handleLead(request, env) {
   // 3) Email via Resend (optional)
   if (env.RESEND_API_KEY && env.LEAD_TO) {
     try {
+      const rows = [
+        ['Naam', lead.name], ['E-mail', lead.email], ['Bedrijf', lead.company],
+        ['Telefoon', lead.phone], ['Dienst', lead.service], ['Sector', lead.sector],
+        ['Stad', lead.city], ['Taal', lead.lang], ['Land', lead.country],
+        ['Bericht', lead.message], ['Bron', lead.source], ['Ontvangen', lead.receivedAt],
+      ].filter(([, v]) => v);
+      const html = `<div style="font-family:system-ui,sans-serif;max-width:560px">
+        <h2 style="margin:0 0 4px">🔥 Nieuwe lead via LeadExpert</h2>
+        <p style="color:#475569;margin:0 0 16px">${lead.service || ''} · ${lead.sector || ''} · ${lead.city || ''}</p>
+        <table style="border-collapse:collapse;width:100%">
+          ${rows.map(([k, v]) => `<tr><td style="padding:6px 10px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;white-space:nowrap">${k}</td><td style="padding:6px 10px;border:1px solid #e2e8f0">${String(v).replace(/</g, '&lt;')}</td></tr>`).join('')}
+        </table>
+        <p style="margin:16px 0 0"><a href="mailto:${lead.email}" style="background:#06b6d4;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700">Beantwoord ${lead.name}</a></p>
+      </div>`;
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
@@ -86,8 +100,9 @@ export async function handleLead(request, env) {
           from: env.LEAD_FROM || 'LeadExpert <leads@leadexpert.be>',
           to: [env.LEAD_TO],
           reply_to: lead.email,
-          subject: `🔥 Nieuwe lead: ${lead.name} (${lead.service} ${lead.city})`,
-          text: Object.entries(lead).map(([k, v]) => `${k}: ${v}`).join('\n'),
+          subject: `🔥 Nieuwe lead: ${lead.name} — ${lead.service || ''} ${lead.city || ''}`.trim(),
+          html,
+          text: rows.map(([k, v]) => `${k}: ${v}`).join('\n'),
         }),
       });
       results.emailed = r.ok;

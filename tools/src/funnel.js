@@ -8,7 +8,7 @@
 
 import {
   BRAND, LANGS, UI, SERVICES, SECTORS, LANG_KEYS,
-  cityName, keywordFor, faqsFor, reviewsFor,
+  cityName, keywordFor, reviewsFor, copyFor,
 } from './catalog.js';
 
 const esc = (s) => String(s == null ? '' : s)
@@ -22,6 +22,7 @@ export function renderFunnel(lang, service, sector, city) {
   const svc = SERVICES[service][lang];
   const sec = SECTORS[sector][lang];
   const cn = cityName(city);
+  const c = copyFor(lang, service, sector, city); // override-aware, [stad]/[sector] filled
   const vars = { service: svc.name, sector: sec, city: cn, n: BRAND.reviewCount };
 
   const kw = keywordFor(lang, service, sector, city);
@@ -31,10 +32,10 @@ export function renderFunnel(lang, service, sector, city) {
       ? `${svc.name} for ${sec} in ${cn}`
       : `${svc.name} voor ${sec} in ${cn}`;
   const title = `${h1} | ${BRAND.name}`.slice(0, 65);
-  const metaDesc = `${svc.promise.replace('[stad]', cn)}. ${t.trial}. ${svc.pain.replace('[sector]', sec).replace('[stad]', cn)}`.slice(0, 158);
+  const metaDesc = `${c.promise}. ${t.trial}. ${c.pain}`.slice(0, 158);
   const canonical = `${BRAND.funnelBase}/${lang}/${service}/${sector}/${city}`;
-  const benefits = svc.benefits.map((b) => b.replace('[stad]', cn).replace('[sector]', sec));
-  const faqs = faqsFor(lang, service, sector, city);
+  const benefits = c.benefits;
+  const faqs = c.faqs;
   const reviews = reviewsFor(lang, sector, city);
 
   // hreflang alternates (same combo, other languages)
@@ -206,7 +207,7 @@ ${alternates}
   <div class="container">
     <span class="hero-eyebrow">${esc(tpl(t.eyebrow, vars))}</span>
     <h1>${esc(h1).replace(esc(cn), `<em>${esc(cn)}</em>`)}</h1>
-    <p class="hero-sub">${esc(svc.promise.replace('[stad]', cn))}.<br>${esc(svc.pain.replace('[sector]', sec).replace('[stad]', cn))}</p>
+    <p class="hero-sub">${esc(c.promise)}.<br>${esc(c.pain)}</p>
     <div class="hero-ctas">
       <a href="#contact" class="btn-primary">🚀 ${esc(t.ctaPrimary)}</a>
       <a href="#how" class="btn-secondary">${esc(t.ctaSecondary)} →</a>
@@ -223,7 +224,7 @@ ${alternates}
   <div class="container">
     <div class="section-label">${esc(t.problemLabel)}</div>
     <h2 class="section-title">${esc(tpl(t.problemTitle, vars))}</h2>
-    <p class="section-sub">${esc(svc.pain.replace('[sector]', sec).replace('[stad]', cn))}</p>
+    <p class="section-sub">${esc(c.pain)}</p>
     <div class="grid">
       ${benefits.map((b) => `<div class="card warn"><h3>✗</h3><p>${esc(lang === 'fr' ? 'Sans ça : ' : lang === 'en' ? 'Without it: ' : 'Zonder dit: ')}${esc(b.toLowerCase())}</p></div>`).join('')}
     </div>

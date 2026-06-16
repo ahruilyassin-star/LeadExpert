@@ -447,3 +447,42 @@ export function reviewsFor(lang, sector, city) {
   };
   return (R[lang] || R.nl).map(([author, text]) => ({ author, text }));
 }
+
+// ── RESEARCH-BACKED OVERRIDES ────────────────────────────────────────────────
+// Replace the generic copy for a specific {lang}:{service}:{sector} with sharp,
+// market-researched copy. Add an entry here to build a "gerichte funnel".
+// Anything omitted falls back to the generic SERVICES copy. [stad] is filled in.
+export const OVERRIDES = {
+  'nl:website:aannemer': {
+    promise: 'Een website die offerteaanvragen oplevert — geen visitekaartje',
+    pain: 'Aannemers in [stad] betalen €1.500 tot €3.500 voor een website. Jij start vanaf €795, live in 7 werkdagen — en betaalt pas na je gratis proefperiode.',
+    benefits: [
+      'Gevonden worden voor "aannemer [stad]" wanneer mensen offertes zoeken',
+      'Je afgewerkte werven overtuigen bezoekers nog vóór ze bellen',
+      'Vanaf €795 eenmalig — geen €150/maand zoals de meeste bureaus',
+      'Eerste aanvragen vaak al tijdens je 14 dagen gratis proefperiode',
+    ],
+    faqs: [
+      ['Waarom €795 en niet €2.000+ zoals andere bureaus?', 'Wij bouwen één sterke, conversiegerichte aannemerswebsite met een vast proces — geen uren-factuur. Daardoor betaal je een fractie van de €1.500–3.500 die in [stad] gangbaar is, met dezelfde kwaliteit.'],
+      ['Hoe snel sta ik online?', 'Binnen 7 werkdagen. Je test alles eerst 14 dagen gratis. Pas als je tevreden bent, gaat het definitief live.'],
+      ['Lever ik echt meer offerteaanvragen op?', 'Daar bouwen we de site rond: duidelijke knoppen, je referentiewerken in beeld, en lokale SEO voor "aannemer [stad]". Veel klanten krijgen de eerste aanvraag al tijdens de proefperiode.'],
+      ['Wat als het me niet bevalt?', 'Dan stopt het gewoon. Geen kaart vooraf, geen verplichting, geen kosten tijdens de 14 gratis dagen.'],
+    ],
+  },
+};
+
+// Resolve the funnel copy for a combo (override → fallback), with [stad]/[sector] filled.
+export function copyFor(lang, service, sector, city) {
+  const base = SERVICES[service][lang];
+  const sec = SECTORS[sector][lang];
+  const cn = cityName(city);
+  const ov = OVERRIDES[`${lang}:${service}:${sector}`] || {};
+  const fill = (s) => String(s).replace(/\[stad\]/g, cn).replace(/\[sector\]/g, sec);
+  return {
+    name: base.name,
+    promise: fill(ov.promise || base.promise),
+    pain: fill(ov.pain || base.pain),
+    benefits: (ov.benefits || base.benefits).map(fill),
+    faqs: ov.faqs ? ov.faqs.map(([q, a]) => ({ q: fill(q), a: fill(a) })) : faqsFor(lang, service, sector, city),
+  };
+}
