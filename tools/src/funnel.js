@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // LeadExpert Growth Engine — FUNNEL RENDERER (premium, mobile-first)
 // Multilingual, conversion-focused landing page for any combo:
-//   /f/{lang}/{service}/{sector}/{city}
+//   /{lang}/{service}/{sector}/{city}/
 // Dark gradient brand look, real logo (+text fallback), SVG icons, sticky mobile
 // CTA bar, star ratings, review avatars, trust badges, 14-day free trial,
 // working lead form (POST /api/lead), full SEO + hreflang + schema.
@@ -328,7 +328,7 @@ ${alternates}
   </a>
   <div class="header-right">
     <div class="langs">
-      ${LANG_KEYS.map((lk) => `<a href="/f/${lk}/${service}/${sector}/${city}" class="${lk === lang ? 'active' : ''}" hreflang="${LANGS[lk].htmlLang}">${lk.toUpperCase()}</a>`).join('')}
+      ${LANG_KEYS.map((lk) => `<a href="/${lk}/${service}/${sector}/${city}/" class="${lk === lang ? 'active' : ''}" hreflang="${LANGS[lk].htmlLang}">${lk.toUpperCase()}</a>`).join('')}
     </div>
     <a href="#contact" class="header-cta">${esc(t.trial)}</a>
   </div>
@@ -337,7 +337,7 @@ ${alternates}
 <nav class="breadcrumbs" aria-label="breadcrumb">
   <ol>
     <li><a href="${BRAND.baseUrl}">${esc(t.breadcrumbHome)}</a></li>
-    <li><a href="/f/${lang}/${service}/${sector}/${city}">${esc(svc.name)}</a></li>
+    <li><a href="/${lang}/${service}/${sector}/${city}/">${esc(svc.name)}</a></li>
     <li><span aria-current="page">${esc(cn)}</span></li>
   </ol>
 </nav>
