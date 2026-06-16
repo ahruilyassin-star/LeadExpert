@@ -1,6 +1,18 @@
 // Tools registry — add new tools here
 export const TOOLS = [
   {
+    id: 'growth',
+    title: 'Growth Engine',
+    description: 'Bouw elke dag funnels die ranken én converteren — per dienst, sector, stad en taal (NL/FR/EN). Met 14-daagse gratis-test funnels en live lead-capture.',
+    icon: '🚀',
+    path: '/growth',
+    color: '#06b6d4',
+    gradient: 'linear-gradient(135deg,#05080f,#0891b2)',
+    tags: ['Funnels', 'SEO', 'Leads', 'Internationaal'],
+    featured: true,
+    badge: 'Nieuw',
+  },
+  {
     id: 'auto-zoeker',
     title: 'AutoZoeker België',
     description: 'Zoek tweedehands wagens op AutoScout24, 2dehands, Autovidal, Facebook en meer — alles gefilterd op prijs, brandstof, zitplaatsen en Euro-norm.',
