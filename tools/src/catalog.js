@@ -1,4 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // LeadExpert Growth Engine — CATALOG (the data brain)
 //
 // Everything the funnel generator + dashboard needs lives here:
@@ -10,13 +10,13 @@
 //
 // To DOMINATE more: just add an entry to SERVICES, SECTORS or CITIES.
 // Every new entry instantly multiplies the number of rankable funnel pages.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 
 export const BRAND = {
   name: 'LeadExpert',
   domain: 'leadexpert.be',
   baseUrl: 'https://leadexpert.be',
-  funnelBase: 'https://leadexpert.be/f', // canonical/hreflang base (production domain)
+  funnelBase: 'https://leadexpert.be', // canonical/hreflang base (production domain)
   email: 'info@leadexpert.be',
   whatsapp: '+32456901064',
   phoneDisplay: '+32 456 90 10 64',
@@ -42,7 +42,7 @@ export const BRAND = {
   linkedin: 'https://www.linkedin.com/company/leadexpert',
 };
 
-// ── LANGUAGES ────────────────────────────────────────────────────────────────
+// ── LANGUAGES ────────────────────────────────────────────────────────────────────────────
 export const LANGS = {
   nl: { label: 'Nederlands', htmlLang: 'nl', locale: 'nl_BE', flag: '🇳🇱' },
   fr: { label: 'Français', htmlLang: 'fr', locale: 'fr_FR', flag: '🇫🇷' },
@@ -50,7 +50,7 @@ export const LANGS = {
 };
 export const LANG_KEYS = Object.keys(LANGS);
 
-// ── UI / FUNNEL STRINGS (per language) ───────────────────────────────────────
+// ── UI / FUNNEL STRINGS (per language) ──────────────────────────────────────────────────
 // {service} {sector} {city} are filled at render time.
 export const UI = {
   nl: {
@@ -178,7 +178,7 @@ export const UI = {
   },
 };
 
-// ── SERVICES (what LeadExpert sells) ─────────────────────────────────────────
+// ── SERVICES (what LeadExpert sells) ───────────────────────────────────────────────────────────────────────────
 // Each service has per-language copy. Add a new service = instant new page set.
 export const SERVICES = {
   website: {
@@ -219,7 +219,7 @@ export const SERVICES = {
     nl: { name: 'Webshop', slug: 'webshop-laten-maken', kw: 'webshop laten maken [sector] [stad]',
       promise: 'Online verkopen, dag en nacht',
       pain: 'Je verkoopt alleen tijdens openingsuren. Je concurrent verkoopt 24/7 online.',
-      benefits: ['Verkoop ook ’s nachts en in het weekend', 'Betaal- en verzendklaar', 'Bereik klanten buiten [stad]'] },
+      benefits: ['Verkoop ook \'s nachts en in het weekend', 'Betaal- en verzendklaar', 'Bereik klanten buiten [stad]'] },
     fr: { name: 'Boutique en ligne', slug: 'creation-boutique-en-ligne', kw: 'création boutique en ligne [sector] [stad]',
       promise: 'Vendez en ligne, jour et nuit',
       pain: 'Vous ne vendez qu\'aux heures d\'ouverture. Votre concurrent vend 24/7 en ligne.',
@@ -328,7 +328,7 @@ export const SERVICES = {
 };
 export const SERVICE_KEYS = Object.keys(SERVICES);
 
-// ── SECTORS (who we target) ──────────────────────────────────────────────────
+// ── SECTORS (who we target) ────────────────────────────────────────────────────────────────────────────
 export const SECTORS = {
   aannemer:        { nl: 'aannemer',        fr: 'entrepreneur en bâtiment', en: 'contractor' },
   autogarage:      { nl: 'autogarage',      fr: 'garage automobile',        en: 'car garage' },
@@ -347,7 +347,7 @@ export const SECTORS = {
 };
 export const SECTOR_KEYS = Object.keys(SECTORS);
 
-// ── CITIES / MARKETS (per language) ──────────────────────────────────────────
+// ── CITIES / MARKETS (per language) ────────────────────────────────────────────────────────────────────────────
 export const CITY_NAMES = {
   antwerpen: 'Antwerpen', gent: 'Gent', brussel: 'Brussel', mechelen: 'Mechelen',
   hasselt: 'Hasselt', brugge: 'Brugge', leuven: 'Leuven', amsterdam: 'Amsterdam',
@@ -363,7 +363,7 @@ export const CITIES_BY_LANG = {
   en: ['london', 'dublin', 'amsterdam', 'berlin', 'dubai', 'new-york', 'toronto', 'sydney'],
 };
 
-// ── HELPERS ──────────────────────────────────────────────────────────────────
+// ── HELPERS ─────────────────────────────────────────────────────────────────────────────────
 export function cityName(slug) {
   return CITY_NAMES[slug] || slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
@@ -460,7 +460,7 @@ export function reviewsFor(lang, sector, city) {
   return (R[lang] || R.nl).map(([author, text]) => ({ author, text }));
 }
 
-// ── RESEARCH-BACKED OVERRIDES ────────────────────────────────────────────────
+// ── RESEARCH-BACKED OVERRIDES ────────────────────────────────────────────────────────────────────────
 // Replace the generic copy for a specific {lang}:{service}:{sector} with sharp,
 // market-researched copy. Add an entry here to build a "gerichte funnel".
 // Anything omitted falls back to the generic SERVICES copy. [stad] is filled in.
@@ -499,7 +499,7 @@ export function copyFor(lang, service, sector, city) {
   };
 }
 
-// ── BRAND / FOOTER COPY (per language) ───────────────────────────────────────
+// ── BRAND / FOOTER COPY (per language) ────────────────────────────────────────────────────────────────────
 export const FOOTER = {
   nl: {
     tagline: 'AI Agent Specialist voor Vlaamse KMO\'s',
