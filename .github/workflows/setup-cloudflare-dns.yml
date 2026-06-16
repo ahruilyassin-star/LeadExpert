@@ -16,55 +16,52 @@ jobs:
           CF_EMAIL: ahruil.yassin@gmail.com
         run: |
           set -e
-
           AUTH_HEADERS=(-H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_TOKEN")
 
-          # Get zone ID
           ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=leadexpert.be" \
-            "${AUTH_HEADERS[@]}" \
-            -H "Content-Type: application/json" | jq -r '.result[0].id')
+            "${AUTH_HEADERS[@]}" -H "Content-Type: application/json" | jq -r '.result[0].id')
           echo "Zone ID: $ZONE_ID"
 
-          # List ALL existing records for leadexpert.be
-          echo "--- Existing records ---"
-          curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=leadexpert.be" \
-            "${AUTH_HEADERS[@]}" | jq -r '.result[] | .type + " " + .name + " -> " + .content + " (id: " + .id + ")"'
+          # Delete root CNAME (conflicts with A records)
+          ROOT_CNAME_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=leadexpert.be" \
+            "${AUTH_HEADERS[@]}" | jq -r '.result[0].id // empty')
+          if [ -n "$ROOT_CNAME_ID" ]; then
+            curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$ROOT_CNAME_ID" \
+              "${AUTH_HEADERS[@]}" > /dev/null
+            echo "Deleted root CNAME (was pointing to Cloudflare Pages)"
+          fi
 
-          # Delete all existing A/AAAA records for @ (root)
-          for TYPE in A AAAA; do
-            IDS=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=$TYPE&name=leadexpert.be" \
-              "${AUTH_HEADERS[@]}" | jq -r '.result[].id')
-            for id in $IDS; do
-              curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$id" \
-                "${AUTH_HEADERS[@]}" > /dev/null
-              echo "Deleted $TYPE record $id"
-            done
+          # Delete any existing A records for root
+          A_IDS=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=A&name=leadexpert.be" \
+            "${AUTH_HEADERS[@]}" | jq -r '.result[].id')
+          for id in $A_IDS; do
+            curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$id" \
+              "${AUTH_HEADERS[@]}" > /dev/null
+            echo "Deleted A record $id"
           done
 
-          # Add GitHub Pages A records using full domain name (not @)
+          # Add GitHub Pages A records
           for IP in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
             RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              "${AUTH_HEADERS[@]}" \
-              -H "Content-Type: application/json" \
+              "${AUTH_HEADERS[@]}" -H "Content-Type: application/json" \
               --data "{\"type\":\"A\",\"name\":\"leadexpert.be\",\"content\":\"$IP\",\"ttl\":1,\"proxied\":false}")
-            echo "A $IP: success=$(echo $RESULT | jq -r '.success') errors=$(echo $RESULT | jq -c '.errors')"
+            echo "A $IP: $(echo $RESULT | jq -r '.success')"
           done
 
-          # CNAME www (already done, just re-ensure)
+          # Ensure CNAME www -> GitHub Pages
           CNAME_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=www.leadexpert.be" \
             "${AUTH_HEADERS[@]}" | jq -r '.result[0].id // empty')
           if [ -n "$CNAME_ID" ]; then
-            echo "CNAME www already exists: $CNAME_ID"
+            echo "CNAME www already exists"
           else
             RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              "${AUTH_HEADERS[@]}" \
-              -H "Content-Type: application/json" \
+              "${AUTH_HEADERS[@]}" -H "Content-Type: application/json" \
               --data '{"type":"CNAME","name":"www","content":"ahruilyassin-star.github.io","ttl":1,"proxied":false}')
             echo "CNAME www: $(echo $RESULT | jq -r '.success')"
           fi
 
-          echo "--- Final DNS records ---"
-          curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=leadexpert.be" \
+          echo "--- Final DNS for leadexpert.be ---"
+          curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
             "${AUTH_HEADERS[@]}" | jq -r '.result[] | .type + " " + .name + " -> " + .content'
 
-          echo "Done!"
+          echo "DNS setup complete!"
