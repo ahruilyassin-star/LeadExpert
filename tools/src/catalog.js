@@ -16,18 +16,30 @@ export const BRAND = {
   name: 'LeadExpert',
   domain: 'leadexpert.be',
   baseUrl: 'https://leadexpert.be',
-  funnelBase: 'https://tools.leadexpert.be/f',
+  funnelBase: 'https://leadexpert.be/f', // canonical/hreflang base (production domain)
   email: 'info@leadexpert.be',
   whatsapp: '+32456901064',
+  phoneDisplay: '+32 456 90 10 64',
   waNumber: '32456901064',
   trialDays: 14,
   rating: '4.9',
   reviewCount: '47',
+  // Brand assets (official LeadExpert logos)
+  logo: 'https://static.readdy.ai/image/e677540a18d5e509f693bbfd4226397a/8882e1216edfa9cfe539564f2049f395.png',
+  logoFooter: 'https://static.readdy.ai/image/e677540a18d5e509f693bbfd4226397a/dcbf18580c230dc8f15d98c529a2724b.png',
+  // Company / legal
+  legalName: 'LeadExpert',
+  street: 'Luxemburgstraat 20',
+  postcode: '9140',
+  city: 'Temse',
+  country: 'BE',
+  vat: 'BE1032.099.301',
   social: [
     'https://www.facebook.com/leadexpert.be',
-    'https://www.instagram.com/leadexpert.be',
     'https://www.linkedin.com/company/leadexpert',
   ],
+  facebook: 'https://www.facebook.com/leadexpert.be',
+  linkedin: 'https://www.linkedin.com/company/leadexpert',
 };
 
 // ── LANGUAGES ────────────────────────────────────────────────────────────────
@@ -486,3 +498,31 @@ export function copyFor(lang, service, sector, city) {
     faqs: ov.faqs ? ov.faqs.map(([q, a]) => ({ q: fill(q), a: fill(a) })) : faqsFor(lang, service, sector, city),
   };
 }
+
+// ── BRAND / FOOTER COPY (per language) ───────────────────────────────────────
+export const FOOTER = {
+  nl: {
+    tagline: 'AI Agent Specialist voor Vlaamse KMO\'s',
+    about: 'LeadExpert.be — AI Agent Specialist voor Vlaamse KMO\'s · Gevestigd in België (Temse) · AVG & EU AI Act conform.',
+    testFirst: 'U test eerst, u betaalt daarna.',
+    badges: ['Lokaal verankerd in België', 'B2B-expert voor KMO\'s', 'AVG/GDPR-conform'],
+    rights: 'Alle rechten voorbehouden',
+    privacy: 'Privacy',
+  },
+  fr: {
+    tagline: 'Spécialiste Agent IA pour PME',
+    about: 'LeadExpert.be — Spécialiste Agent IA pour PME · Établi en Belgique (Temse) · Conforme RGPD & EU AI Act.',
+    testFirst: 'Vous testez d\'abord, vous payez ensuite.',
+    badges: ['Ancré localement en Belgique', 'Expert B2B pour PME', 'Conforme RGPD'],
+    rights: 'Tous droits réservés',
+    privacy: 'Confidentialité',
+  },
+  en: {
+    tagline: 'AI Agent Specialist for SMEs',
+    about: 'LeadExpert.be — AI Agent Specialist for SMEs · Based in Belgium (Temse) · GDPR & EU AI Act compliant.',
+    testFirst: 'You test first, you pay later.',
+    badges: ['Locally rooted in Belgium', 'B2B expert for SMEs', 'GDPR-compliant'],
+    rights: 'All rights reserved',
+    privacy: 'Privacy',
+  },
+};
