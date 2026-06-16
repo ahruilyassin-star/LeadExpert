@@ -13,52 +13,79 @@ jobs:
       - name: Set DNS A records and CNAME
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_EMAIL: ahruil.yassin@gmail.com
         run: |
           set -e
 
-          if [ -z "$CF_TOKEN" ]; then
-            echo "ERROR: CLOUDFLARE_TOKEN secret not set in repo settings"
-            exit 1
-          fi
+          echo "Testing auth methods..."
 
-          ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=leadexpert.be" \
+          # Try Bearer token first
+          RESPONSE=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=leadexpert.be" \
             -H "Authorization: Bearer $CF_TOKEN" \
-            -H "Content-Type: application/json" | jq -r '.result[0].id')
+            -H "Content-Type: application/json")
+          echo "Bearer result: $(echo $RESPONSE | jq -r '.success') errors: $(echo $RESPONSE | jq -r '.errors')"
+          ZONE_ID=$(echo $RESPONSE | jq -r '.result[0].id // empty')
 
-          if [ -z "$ZONE_ID" ] || [ "$ZONE_ID" = "null" ]; then
-            echo "ERROR: Zone leadexpert.be not found. Check token permissions."
+          # If Bearer fails, try X-Auth-Key (Global API Key style)
+          if [ -z "$ZONE_ID" ]; then
+            echo "Bearer failed, trying X-Auth-Key..."
+            RESPONSE=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=leadexpert.be" \
+              -H "X-Auth-Email: $CF_EMAIL" \
+              -H "X-Auth-Key: $CF_TOKEN" \
+              -H "Content-Type: application/json")
+            echo "X-Auth-Key result: $(echo $RESPONSE | jq -r '.success') errors: $(echo $RESPONSE | jq -r '.errors')"
+            ZONE_ID=$(echo $RESPONSE | jq -r '.result[0].id // empty')
+            AUTH_TYPE="xauth"
+          else
+            AUTH_TYPE="bearer"
+          fi
+
+          if [ -z "$ZONE_ID" ]; then
+            echo "ERROR: Zone leadexpert.be not found with either auth method."
             exit 1
           fi
-          echo "Zone ID: $ZONE_ID"
 
+          echo "Zone ID: $ZONE_ID (auth: $AUTH_TYPE)"
+
+          # Set auth headers based on method
+          if [ "$AUTH_TYPE" = "bearer" ]; then
+            AUTH_HEADERS=(-H "Authorization: Bearer $CF_TOKEN")
+          else
+            AUTH_HEADERS=(-H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_TOKEN")
+          fi
+
+          # Remove existing A records
           EXISTING_IDS=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=A&name=leadexpert.be" \
-            -H "Authorization: Bearer $CF_TOKEN" | jq -r '.result[].id')
+            "${AUTH_HEADERS[@]}" | jq -r '.result[].id')
           for id in $EXISTING_IDS; do
             curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$id" \
-              -H "Authorization: Bearer $CF_TOKEN" > /dev/null
-            echo "Deleted old A record $id"
+              "${AUTH_HEADERS[@]}" > /dev/null
+            echo "Deleted A record $id"
           done
 
+          # Add GitHub Pages A records
           for IP in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
             RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              -H "Authorization: Bearer $CF_TOKEN" \
+              "${AUTH_HEADERS[@]}" \
               -H "Content-Type: application/json" \
               --data "{\"type\":\"A\",\"name\":\"@\",\"content\":\"$IP\",\"ttl\":1,\"proxied\":false}")
             echo "A $IP: $(echo $RESULT | jq -r '.success')"
           done
 
+          # Remove existing CNAME www
           CNAME_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=www.leadexpert.be" \
-            -H "Authorization: Bearer $CF_TOKEN" | jq -r '.result[0].id')
-          if [ -n "$CNAME_ID" ] && [ "$CNAME_ID" != "null" ]; then
+            "${AUTH_HEADERS[@]}" | jq -r '.result[0].id // empty')
+          if [ -n "$CNAME_ID" ]; then
             curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$CNAME_ID" \
-              -H "Authorization: Bearer $CF_TOKEN" > /dev/null
-            echo "Deleted old CNAME www"
+              "${AUTH_HEADERS[@]}" > /dev/null
+            echo "Deleted CNAME www"
           fi
 
+          # Add CNAME www
           RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-            -H "Authorization: Bearer $CF_TOKEN" \
+            "${AUTH_HEADERS[@]}" \
             -H "Content-Type: application/json" \
             --data '{"type":"CNAME","name":"www","content":"ahruilyassin-star.github.io","ttl":1,"proxied":false}')
           echo "CNAME www: $(echo $RESULT | jq -r '.success')"
 
-          echo "Done! DNS for leadexpert.be is live."
+          echo "DNS setup complete for leadexpert.be!"
