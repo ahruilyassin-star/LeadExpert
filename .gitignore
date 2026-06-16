@@ -1,0 +1,5 @@
+dist/
+deploy.zip
+node_modules/
+.env
+.env.local
