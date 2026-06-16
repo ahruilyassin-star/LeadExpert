@@ -1,0 +1,71 @@
+name: Deploy LeadExpert pSEO pages
+
+# Regenerates the pSEO landing pages and uploads them to Hostinger via FTP.
+# Triggers on pushes to main that touch leadexpert-pseo/, or manually.
+#
+# Required repository secrets (Settings → Secrets → Actions):
+#   FTP_HOST        — e.g. ftp.leadexpert.be
+#   FTP_USER        — your Hostinger FTP username
+#   FTP_PASS        — your Hostinger FTP password
+#   FTP_REMOTE_DIR  — target dir, e.g. /public_html/webdesign/  (optional, default below)
+#
+# Without these secrets the job skips gracefully (no failure).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "leadexpert-pseo/**"
+      - ".github/workflows/deploy-pseo.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check FTP secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.FTP_HOST }}" ] && [ -n "${{ secrets.FTP_USER }}" ] && [ -n "${{ secrets.FTP_PASS }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Deploy overgeslagen: FTP_HOST/FTP_USER/FTP_PASS ontbreken. Voeg ze toe via Settings → Secrets → Actions."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 20
+
+      - name: Generate pages + sitemap + robots.txt
+        if: steps.check.outputs.ready == 'true'
+        working-directory: leadexpert-pseo
+        run: |
+          node generate.js "--all=true"
+          node sitemap.js
+
+      - name: Install lftp
+        if: steps.check.outputs.ready == 'true'
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Upload dist/ to Hostinger via FTP
+        if: steps.check.outputs.ready == 'true'
+        working-directory: leadexpert-pseo
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR }}
+        run: |
+          REMOTE="${FTP_REMOTE_DIR:-/public_html/webdesign/}"
+          lftp -c "
+            set ftp:ssl-allow true;
+            set ssl:verify-certificate no;
+            open -u \"$FTP_USER\",\"$FTP_PASS\" \"$FTP_HOST\";
+            mirror -R --delete --verbose dist/ \"$REMOTE\";
+            bye
+          "

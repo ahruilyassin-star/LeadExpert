@@ -1,6 +1,10 @@
 import { renderHub } from './hub.js';
 import { renderCarPage } from './car-view.js';
 import { searchAll } from './scrapers.js';
+import { renderGrowth } from './growth.js';
+import { renderFunnel } from './funnel.js';
+import { isValidCombo } from './catalog.js';
+import { handleLead, handleLeadsList } from './leads.js';
 
 export default {
   async fetch(request, env) {
@@ -11,10 +15,36 @@ export default {
       return new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
           'Access-Control-Max-Age': '86400',
         },
       });
+    }
+
+    // ── Lead capture API ───────────────────────────────────────────────────
+    if (path === '/api/lead' && request.method === 'POST') {
+      return handleLead(request, env);
+    }
+    if (path === '/api/leads') {
+      return handleLeadsList(url, env);
+    }
+
+    // ── Growth Engine control center ─────────────────────────────────────────
+    if (path === '/growth' || path === '/growth/') {
+      return html(renderGrowth());
+    }
+
+    // ── Funnel pages: /f/{lang}/{service}/{sector}/{city} ────────────────────
+    if (path.startsWith('/f/')) {
+      const parts = path.replace(/^\/f\//, '').replace(/\/$/, '').split('/');
+      if (parts.length === 4) {
+        const [lang, service, sector, city] = parts;
+        if (isValidCombo(lang, service, sector, city)) {
+          return html(renderFunnel(lang, service, sector, city));
+        }
+      }
+      return new Response(render404(), { status: 404, headers: { 'Content-Type': 'text/html;charset=UTF-8' } });
     }
 
     // ── Auto-zoeker API ──────────────────────────────────────────────────────
