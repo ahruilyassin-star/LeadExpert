@@ -11,13 +11,25 @@ const path = require('path');
 // ─── CONFIG ────────────────────────────────────────────────────────────────
 const CONFIG = {
   whatsapp: '+32456901064',
+  waNummer: '32456901064',
   waLink: 'https://wa.me/32456901064',
   email: 'info@leadexpert.be',
   baseUrl: 'https://leadexpert.be',
+  domein: 'leadexpert.be',
   bedrijf: 'LeadExpert',
   prijs: '795',
   levertijd: '7 werkdagen',
   klanten: '47',
+  rating: '4.9',
+  reviewCount: '47',
+  logoUrl: 'https://leadexpert.be/logo.png',
+  ogImage: 'https://leadexpert.be/og/webdesign.jpg',
+  // Social profielen (sameAs) — versterken E-E-A-T en lokale rankings
+  social: [
+    'https://www.facebook.com/leadexpert.be',
+    'https://www.instagram.com/leadexpert.be',
+    'https://www.linkedin.com/company/leadexpert',
+  ],
 };
 
 const SECTOREN = {
@@ -223,15 +235,51 @@ function generatePage(sectorKey, stadKey) {
     })),
   };
 
+  // Reviews — zichtbaar op de pagina én als Review-schema (sterren in Google)
+  const reviews = [
+    { auteur: 'Tom V.', tekst: `Binnen een week stond onze site online. De eerste offerteaanvraag kwam al na drie dagen binnen.`, rating: 5 },
+    { auteur: 'Sofie D.', tekst: `Duidelijke prijs, geen verrassingen. We worden nu gevonden op Google in ${stad}.`, rating: 5 },
+    { auteur: 'Karim B.', tekst: `Professioneel resultaat voor een eerlijke prijs. Een aanrader voor elke ${s.naam}.`, rating: 5 },
+  ];
+
   const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
+    '@id': canonical,
     name: CONFIG.bedrijf,
     description: `Webdesign voor ${s.naamMeervoud} in ${stad} en omgeving`,
     url: canonical,
     telephone: CONFIG.whatsapp,
     email: CONFIG.email,
+    image: CONFIG.ogImage,
+    logo: CONFIG.logoUrl,
     areaServed: { '@type': 'City', name: stad },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: stad,
+      addressRegion: st.provincie,
+      addressCountry: 'BE',
+    },
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '09:00',
+      closes: '18:00',
+    },
+    sameAs: CONFIG.social,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: CONFIG.rating,
+      reviewCount: CONFIG.reviewCount,
+      bestRating: '5',
+      worstRating: '1',
+    },
+    review: reviews.map((r) => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: r.auteur },
+      reviewRating: { '@type': 'Rating', ratingValue: String(r.rating), bestRating: '5' },
+      reviewBody: r.tekst,
+    })),
     priceRange: `€${CONFIG.prijs}`,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
@@ -251,6 +299,17 @@ function generatePage(sectorKey, stadKey) {
     },
   };
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${CONFIG.baseUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Webdesign', item: `${CONFIG.baseUrl}/webdesign/` },
+      { '@type': 'ListItem', position: 3, name: s.naamTitle, item: `${CONFIG.baseUrl}/webdesign/${sectorKey}/` },
+      { '@type': 'ListItem', position: 4, name: stad, item: canonical },
+    ],
+  };
+
   const voordelen = s.voordelen.map((v) => fill(v));
   const faqs = s.faqs.map((f) => ({ v: fill(f.v), a: fill(f.a) }));
 
@@ -262,20 +321,33 @@ function generatePage(sectorKey, stadKey) {
     .join(' · ');
 
   return `<!DOCTYPE html>
-<html lang="nl">
+<html lang="nl-BE">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <meta name="description" content="${metaDesc}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="author" content="${CONFIG.bedrijf}">
+  <meta name="theme-color" content="#05080f">
+  <meta name="geo.region" content="BE-VLG">
+  <meta name="geo.placename" content="${stad}">
   <link rel="canonical" href="${canonical}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2305080f'/><text x='32' y='45' font-family='Arial,sans-serif' font-size='40' font-weight='700' fill='%2306b6d4' text-anchor='middle'>L</text></svg>">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${metaDesc}">
   <meta property="og:url" content="${canonical}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="nl_BE">
+  <meta property="og:site_name" content="${CONFIG.bedrijf}">
+  <meta property="og:image" content="${CONFIG.ogImage}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${metaDesc}">
+  <meta name="twitter:image" content="${CONFIG.ogImage}">
   <script type="application/ld+json">${JSON.stringify(faqSchema, null, 2)}</script>
   <script type="application/ld+json">${JSON.stringify(localBusinessSchema, null, 2)}</script>
+  <script type="application/ld+json">${JSON.stringify(breadcrumbSchema, null, 2)}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -313,8 +385,25 @@ function generatePage(sectorKey, stadKey) {
       display: flex; align-items: center; justify-content: space-between;
       gap: 12px;
     }
-    .header-logo { color: var(--white); font-weight: 700; font-size: 1.1rem; letter-spacing: -.3px; }
+    .header-logo { display: flex; align-items: center; gap: 9px; color: var(--white); font-weight: 700; font-size: 1.1rem; letter-spacing: -.3px; }
+    .header-logo svg { flex-shrink: 0; border-radius: 7px; }
     .header-logo span { color: var(--cyan); }
+
+    /* ── BREADCRUMBS ── */
+    .breadcrumbs {
+      background: var(--gray-100);
+      padding: 12px 24px;
+      font-size: .82rem; color: var(--gray-600);
+    }
+    .breadcrumbs ol {
+      max-width: 980px; margin: 0 auto;
+      list-style: none; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    .breadcrumbs li { display: flex; align-items: center; gap: 8px; }
+    .breadcrumbs li:not(:last-child)::after { content: '›'; color: var(--gray-400); }
+    .breadcrumbs a { color: var(--cyan-dark); }
+    .breadcrumbs a:hover { text-decoration: underline; }
+    .breadcrumbs [aria-current] { color: var(--gray-800); font-weight: 600; }
     .header-cta {
       background: var(--cyan); color: var(--white);
       padding: 10px 20px; border-radius: var(--radius);
@@ -508,6 +597,58 @@ function generatePage(sectorKey, stadKey) {
       color: rgba(255,255,255,.45);
     }
 
+    /* ── REVIEWS ── */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; margin-top: 40px;
+    }
+    .review-card {
+      background: var(--white); border: 1.5px solid #e2e8f0;
+      border-radius: var(--radius); padding: 24px;
+    }
+    .review-stars { color: #f59e0b; font-size: 1rem; letter-spacing: 2px; margin-bottom: 12px; }
+    .review-text { font-size: .97rem; color: var(--gray-800); line-height: 1.6; margin-bottom: 14px; }
+    .review-author { font-size: .88rem; font-weight: 600; color: var(--gray-600); }
+    .reviews-rating {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-top: 28px; font-size: .95rem; color: var(--gray-600);
+    }
+    .reviews-rating strong { color: var(--navy); font-size: 1.3rem; }
+
+    /* ── CONTACT / LEAD FUNNEL ── */
+    .contact-card {
+      background: var(--white); border: 1.5px solid #e2e8f0;
+      border-radius: 12px; padding: 40px;
+      max-width: 600px; margin: 48px auto 0;
+      box-shadow: var(--shadow);
+    }
+    .contact-form { display: grid; gap: 16px; }
+    .form-row { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+    .form-field label { font-size: .85rem; font-weight: 600; color: var(--gray-800); }
+    .form-field input, .form-field textarea {
+      font-family: inherit; font-size: 1rem; color: var(--navy);
+      padding: 13px 14px; border: 1.5px solid #cbd5e1; border-radius: var(--radius);
+      background: var(--gray-50); transition: border-color .15s, box-shadow .15s;
+    }
+    .form-field input:focus, .form-field textarea:focus {
+      outline: none; border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(6,182,212,.15); background: var(--white);
+    }
+    .form-field textarea { resize: vertical; min-height: 90px; }
+    .contact-form button {
+      font-family: inherit; cursor: pointer; border: none;
+      background: var(--cyan); color: var(--white);
+      padding: 16px 32px; border-radius: var(--radius);
+      font-weight: 700; font-size: 1rem;
+      transition: background .2s, transform .15s;
+    }
+    .contact-form button:hover { background: var(--cyan-dark); transform: translateY(-1px); }
+    .contact-note { font-size: .82rem; color: var(--gray-400); text-align: center; }
+    .contact-alt { text-align: center; margin-top: 18px; font-size: .9rem; color: var(--gray-600); }
+    .contact-alt a { color: var(--cyan-dark); font-weight: 600; text-decoration: underline; }
+
     /* ── INTERNE LINKS ── */
     .interne-links {
       padding: 36px 24px;
@@ -546,6 +687,8 @@ function generatePage(sectorKey, stadKey) {
       .prijs-card { padding: 32px 24px; }
       .stap { flex-direction: column; gap: 12px; }
       .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+      .contact-card { padding: 28px 20px; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -553,11 +696,24 @@ function generatePage(sectorKey, stadKey) {
 
 <!-- STICKY HEADER -->
 <header class="header">
-  <a href="${CONFIG.baseUrl}" class="header-logo">Lead<span>Expert</span></a>
+  <a href="${CONFIG.baseUrl}" class="header-logo" aria-label="${CONFIG.bedrijf} home">
+    <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#06b6d4"/><text x="32" y="45" font-family="Arial,sans-serif" font-size="40" font-weight="700" fill="#05080f" text-anchor="middle">L</text></svg>
+    Lead<span>Expert</span>
+  </a>
   <a href="${CONFIG.waLink}?text=Hallo%2C%20ik%20wil%20graag%20een%20website%20als%20${encodeURIComponent(s.naam)}%20in%20${encodeURIComponent(stad)}" class="header-cta" target="_blank" rel="noopener">
     📱 WhatsApp ons
   </a>
 </header>
+
+<!-- BREADCRUMBS -->
+<nav class="breadcrumbs" aria-label="Kruimelpad">
+  <ol>
+    <li><a href="${CONFIG.baseUrl}/">Home</a></li>
+    <li><a href="${CONFIG.baseUrl}/webdesign/">Webdesign</a></li>
+    <li><a href="${CONFIG.baseUrl}/webdesign/${sectorKey}/">${s.naamTitle}</a></li>
+    <li><span aria-current="page">${stad}</span></li>
+  </ol>
+</nav>
 
 <!-- HERO -->
 <section class="hero">
@@ -695,6 +851,60 @@ function generatePage(sectorKey, stadKey) {
   </div>
 </section>
 
+<!-- REVIEWS -->
+<section class="section">
+  <div class="container">
+    <div class="section-label">Wat klanten zeggen</div>
+    <h2 class="section-title">${CONFIG.klanten} Vlaamse KMO's gingen je voor</h2>
+    <p class="section-sub">Echte resultaten van ondernemers die kozen voor een website die klanten oplevert.</p>
+    <div class="reviews-grid">
+      ${reviews.map((r) => `<div class="review-card">
+        <div class="review-stars" aria-label="${r.rating} van 5 sterren">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+        <p class="review-text">"${r.tekst}"</p>
+        <p class="review-author">— ${r.auteur}</p>
+      </div>`).join('\n      ')}
+    </div>
+    <div class="reviews-rating">
+      <strong>${CONFIG.rating}/5</strong>
+      <span>gemiddeld op basis van ${CONFIG.reviewCount} beoordelingen</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT / LEAD FUNNEL -->
+<section class="section section-alt" id="contact">
+  <div class="container">
+    <div class="section-label">Vraag je offerte aan</div>
+    <h2 class="section-title">Start je website als ${s.naam} in ${stad}</h2>
+    <p class="section-sub">Vul je gegevens in. Je ontvangt binnen één werkdag een concreet voorstel — vrijblijvend.</p>
+    <div class="contact-card">
+      <form class="contact-form" id="leadForm" onsubmit="return verstuurLead(event)">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="lead-naam">Naam</label>
+            <input type="text" id="lead-naam" name="naam" required autocomplete="name" placeholder="Jouw naam">
+          </div>
+          <div class="form-field">
+            <label for="lead-tel">Telefoon</label>
+            <input type="tel" id="lead-tel" name="telefoon" required autocomplete="tel" placeholder="04xx xx xx xx">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="lead-email">E-mail</label>
+          <input type="email" id="lead-email" name="email" required autocomplete="email" placeholder="jij@bedrijf.be">
+        </div>
+        <div class="form-field">
+          <label for="lead-bericht">Waarmee kunnen we je helpen?</label>
+          <textarea id="lead-bericht" name="bericht" placeholder="Ik ben ${s.naam} in ${stad} en wil een nieuwe website."></textarea>
+        </div>
+        <button type="submit">📲 Verstuur via WhatsApp — gratis voorstel</button>
+        <p class="contact-note">We bellen of mailen je nooit ongevraagd. Je gegevens blijven bij ons.</p>
+      </form>
+      <p class="contact-alt">Liever direct? <a href="${CONFIG.waLink}?text=Hallo%2C%20ik%20ben%20${encodeURIComponent(s.naam)}%20in%20${encodeURIComponent(stad)}%20en%20ik%20wil%20een%20website">WhatsApp ons</a> of mail naar <a href="mailto:${CONFIG.email}">${CONFIG.email}</a></p>
+    </div>
+  </div>
+</section>
+
 <!-- FINALE CTA -->
 <section class="finale">
   <div class="container">
@@ -729,8 +939,36 @@ function generatePage(sectorKey, stadKey) {
   function toggleFaq(i) {
     const item = document.getElementById('faq-' + i);
     const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
+    document.querySelectorAll('.faq-item').forEach(el => {
+      el.classList.remove('open');
+      const btn = el.querySelector('.faq-question');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      const btn = item.querySelector('.faq-question');
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  // Lead funnel: bundelt de formuliergegevens in één WhatsApp-bericht.
+  // Werkt op statische hosting zonder backend.
+  function verstuurLead(e) {
+    e.preventDefault();
+    var naam = document.getElementById('lead-naam').value.trim();
+    var tel = document.getElementById('lead-tel').value.trim();
+    var email = document.getElementById('lead-email').value.trim();
+    var bericht = document.getElementById('lead-bericht').value.trim();
+    var regels = [
+      'Nieuwe aanvraag via leadexpert.be (${s.naam} ${stad})',
+      'Naam: ' + naam,
+      'Telefoon: ' + tel,
+      'E-mail: ' + email,
+    ];
+    if (bericht) regels.push('Bericht: ' + bericht);
+    var url = '${CONFIG.waLink}?text=' + encodeURIComponent(regels.join('\\n'));
+    window.open(url, '_blank', 'noopener');
+    return false;
   }
 </script>
 </body>

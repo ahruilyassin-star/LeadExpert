@@ -47,3 +47,14 @@ fs.mkdirSync(DIST_DIR, { recursive: true });
 fs.writeFileSync(OUTPUT, xml, 'utf-8');
 console.log(`✅ sitemap.xml gegenereerd — ${pages.length} URLs`);
 console.log(`📍 ${OUTPUT}`);
+
+// robots.txt — laat alles toe en verwijst naar de sitemap
+const robots = `User-agent: *
+Allow: /
+
+Sitemap: ${BASE_URL}/sitemap.xml
+`;
+const ROBOTS = path.join(DIST_DIR, 'robots.txt');
+fs.writeFileSync(ROBOTS, robots, 'utf-8');
+console.log(`✅ robots.txt gegenereerd`);
+console.log(`📍 ${ROBOTS}`);
