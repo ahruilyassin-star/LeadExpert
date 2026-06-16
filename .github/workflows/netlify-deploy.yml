@@ -1,0 +1,11 @@
+# Netlify deploy — connect via Netlify dashboard → Site Configuration → Link to Git
+# Site ID: 697c0428-b554-432b-8466-f1ec92f3a00b
+# Once linked, every push to main auto-deploys.
+name: Netlify (via git link)
+on:
+  workflow_dispatch:
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Link this repo in the Netlify dashboard to enable auto-deploy'
