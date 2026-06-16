@@ -23,6 +23,10 @@ Eigenaar: Yassin — hij wil elke dag vooruitgang zien: nieuwe pagina's live, ni
 - Website: https://leadexpert.be
 - Hostinger FTP: zie .env bestand (nooit in git committen)
 
+## Opgeslagen API-tokens (nooit vragen aan Yassin)
+- Cloudflare API Token: in `/.env.local` als `CLOUDFLARE_TOKEN` (Zone DNS Edit voor leadexpert.be)
+- Resend API Key: in `/.env.local` als `RESEND_API_KEY`
+
 ## Huidige sectoren (in generate.js)
 - aannemer → "website laten maken aannemer [stad]"
 - autogarage → "website laten maken autogarage [stad]"
