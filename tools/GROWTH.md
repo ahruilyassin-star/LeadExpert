@@ -23,8 +23,8 @@ Alles wordt hieruit gegenereerd. Meer domineren = hier uitbreiden:
 - **Stad/markt toevoegen** → slug in `CITIES_BY_LANG` + naam in `CITY_NAMES`.
 - **Taal toevoegen** → blok in `LANGS` + `UI` + per-taal velden in elke dienst/sector.
 
-Huidige dekking: **3 talen × 6 diensten × 9 sectoren × markten** = duizenden
-rankbare long-tail pagina's.
+Huidige dekking: **3 talen × 9 diensten × 14 sectoren × markten ≈ 3.300**
+rankbare long-tail pagina's. Zie `MARKET-RESEARCH.md` voor de onderbouwing.
 
 ## Leads opvangen
 
