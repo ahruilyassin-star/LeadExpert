@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 
 import { renderFunnel } from './src/funnel.js';
 import { renderGrowth } from './src/growth.js';
+import { renderPromote } from './src/promote.js';
 import { renderHome } from './src/home.js';
 import {
   isValidCombo, LANG_KEYS, SERVICE_KEYS, SECTOR_KEYS, CITIES_BY_LANG, BRAND,
@@ -32,6 +33,10 @@ console.log('✓  / (homepage)');
 // ── growth dashboard
 write(join(dist, 'growth', 'index.html'), renderGrowth());
 console.log('✓  /growth');
+
+// ── promote / distribution cockpit
+write(join(dist, 'promote', 'index.html'), renderPromote());
+console.log('✓  /promote');
 
 // ── all funnel pages
 const urls = [];
