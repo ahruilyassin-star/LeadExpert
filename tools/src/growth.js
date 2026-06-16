@@ -54,7 +54,7 @@ const DOMINATE_IDEAS = [
   ['Voeg dagelijks 5–10 funnels toe', 'Elke nieuwe combo = een nieuw long-tail zoekwoord waarop je kan ranken. Consistentie verslaat perfectie.'],
   ['Eén sector volledig afdekken', 'Pak één sector en bouw álle services × steden. Word dé autoriteit voor die niche voor je naar de volgende gaat.'],
   ['Vertaal je toppers naar FR + EN', 'Een funnel die in het NL converteert, doet dat vaak ook internationaal. Drie talen = drie keer het bereik.'],
-  ['Koppel de leads aan je CRM', 'Zet LEAD_WEBHOOK_URL naar n8n → automatisch e-mail, opvolging en CRM. Geen lead valt nog tussen de mazen.'],
+  ['Koppel de leads aan je CRM', 'Zet LEAD_WEBHOOK_URL → automatisch e-mail, opvolging en CRM. Geen lead valt nog tussen de mazen.'],
   ['Bouw funnels rond seizoenspieken', 'Speel in op wat de markt nú zoekt (eindejaar, lente-renovaties, nieuwjaarsacties) met tijdelijke trial-funnels.'],
   ['Verzamel echte reviews', 'Vervang de voorbeeldreviews door echte klantcitaten. Sterren in Google = meer clicks = meer leads.'],
 ];
@@ -200,7 +200,7 @@ footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--gray)}
 
 </div>
 
-<footer>© ${new Date().getFullYear()} LeadExpert · <a href="/">← Alle tools</a> · <a href="mailto:${BRAND.email}">${BRAND.email}</a></footer>
+<footer>© ${new Date().getFullYear()} LeadExpert · <a href="/">← Alle tools</a> · <a href="/promote">📣 Promote Cockpit</a> · <a href="mailto:${BRAND.email}">${BRAND.email}</a></footer>
 
 <script>
 const DATA=${JSON.stringify(clientData)};
