@@ -48,3 +48,22 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: 'Deploy: ${{ github.event.head_commit.message || github.event_name }}'
+
+      - name: Set custom domain & enforce HTTPS (remove "Not Secure")
+        continue-on-error: true
+        run: |
+          # Register the custom domain in Pages settings (triggers Let's Encrypt cert).
+          gh api --method PUT -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/pages \
+            -f "cname=leadexpert.be" || echo "cname set skipped"
+          # Show current certificate state for visibility in the logs.
+          gh api /repos/${{ github.repository }}/pages \
+            -q '"domain="+.cname+" | https_certificate="+(.https_certificate.state // "pending")+" | https_enforced="+( .https_enforced|tostring)' || true
+          # Enforce HTTPS - only succeeds once the certificate is issued; safe to retry on every run.
+          gh api --method PUT -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/pages \
+            -F "https_enforced=true" \
+            && echo "HTTPS enforced - Not Secure warning removed." \
+            || echo "Certificate not ready yet; will enforce on the next scheduled run."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
