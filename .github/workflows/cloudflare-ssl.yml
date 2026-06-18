@@ -1,0 +1,52 @@
+name: Cloudflare SSL for leadexpert.be (remove Not Secure)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/cloudflare-ssl.yml'
+
+jobs:
+  cf-ssl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable Cloudflare SSL + proxy in front of GitHub Pages
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_EMAIL: ahruil.yassin@gmail.com
+        run: |
+          set -e
+          AUTH=(-H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_TOKEN" -H "Content-Type: application/json")
+
+          ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=leadexpert.be" "${AUTH[@]}" | jq -r '.result[0].id')
+          echo "Zone: $ZONE_ID"
+
+          # 1) SSL mode = full (avoids redirect loops with GitHub Pages HTTPS redirect)
+          echo "-- SSL mode --"
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings/ssl" \
+            "${AUTH[@]}" --data '{"value":"full"}' | jq -r '"ssl="+(.result.value // (.errors|tostring))'
+
+          # 2) Always Use HTTPS = on (http -> https redirect at the edge)
+          echo "-- Always Use HTTPS --"
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings/always_use_https" \
+            "${AUTH[@]}" --data '{"value":"on"}' | jq -r '"always_use_https="+(.result.value // (.errors|tostring))'
+
+          # 3) Automatic HTTPS Rewrites = on (fix mixed-content)
+          echo "-- Automatic HTTPS Rewrites --"
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings/automatic_https_rewrites" \
+            "${AUTH[@]}" --data '{"value":"on"}' | jq -r '"auto_https_rewrites="+(.result.value // (.errors|tostring))'
+
+          # 4) Turn proxy ON for apex A records + www CNAME so Cloudflare serves its SSL
+          echo "-- Proxy apex A records --"
+          for id in $(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=A&name=leadexpert.be" "${AUTH[@]}" | jq -r '.result[].id'); do
+            curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$id" \
+              "${AUTH[@]}" --data '{"proxied":true}' | jq -r '"A "+.result.content+" proxied="+(.result.proxied|tostring)'
+          done
+
+          echo "-- Proxy www CNAME --"
+          for id in $(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=www.leadexpert.be" "${AUTH[@]}" | jq -r '.result[].id'); do
+            curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$id" \
+              "${AUTH[@]}" --data '{"proxied":true}' | jq -r '"CNAME www proxied="+(.result.proxied|tostring)'
+          done
+
+          echo "Done. Cloudflare now serves HTTPS in front of GitHub Pages."
