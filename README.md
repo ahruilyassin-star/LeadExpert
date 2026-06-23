@@ -1,4 +1,36 @@
 # 🧸 Project: Little Oummah - International Expansion
+
+---
+
+## 🤖💸 AI Verdien Gids — Dagelijkse Nieuwsbrief
+
+Automatisch dagelijks verstuurd naar **ahruil.yassin@gmail.com** om 07:00.
+
+### Inhoud van elke editie:
+- **Model van de dag** — Uitleg + verdien-kansen (Claude, GPT-4o, Gemini, Midjourney, etc.)
+- **Strategie van de dag** — Freelance, SaaS, Affiliate, Digitale producten
+- **Gouden Markt** — Sectoren die premium betalen voor AI-diensten
+- **Tips van de dag** — Concrete actiepunten
+- **Actie checklist** — Wat je vandaag kunt doen
+
+### Setup (eenmalig):
+
+1. **Gmail App Password aanmaken:**
+   - Ga naar: myaccount.google.com → Security → 2-Step Verification → App passwords
+   - Maak een nieuw App Password aan voor "Mail"
+   - Kopieer het 16-cijferige wachtwoord
+
+2. **GitHub Secrets instellen:**
+   - Ga naar je repo → Settings → Secrets and variables → Actions → New repository secret
+   - Voeg toe: `GMAIL_SENDER` = `ahruil.yassin@gmail.com`
+   - Voeg toe: `GMAIL_APP_PASSWORD` = je App Password
+
+3. **Klaar!** — Elke ochtend om 07:00 ontvang je automatisch de gids.
+
+### Handmatig versturen:
+Ga naar Actions → Daily AI Earnings Newsletter → Run workflow
+
+---
 **Status:** 🔵 Rebranding & SEO Phase (English Primary)
 **Client:** Little Oummah (Islamic Educational Toys)
 
