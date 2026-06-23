@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khamrah Lattafa – 3D Parfum</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;background:#f8f6f2;overflow:hidden;font-family:Georgia,serif;-webkit-user-select:none;user-select:none}
+    canvas{display:block;cursor:grab}
+    canvas:active{cursor:grabbing}
+    #ui{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;white-space:nowrap}
+    #ui h1{color:rgba(100,65,8,.85);font-size:1.1rem;letter-spacing:6px;font-weight:normal;text-transform:uppercase}
+    #ui .ar{color:rgba(130,80,10,.5);font-size:1rem;margin-top:2px}
+    #ui p{color:rgba(90,60,8,.32);font-size:.55rem;letter-spacing:3px;margin-top:6px;text-transform:uppercase}
+    #hint{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:rgba(90,60,8,.38);font-size:.58rem;letter-spacing:3px;text-transform:uppercase;pointer-events:none;white-space:nowrap;transition:opacity 2s}
+    #hint.gone{opacity:0}
+    #btn{position:fixed;bottom:22px;right:16px;background:rgba(160,115,15,.1);border:1px solid rgba(140,100,15,.3);color:rgba(90,60,5,.75);font-size:.56rem;letter-spacing:2px;padding:7px 13px;cursor:pointer;text-transform:uppercase;border-radius:2px}
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hint">Sleep om te draaien &nbsp;·&nbsp; Scroll om in te zoomen</div>
+<div id="ui">
+  <h1>Khamrah &nbsp;·&nbsp; Lattafa</h1>
+  <div class="ar">خمرة</div>
+  <p>For Women &amp; Men &nbsp;·&nbsp; Eau de Parfum · 100ml</p>
+</div>
+<button id="btn">⟳ Auto-rotatie</button>
+
+<script>
+// ── Canvas setup ──────────────────────────────────────────────────────────────
+const CV = document.getElementById('c');
+const ctx = CV.getContext('2d');
+CV.width  = window.innerWidth  || 375;
+CV.height = window.innerHeight || 667;
+window.addEventListener('resize', () => { CV.width = window.innerWidth; CV.height = window.innerHeight; });
+
+// ── Label texture (pre-rendered to canvas) ────────────────────────────────────
+const LC = document.createElement('canvas');
+LC.width = 256; LC.height = 256;
+const lx = LC.getContext('2d');
+// Gold background
+const lg = lx.createLinearGradient(0, 0, 256, 256);
+lg.addColorStop(0,   '#4a2e06');
+lg.addColorStop(0.25,'#c07e14');
+lg.addColorStop(0.5, '#e0a820');
+lg.addColorStop(0.75,'#c07e14');
+lg.addColorStop(1,   '#4a2e06');
+lx.fillStyle = lg; lx.fillRect(0,0,256,256);
+// Borders
+lx.strokeStyle = '#f8e060'; lx.lineWidth = 5;
+lx.strokeRect(8, 8, 240, 240);
+lx.lineWidth = 1.5;
+lx.strokeRect(14, 14, 228, 228);
+// Arabic text
+lx.fillStyle = '#100600'; lx.textAlign = 'center'; lx.textBaseline = 'middle';
+lx.font = 'bold 68px serif'; lx.fillText('خمرة', 128, 90);
+lx.font = 'bold 22px serif'; lx.fillText('KHAMRAH', 128, 148);
+lx.font = '14px serif';      lx.fillText('Lattafa', 128, 180);
+
+// ── 3D math ───────────────────────────────────────────────────────────────────
+// Y-up coordinate system; camera looks down -Z axis
+function rotY(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x*c + p.z*s,  y: p.y,  z: -p.x*s + p.z*c };
+}
+function rotX(p, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x,  y: p.y*c - p.z*s,  z: p.y*s + p.z*c };
+}
+function transform(p, ay, ax) { return rotX(rotY(p, ay), ax); }
+function project(p, cx, cy, sc) {
+  const f = 900 / (900 + p.z);
+  return { x: cx + p.x * f * sc,  y: cy - p.y * f * sc };
+}
+
+// ── Bottle geometry ───────────────────────────────────────────────────────────
+// All dimensions in abstract units. Bottle vertically centered at origin (Y-up).
+// Measured from the real photo:  bottle is roughly square cross-section,
+// height ≈ 1.35× width.  Cap ≈ 35% of bottle height. Amber fills bottom 55%.
+//
+//  Part heights (total = 480):
+//    cap        : 150   center y = +240 - 75  = +165
+//    collar     : 10    center y = +165 - 75 - 5 = +85
+//    bottle body: 310   center y = +85 - 5 - 155 = -75
+//    base trim  : 10    center y = -75 - 155 - 5 = -235
+const W = 220;   // bottle half-width  (220 → full 440 wide)
+const D = 220;   // bottle half-depth  (square cross-section)
+const CAP_CY   = +165,  CAP_HH   = 75;
+const COL_CY   = +85,   COL_HH   = 5;
+const BOT_CY   = -75,   BOT_HH   = 155;
+const BASE_CY  = -235,  BASE_HH  = 5;
+// Amber liquid: inner, covers lower 55% of bottle body
+const AMB_CY   = BOT_CY - BOT_HH + BOT_HH*1.10/2;  // lower portion center
+const AMB_HH   = BOT_HH * 0.55;
+const AMB_W    = W - 6;
+
+// Build box faces: cy = y center, hw/hh/hd = half-dims, mat = material
+function mkBox(cy, hw, hh, hd, mat) {
+  const [x0,x1,y0,y1,z0,z1] = [-hw, hw, cy-hh, cy+hh, -hd, hd];
+  const V = [
+    {x:x0,y:y1,z:z0},{x:x1,y:y1,z:z0},{x:x1,y:y0,z:z0},{x:x0,y:y0,z:z0}, // 0-3 back
+    {x:x0,y:y1,z:z1},{x:x1,y:y1,z:z1},{x:x1,y:y0,z:z1},{x:x0,y:y0,z:z1}, // 4-7 front
+  ];
+  return [
+    { pts:[V[0],V[1],V[2],V[3]], nx:0,ny:0,nz:-1, side:'back',   mat },
+    { pts:[V[4],V[5],V[6],V[7]], nx:0,ny:0,nz:+1, side:'front',  mat },
+    { pts:[V[0],V[4],V[7],V[3]], nx:-1,ny:0,nz:0, side:'left',   mat },
+    { pts:[V[5],V[1],V[2],V[6]], nx:+1,ny:0,nz:0, side:'right',  mat },
+    { pts:[V[4],V[0],V[1],V[5]], nx:0,ny:+1,nz:0, side:'top',    mat },
+    { pts:[V[7],V[6],V[2],V[3]], nx:0,ny:-1,nz:0, side:'bottom', mat },
+  ];
+}
+
+const FACES = [
+  ...mkBox(CAP_CY,  W-10, CAP_HH, D-10, 'capGlass'),
+  ...mkBox(COL_CY,  W+8,  COL_HH, D+8,  'gold'),
+  ...mkBox(BOT_CY,  W,    BOT_HH, D,    'cutGlass'),
+  ...mkBox(AMB_CY,  AMB_W, AMB_HH, AMB_W, 'amber'),
+  ...mkBox(BASE_CY, W+8,  BASE_HH, D+8,  'gold'),
+];
+// Cap top = gold
+FACES.find(f => f.mat === 'capGlass' && f.side === 'top').mat = 'gold';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let ay = 0.3, ax = -0.10, zoom = 1;
+let drag = false, lxp = 0, lyp = 0, vy = 0;
+let autoOn = true, prevT = 0;
+
+function getScale() {
+  const h = CV.height || 667, w = CV.width || 375;
+  return Math.min(h * 0.58, w * 0.85) / 480 * zoom;
+}
+
+// ── Render helpers ────────────────────────────────────────────────────────────
+function tracePath(pp) {
+  ctx.beginPath();
+  ctx.moveTo(pp[0].x, pp[0].y);
+  for (let i = 1; i < pp.length; i++) ctx.lineTo(pp[i].x, pp[i].y);
+  ctx.closePath();
+}
+
+function drawCutPattern(pp, alpha, sc) {
+  // Diamond / chevron cut pattern matching real Khamrah bottle
+  const xs = pp.map(p=>p.x), ys = pp.map(p=>p.y);
+  const x0=Math.min(...xs), x1=Math.max(...xs);
+  const y0=Math.min(...ys), y1=Math.max(...ys);
+  const step = Math.max(6, 22 * sc);
+  ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+  ctx.lineWidth = Math.max(0.5, 1.2 * sc);
+  for (let i = x0 - (y1-y0); i < x1 + (y1-y0); i += step) {
+    ctx.beginPath(); ctx.moveTo(i, y0); ctx.lineTo(i+(y1-y0), y1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(i, y1); ctx.lineTo(i+(y1-y0), y0); ctx.stroke();
+  }
+  // Horizontal grooves every 2 diagonals
+  ctx.strokeStyle = `rgba(255,255,255,${alpha*0.5})`;
+  ctx.lineWidth = Math.max(0.3, 0.6*sc);
+  for (let y = y0; y < y1; y += step*2) {
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+  }
+}
+
+function drawFace(face, pp, sc) {
+  const mat = face.mat, side = face.side;
+  const xs = pp.map(p=>p.x), ys = pp.map(p=>p.y);
+  const x0=Math.min(...xs), x1=Math.max(...xs);
+  const y0=Math.min(...ys), y1=Math.max(...ys);
+  const mx = (x0+x1)/2, my = (y0+y1)/2;
+  const w = x1-x0, h = y1-y0;
+
+  ctx.save();
+  tracePath(pp); ctx.clip();
+
+  if (mat === 'gold') {
+    const g = ctx.createLinearGradient(x0, y0, x1, y1);
+    g.addColorStop(0,   '#5a3a08');
+    g.addColorStop(0.25,'#d4980e');
+    g.addColorStop(0.5, '#f0c020');
+    g.addColorStop(0.75,'#c48010');
+    g.addColorStop(1,   '#5a3a08');
+    ctx.fillStyle = g; tracePath(pp); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,220,60,.4)'; ctx.lineWidth = 0.6;
+    tracePath(pp); ctx.stroke();
+  }
+
+  else if (mat === 'amber') {
+    const g = ctx.createLinearGradient(mx, y0, mx, y1);
+    g.addColorStop(0, 'rgba(200,100,5,.93)');
+    g.addColorStop(1, 'rgba(145,55,0,.97)');
+    ctx.fillStyle = g; tracePath(pp); ctx.fill();
+    // Warm highlight on front/sides
+    if (side !== 'top' && side !== 'bottom') {
+      const hg = ctx.createLinearGradient(x0, my, mx*1.1, my);
+      hg.addColorStop(0, 'rgba(255,170,30,.22)');
+      hg.addColorStop(0.4, 'rgba(255,170,30,0)');
+      ctx.fillStyle = hg; tracePath(pp); ctx.fill();
+    }
+    // The amber also shows the cut pattern (the grooves in the glass pass through)
+    if (side !== 'top' && side !== 'bottom') {
+      drawCutPattern(pp, 0.12, sc);
+    }
+  }
+
+  else if (mat === 'cutGlass') {
+    // Base glass tint
+    const baseAlpha = side === 'back' ? 0.06 : (side === 'front' ? 0.18 : 0.12);
+    ctx.fillStyle = `rgba(210,228,248,${baseAlpha})`;
+    tracePath(pp); ctx.fill();
+
+    // Cut glass lines
+    if (side !== 'top' && side !== 'bottom') {
+      const lineAlpha = side === 'front' ? 0.35 : (side === 'back' ? 0.18 : 0.25);
+      drawCutPattern(pp, lineAlpha, sc);
+    }
+
+    // Edge highlight
+    if (side === 'front' || side === 'right') {
+      const eg = ctx.createLinearGradient(x0, my, x0 + w*0.3, my);
+      eg.addColorStop(0, 'rgba(255,255,255,.18)');
+      eg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = eg; tracePath(pp); ctx.fill();
+    }
+
+    // Label on front/back
+    if ((side === 'front' || side === 'back') && w > 10 && h > 10) {
+      const lw = w * 0.45, lh = lw;
+      const ly = my + h * 0.12; // slightly below center (amber region)
+      ctx.globalAlpha = 0.92;
+      ctx.drawImage(LC, mx - lw/2, ly - lh/2, lw, lh);
+      ctx.globalAlpha = 1;
+    }
+
+    // Thin glass border edge
+    ctx.strokeStyle = `rgba(200,220,245,.25)`; ctx.lineWidth = 0.5;
+    tracePath(pp); ctx.stroke();
+  }
+
+  else if (mat === 'capGlass') {
+    const baseAlpha = side === 'back' ? 0.05 : (side === 'front' ? 0.15 : 0.1);
+    ctx.fillStyle = `rgba(215,232,250,${baseAlpha})`;
+    tracePath(pp); ctx.fill();
+    if (side === 'front' || side === 'right') {
+      const eg = ctx.createLinearGradient(x0, my, x0 + w*0.35, my);
+      eg.addColorStop(0, 'rgba(255,255,255,.15)');
+      eg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = eg; tracePath(pp); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(200,220,245,.2)'; ctx.lineWidth = 0.5;
+    tracePath(pp); ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ── Main draw function ────────────────────────────────────────────────────────
+function draw(ts) {
+  const dt = Math.min(ts - prevT, 50); prevT = ts;
+  if (autoOn) ay += dt * 0.0007;
+
+  const w = CV.width, h = CV.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w/2, cy = h/2 - h*0.03;
+  const sc = getScale();
+
+  // Soft ground shadow
+  const shadowR = Math.max(1, 80 * sc);
+  const shadowY = cy + 240 * sc * 0.97;
+  const sg = ctx.createRadialGradient(cx, shadowY, 0, cx, shadowY, shadowR);
+  sg.addColorStop(0, 'rgba(140,100,30,.22)');
+  sg.addColorStop(1, 'rgba(140,100,30,0)');
+  ctx.fillStyle = sg;
+  ctx.beginPath();
+  ctx.ellipse(cx, shadowY+4, shadowR, shadowR * 0.15, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Transform and sort all faces
+  const isGlass = m => m === 'cutGlass' || m === 'capGlass';
+  const tFaces = FACES.map(f => {
+    const rp = f.pts.map(p => transform(p, ay, ax));
+    const avgZ = (rp[0].z + rp[1].z + rp[2].z + rp[3].z) * 0.25;
+    const pp = rp.map(p => project(p, cx, cy, sc));
+    const rn = transform({x:f.nx, y:f.ny, z:f.nz}, ay, ax);
+    return { f, pp, avgZ, frontFacing: rn.z > 0 };
+  });
+
+  tFaces.sort((a, b) => a.avgZ - b.avgZ); // back to front
+
+  tFaces.forEach(({ f, pp, frontFacing }) => {
+    // Skip back-facing opaque faces
+    if (!frontFacing && !isGlass(f.mat)) return;
+    // For glass: draw back faces too (creates depth), but skip non-back opaque
+    if (!frontFacing && f.side !== 'back') return;
+    drawFace(f, pp, sc);
+  });
+}
+
+// ── Animation loop ────────────────────────────────────────────────────────────
+// Draw first frame immediately (synchronous), then start rAF loop
+prevT = (typeof performance !== 'undefined' && performance.now) ? performance.now() : 0;
+draw(prevT);
+
+(function loop(ts) {
+  draw(ts || 0);
+  requestAnimationFrame(loop);
+})(prevT);
+
+// ── Interaction ───────────────────────────────────────────────────────────────
+function onDown(x, y) {
+  drag = true; vy = 0; lxp = x; lyp = y;
+  autoOn = false;
+  document.getElementById('btn').textContent = '⟳ Auto-rotatie';
+}
+function onMove(x, y) {
+  if (!drag) return;
+  vy = (x - lxp) * 0.007;
+  ay += vy;
+  ax = Math.max(-0.45, Math.min(0.22, ax + (y - lyp) * 0.004));
+  lxp = x; lyp = y;
+}
+function onUp() {
+  if (!drag) return; drag = false;
+  (function coast() { vy *= 0.92; ay += vy; if (Math.abs(vy) > 0.0004) requestAnimationFrame(coast); })();
+}
+
+CV.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
+window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+window.addEventListener('mouseup', onUp);
+CV.addEventListener('touchstart', e => { if (e.touches.length === 1) onDown(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+window.addEventListener('touchmove', e => { if (drag && e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+window.addEventListener('touchend', onUp);
+
+window.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoom = Math.max(0.3, Math.min(3, zoom * (1 - e.deltaY * 0.001)));
+}, {passive:false});
+
+let pinchD0 = 0, pinchZ0 = 1;
+window.addEventListener('touchstart', e => {
+  if (e.touches.length === 2) {
+    drag = false;
+    pinchD0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    pinchZ0 = zoom;
+  }
+}, {passive:true});
+window.addEventListener('touchmove', e => {
+  if (e.touches.length === 2) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    zoom = Math.max(0.3, Math.min(3, pinchZ0 * (d / pinchD0)));
+  }
+}, {passive:true});
+
+document.getElementById('btn').addEventListener('click', () => {
+  autoOn = !autoOn;
+  document.getElementById('btn').textContent = autoOn ? '⏸ Stoppen' : '⟳ Auto-rotatie';
+});
+setTimeout(() => document.getElementById('hint').classList.add('gone'), 4000);
+</script>
+</body>
+</html>
