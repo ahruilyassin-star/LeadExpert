@@ -1,0 +1,119 @@
+<section class="ebc-wrap" id="ebc-{{ section.id }}">
+  <div class="ebc-inner">
+    <div class="ebc-header">
+      <h2 class="ebc-title">{{ section.settings.title | default: 'Nuestras Marcas' }}</h2>
+      <div class="ebc-nav">
+        <button class="ebc-arrow ebc-arrow--prev" type="button" aria-label="Anterior">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="ebc-arrow ebc-arrow--next" type="button" aria-label="Siguiente">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="ebc-scroll" id="ebc-scroll-{{ section.id }}">
+      <div class="ebc-track">
+        {%- for block in section.blocks -%}
+          <a class="ebc-item" href="{{ block.settings.url | default: '/collections/all' }}" aria-label="{{ block.settings.name }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.logo != blank -%}
+              <img class="ebc-item__logo" src="{{ block.settings.logo | img_url: '300x' }}" alt="{{ block.settings.name }}" loading="lazy" width="300" height="120">
+            {%- else -%}
+              <span class="ebc-item__text">{{ block.settings.name | default: 'Marca' }}</span>
+            {%- endif -%}
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+#ebc-{{ section.id }} {background:#fff;padding:56px 24px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;border-top:1px solid #ebebeb;border-bottom:1px solid #ebebeb;}
+#ebc-{{ section.id }} .ebc-inner {max-width:1440px;margin:0 auto;}
+#ebc-{{ section.id }} .ebc-header {display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;}
+#ebc-{{ section.id }} .ebc-title {font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.3rem,2.2vw,1.7rem);font-weight:400;color:#0a0a0a;margin:0;letter-spacing:-0.02em;}
+#ebc-{{ section.id }} .ebc-nav {display:flex;gap:8px;}
+#ebc-{{ section.id }} .ebc-arrow {width:38px;height:38px;border:1px solid #e5e5e5;background:#fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0a0a0a;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ebc-{{ section.id }} .ebc-arrow:hover {background:#0a0a0a;color:#fff;border-color:#0a0a0a;}
+#ebc-{{ section.id }} .ebc-arrow:disabled {opacity:0.3;cursor:not-allowed;}
+#ebc-{{ section.id }} .ebc-arrow:disabled:hover {background:#fff;color:#0a0a0a;border-color:#e5e5e5;}
+#ebc-{{ section.id }} .ebc-scroll {overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;}
+#ebc-{{ section.id }} .ebc-scroll::-webkit-scrollbar {display:none;}
+#ebc-{{ section.id }} .ebc-track {display:flex;gap:16px;padding:4px;width:max-content;}
+#ebc-{{ section.id }} .ebc-item {flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:200px;height:90px;border:1px solid #ebebeb;border-radius:4px;background:#fff;text-decoration:none;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);padding:16px;}
+#ebc-{{ section.id }} .ebc-item:hover {border-color:#0a0a0a;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.08);}
+#ebc-{{ section.id }} .ebc-item__logo {max-height:50px;max-width:100%;width:auto;object-fit:contain;display:block;}
+#ebc-{{ section.id }} .ebc-item__text {font-family:'Cormorant Garamond',Georgia,serif;font-size:1.1rem;font-weight:400;color:#0a0a0a;letter-spacing:0.04em;text-align:center;}
+@media(max-width:768px){
+#ebc-{{ section.id }} {padding:40px 16px;}
+#ebc-{{ section.id }} .ebc-header {margin-bottom:20px;}
+#ebc-{{ section.id }} .ebc-track {gap:12px;}
+#ebc-{{ section.id }} .ebc-item {width:150px;height:72px;padding:12px;}
+#ebc-{{ section.id }} .ebc-item__text {font-size:0.92rem;}
+#ebc-{{ section.id }} .ebc-arrow {width:34px;height:34px;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ebc-' + sid);
+  if (!wrap) return;
+  var scroll = document.getElementById('ebc-scroll-' + sid);
+  var prevBtn = wrap.querySelector('.ebc-arrow--prev');
+  var nextBtn = wrap.querySelector('.ebc-arrow--next');
+  if (!scroll) return;
+  function updateBtns(){
+    if (!prevBtn || !nextBtn) return;
+    prevBtn.disabled = scroll.scrollLeft <= 4;
+    nextBtn.disabled = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 4;
+  }
+  function doScroll(dir){
+    var amount = scroll.clientWidth * 0.7;
+    scroll.scrollBy({ left: dir * amount, behavior: 'smooth' });
+  }
+  if (prevBtn) prevBtn.addEventListener('click', function(){ doScroll(-1); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ doScroll(1); });
+  scroll.addEventListener('scroll', updateBtns);
+  window.addEventListener('resize', updateBtns);
+  updateBtns();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Brand Carousel",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 20,
+  "settings": [
+    {"type":"text","id":"title","label":"Title","default":"Nuestras Marcas"}
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {"type":"text","id":"name","label":"Brand name","default":"Marca"},
+        {"type":"image_picker","id":"logo","label":"Logo (PNG transparent recommended)"},
+        {"type":"url","id":"url","label":"Link URL"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Brand Carousel",
+      "blocks": [
+        {"type":"brand","settings":{"name":"LATTAFA"}},
+        {"type":"brand","settings":{"name":"ARMAF"}},
+        {"type":"brand","settings":{"name":"AFNAN"}},
+        {"type":"brand","settings":{"name":"RASASI"}},
+        {"type":"brand","settings":{"name":"MAISON ALHAMBRA"}},
+        {"type":"brand","settings":{"name":"AL HARAMAIN"}},
+        {"type":"brand","settings":{"name":"NUSUK"}},
+        {"type":"brand","settings":{"name":"RIIFFS"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,133 @@
+<section class="ecc-wrap" id="ecc-{{ section.id }}">
+  <div class="ecc-inner">
+    {%- if section.settings.show_header -%}
+      <div class="ecc-header">
+        <h2 class="ecc-title">{{ section.settings.title | default: 'Categorías populares' }}</h2>
+        <div class="ecc-nav">
+          <button class="ecc-arrow ecc-arrow--prev" type="button" aria-label="Anterior">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <button class="ecc-arrow ecc-arrow--next" type="button" aria-label="Siguiente">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    {%- endif -%}
+    <div class="ecc-scroll" id="ecc-scroll-{{ section.id }}">
+      <div class="ecc-track">
+        {%- for block in section.blocks -%}
+          <a class="ecc-item" href="{{ block.settings.url | default: '/collections/all' }}" {{ block.shopify_attributes }}>
+            <div class="ecc-item__circle" style="background:{{ block.settings.bg_color | default: '#fbe7df' }};">
+              {%- if block.settings.image != blank -%}
+                <img class="ecc-item__img" src="{{ block.settings.image | img_url: '300x' }}" alt="{{ block.settings.name }}" loading="lazy" width="300" height="300">
+              {%- elsif block.settings.icon != blank -%}
+                <span class="ecc-item__icon">{{ block.settings.icon }}</span>
+              {%- else -%}
+                <span class="ecc-item__icon">✦</span>
+              {%- endif -%}
+            </div>
+            <span class="ecc-item__name">{{ block.settings.name | default: 'Categoría' }}</span>
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+#ecc-{{ section.id }} {background:#fff;padding:48px 24px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#ecc-{{ section.id }} .ecc-inner {max-width:1440px;margin:0 auto;}
+#ecc-{{ section.id }} .ecc-header {display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;}
+#ecc-{{ section.id }} .ecc-title {font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.4rem,2.4vw,1.9rem);font-weight:400;color:#0a0a0a;margin:0;letter-spacing:-0.02em;}
+#ecc-{{ section.id }} .ecc-nav {display:flex;gap:8px;}
+#ecc-{{ section.id }} .ecc-arrow {width:38px;height:38px;border:1px solid #e5e5e5;background:#fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0a0a0a;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecc-{{ section.id }} .ecc-arrow:hover {background:#0a0a0a;color:#fff;border-color:#0a0a0a;}
+#ecc-{{ section.id }} .ecc-arrow:disabled {opacity:0.3;cursor:not-allowed;}
+#ecc-{{ section.id }} .ecc-arrow:disabled:hover {background:#fff;color:#0a0a0a;border-color:#e5e5e5;}
+#ecc-{{ section.id }} .ecc-scroll {overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;}
+#ecc-{{ section.id }} .ecc-scroll::-webkit-scrollbar {display:none;}
+#ecc-{{ section.id }} .ecc-track {display:flex;gap:36px;padding:8px 4px;width:max-content;}
+#ecc-{{ section.id }} .ecc-item {flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-decoration:none;cursor:pointer;}
+#ecc-{{ section.id }} .ecc-item__circle {width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__circle {transform:scale(1.05);}
+#ecc-{{ section.id }} .ecc-item__img {width:80%;height:80%;object-fit:contain;display:block;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__img {transform:scale(1.08);}
+#ecc-{{ section.id }} .ecc-item__icon {font-size:3.5rem;font-weight:400;color:#0a0a0a;line-height:1;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}
+#ecc-{{ section.id }} .ecc-item__name {font-size:0.92rem;font-weight:500;color:#0a0a0a;letter-spacing:0.01em;text-align:center;}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__name {color:#262626;}
+@media(max-width:768px){
+#ecc-{{ section.id }} {padding:32px 16px;}
+#ecc-{{ section.id }} .ecc-header {margin-bottom:20px;}
+#ecc-{{ section.id }} .ecc-track {gap:20px;}
+#ecc-{{ section.id }} .ecc-item__circle {width:96px;height:96px;}
+#ecc-{{ section.id }} .ecc-item__icon {font-size:2.4rem;}
+#ecc-{{ section.id }} .ecc-item__name {font-size:0.8rem;}
+#ecc-{{ section.id }} .ecc-arrow {display:none;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ecc-' + sid);
+  if (!wrap) return;
+  var scroll = document.getElementById('ecc-scroll-' + sid);
+  var prevBtn = wrap.querySelector('.ecc-arrow--prev');
+  var nextBtn = wrap.querySelector('.ecc-arrow--next');
+  if (!scroll) return;
+  function updateBtns(){
+    if (!prevBtn || !nextBtn) return;
+    prevBtn.disabled = scroll.scrollLeft <= 4;
+    nextBtn.disabled = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 4;
+  }
+  function scrollBy(dir){
+    var amount = scroll.clientWidth * 0.7;
+    scroll.scrollBy({ left: dir * amount, behavior: 'smooth' });
+  }
+  if (prevBtn) prevBtn.addEventListener('click', function(){ scrollBy(-1); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ scrollBy(1); });
+  scroll.addEventListener('scroll', updateBtns);
+  window.addEventListener('resize', updateBtns);
+  updateBtns();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Circle Categories",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 12,
+  "settings": [
+    {"type":"checkbox","id":"show_header","label":"Show header","default":true},
+    {"type":"text","id":"title","label":"Title","default":"Categorías populares"}
+  ],
+  "blocks": [
+    {
+      "type": "circle",
+      "name": "Circle",
+      "settings": [
+        {"type":"text","id":"name","label":"Name","default":"Categoría"},
+        {"type":"text","id":"icon","label":"Fallback icon (emoji or symbol)","default":"✦"},
+        {"type":"image_picker","id":"image","label":"Image (optional, recommended PNG transparent)"},
+        {"type":"color","id":"bg_color","label":"Circle background color","default":"#fbe7df"},
+        {"type":"url","id":"url","label":"Link URL"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Circle Categories",
+      "blocks": [
+        {"type":"circle","settings":{"name":"Ofertas","icon":"%","bg_color":"#fbe7df"}},
+        {"type":"circle","settings":{"name":"Mujer","icon":"♀","bg_color":"#fde4e4"}},
+        {"type":"circle","settings":{"name":"Hombre","icon":"♂","bg_color":"#e6f0f5"}},
+        {"type":"circle","settings":{"name":"Top 10 Mujer","icon":"★","bg_color":"#fef0d9"}},
+        {"type":"circle","settings":{"name":"Top 10 Hombre","icon":"★","bg_color":"#e8e6f0"}},
+        {"type":"circle","settings":{"name":"Oud & Oriental","icon":"◆","bg_color":"#f0e4d4"}},
+        {"type":"circle","settings":{"name":"Sets de Regalo","icon":"🎁","bg_color":"#e8f0e0"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

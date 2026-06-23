@@ -1,0 +1,98 @@
+<div class="ed-reviews" id="reviews">
+  <div class="ed-reviews__inner">
+    <div class="ed-reviews__header">
+      <p class="ed-reviews__eyebrow">Opiniones verificadas</p>
+      <h2 class="ed-reviews__title">Lo que dicen nuestros clientes</h2>
+      <div class="ed-reviews__stars-summary">
+        <div class="ed-reviews__stars-big">
+          {% for i in (1..5) %}<span class="ed-reviews__star ed-reviews__star--gold">★</span>{% endfor %}
+        </div>
+        <span class="ed-reviews__rating-num">4.9</span>
+        <span class="ed-reviews__rating-count">/ 5.0 · +5.000 clientes satisfechos</span>
+      </div>
+    </div>
+
+    <div class="ed-reviews__grid">
+      <article class="ed-reviews__card">
+        <div class="ed-reviews__card-stars">★★★★★</div>
+        <p class="ed-reviews__card-text">"El Khamrah de Lattafa es increíble. La proyección dura todo el día y recibo cumplidos constantemente. Envío rapidísimo, llegó en 24h."</p>
+        <footer class="ed-reviews__card-footer">
+          <span class="ed-reviews__card-avatar">M</span>
+          <div>
+            <strong class="ed-reviews__card-name">María L.</strong>
+            <span class="ed-reviews__card-date">Madrid · hace 3 días</span>
+          </div>
+          <span class="ed-reviews__card-verified">✓ Compra verificada</span>
+        </footer>
+      </article>
+
+      <article class="ed-reviews__card">
+        <div class="ed-reviews__card-stars">★★★★★</div>
+        <p class="ed-reviews__card-text">"Llevo meses comprando aquí. El Club de Nuit Intense es mi favorito absoluto. La calidad es exactamente igual al original, totalmente auténtico."</p>
+        <footer class="ed-reviews__card-footer">
+          <span class="ed-reviews__card-avatar">C</span>
+          <div>
+            <strong class="ed-reviews__card-name">Carlos R.</strong>
+            <span class="ed-reviews__card-date">Barcelona · hace 1 semana</span>
+          </div>
+          <span class="ed-reviews__card-verified">✓ Compra verificada</span>
+        </footer>
+      </article>
+
+      <article class="ed-reviews__card">
+        <div class="ed-reviews__card-stars">★★★★★</div>
+        <p class="ed-reviews__card-text">"Pedí un set de regalo para mi marido y quedó encantado. El packaging es precioso y el perfume (Hawas de Rasasi) es espectacular. Muy recomendable."</p>
+        <footer class="ed-reviews__card-footer">
+          <span class="ed-reviews__card-avatar">A</span>
+          <div>
+            <strong class="ed-reviews__card-name">Ana G.</strong>
+            <span class="ed-reviews__card-date">Valencia · hace 2 semanas</span>
+          </div>
+          <span class="ed-reviews__card-verified">✓ Compra verificada</span>
+        </footer>
+      </article>
+    </div>
+
+    <div class="ed-reviews__app-notice">
+      <p>¿Ya compraste con nosotros? <a href="mailto:info@esenciasdedubai.com?subject=Quiero dejar una opinión">Deja tu opinión</a> y recibe un cupón del 5% en tu próximo pedido.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.ed-reviews{padding:72px 0;background:#faf8f5;border-top:1px solid #f0ebe3}
+.ed-reviews__inner{max-width:1200px;margin:0 auto;padding:0 24px}
+.ed-reviews__header{text-align:center;margin-bottom:48px}
+.ed-reviews__eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#c9a96e;font-weight:600;margin:0 0 10px;font-family:'Inter',sans-serif}
+.ed-reviews__title{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.9rem,3.5vw,2.6rem);font-weight:400;color:#1a1a1a;margin:0 0 16px}
+.ed-reviews__stars-summary{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.ed-reviews__stars-big{font-size:22px;letter-spacing:2px}
+.ed-reviews__star--gold{color:#c9a96e}
+.ed-reviews__rating-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:2rem;font-weight:400;color:#1a1a1a}
+.ed-reviews__rating-count{font-size:14px;color:#888;font-family:'Inter',sans-serif}
+.ed-reviews__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:40px}
+.ed-reviews__card{background:#fff;border:1px solid #f0ebe3;border-radius:4px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.ed-reviews__card-stars{color:#c9a96e;font-size:18px;letter-spacing:2px}
+.ed-reviews__card-text{font-size:14px;color:#444;line-height:1.7;margin:0;flex:1;font-style:italic}
+.ed-reviews__card-footer{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:16px;border-top:1px solid #f0ebe3;flex-wrap:wrap}
+.ed-reviews__card-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#c9a96e,#a07840);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ed-reviews__card-name{display:block;font-size:13px;font-weight:600;color:#1a1a1a}
+.ed-reviews__card-date{display:block;font-size:11px;color:#aaa;margin-top:2px}
+.ed-reviews__card-verified{margin-left:auto;font-size:11px;color:#27ae60;font-weight:500;white-space:nowrap}
+.ed-reviews__app-notice{text-align:center;font-size:13px;color:#888;background:#fff;border:1px dashed #e0d8d0;border-radius:4px;padding:16px 24px}
+.ed-reviews__app-notice a{color:#c9a96e;font-weight:600;text-decoration:none}
+.ed-reviews__app-notice a:hover{text-decoration:underline}
+@media(max-width:900px){.ed-reviews__grid{grid-template-columns:1fr}}
+@media(max-width:640px){.ed-reviews{padding:48px 0}}
+</style>
+
+{% schema %}
+{
+  "name": "Opiniones de clientes",
+  "tag": "section",
+  "class": "section-product-reviews",
+  "disabled_on": {"groups": ["header", "footer"]},
+  "settings": [],
+  "presets": [{"name": "Opiniones de clientes"}]
+}
+{% endschema %}

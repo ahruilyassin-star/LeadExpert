@@ -1,0 +1,177 @@
+{
+  "sections": {
+    "top_bar": {
+      "type": "ed-top-bar",
+      "blocks": {
+        "u1": {"type": "usp", "settings": {"text": "<strong>Envío gratis</strong> a partir de 49€"}},
+        "u2": {"type": "usp", "settings": {"text": "<strong>Entrega 24-48h</strong> en toda España"}},
+        "u3": {"type": "usp", "settings": {"text": "<strong>Devolución gratuita</strong> en 14 días"}}
+      },
+      "block_order": ["u1", "u2", "u3"],
+      "settings": {"bg_color": "#f7efe6", "show_trustpilot": true, "review_count": "5K reviews"}
+    },
+    "hero_mosaic": {
+      "type": "ed-banner-mosaic",
+      "blocks": {
+        "b1": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Edición especial",
+            "title": "Wedding Season",
+            "image": "shopify://shop_images/Gemini_Generated_Image_ah0zqdah0zqdah0z_794029d9-54b6-4c40-9965-0f872cab3b5c.png",
+            "image_url": "",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "b2": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Recién llegado",
+            "title": "Nuevos Sets de Regalo",
+            "image": "shopify://shop_images/banner_mujer.jpg",
+            "image_url": "",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "b3": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Mujer",
+            "title": "Nuevas Fragancias Mujer",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.95752.jpg?v=1779380734",
+            "url": "/collections/perfumes-mujer"
+          }
+        },
+        "b4": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Hombre",
+            "title": "Nuevas Fragancias Hombre",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.65414_9af3fd52-c632-457a-9759-086ad86b7c11.jpg?v=1779380569",
+            "url": "/collections/perfumes-hombre"
+          }
+        },
+        "b5": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Bestsellers",
+            "title": "Oud & Orientales",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.84403.jpg?v=1779490050",
+            "url": "/collections/perfumes-con-oud"
+          }
+        }
+      },
+      "block_order": ["b1", "b2", "b3", "b4", "b5"],
+      "settings": {"accent_color": "#F2A88A"}
+    },
+    "circle_cats": {
+      "type": "ed-circle-categories",
+      "blocks": {
+        "c1": {"type": "circle", "settings": {"name": "Ofertas", "icon": "%", "bg_color": "#fbe7df", "url": "/collections/all"}},
+        "c2": {"type": "circle", "settings": {"name": "Mujer", "icon": "♀", "bg_color": "#fde4e4", "url": "/collections/perfumes-mujer"}},
+        "c3": {"type": "circle", "settings": {"name": "Hombre", "icon": "♂", "bg_color": "#e6f0f5", "url": "/collections/perfumes-hombre"}},
+        "c4": {"type": "circle", "settings": {"name": "Bestsellers", "icon": "★", "bg_color": "#fef0d9", "url": "/collections/bestsellers-esencias-de-dubai"}},
+        "c5": {"type": "circle", "settings": {"name": "Oud & Oriental", "icon": "◆", "bg_color": "#f0e4d4", "url": "/collections/perfumes-con-oud"}},
+        "c6": {"type": "circle", "settings": {"name": "Sets de Regalo", "icon": "🎁", "bg_color": "#e8f0e0", "url": "/collections/sets-de-regalo-perfumes-arabes"}},
+        "c7": {"type": "circle", "settings": {"name": "Dulces", "icon": "♥", "bg_color": "#f5e4eb", "url": "/collections/perfumes-dulces-y-gourmand"}},
+        "c8": {"type": "circle", "settings": {"name": "Verano", "icon": "☀", "bg_color": "#fff4d6", "url": "/collections/perfumes-para-el-verano"}}
+      },
+      "block_order": ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"],
+      "settings": {"show_header": true, "title": "Categorías populares"}
+    },
+    "bestsellers": {
+      "type": "ed-product-grid",
+      "settings": {
+        "eyebrow": "Bestsellers",
+        "title": "Los más vendidos",
+        "collection_handle": "bestsellers-esencias-de-dubai",
+        "cta_text": "Ver todos los bestsellers",
+        "cta_url": "/collections/bestsellers-esencias-de-dubai"
+      }
+    },
+    "promo_asym": {
+      "type": "ed-promo-asymmetric",
+      "blocks": {
+        "p1": {
+          "type": "banner",
+          "settings": {
+            "show_overlay": true,
+            "eyebrow": "Marca destacada",
+            "title": "Colección LATTAFA",
+            "subtitle": "Khamrah, Asad, Yara y muchos más bestsellers.",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.72821_00d66155-65ea-4133-a363-201464157bc2.jpg?v=1779380602",
+            "url": "/collections/perfumes-lattafa"
+          }
+        },
+        "p2": {
+          "type": "banner",
+          "settings": {
+            "title": "Sets de Regalo",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.76880_d839fc4d-ab52-4dab-a9f6-cead3b5022bf.jpg?v=1779380702",
+            "url": "/collections/sets-de-regalo-perfumes-arabes"
+          }
+        },
+        "p3": {
+          "type": "banner",
+          "settings": {
+            "title": "Oud & Orientales",
+            "image_url": "https://cdn.shopify.com/s/files/1/1029/1167/2662/files/375x500.64948_798b6788-87fb-4521-8c03-f63b7d950922.jpg?v=1779380602",
+            "url": "/collections/perfumes-con-oud"
+          }
+        }
+      },
+      "block_order": ["p1", "p2", "p3"],
+      "settings": {"accent_color": "#F2A88A"}
+    },
+    "brand_carousel": {
+      "type": "ed-brand-carousel",
+      "blocks": {
+        "b1": {"type": "brand", "settings": {"name": "LATTAFA", "url": "/collections/perfumes-lattafa"}},
+        "b2": {"type": "brand", "settings": {"name": "ARMAF", "url": "/collections/perfumes-armaf"}},
+        "b3": {"type": "brand", "settings": {"name": "AFNAN", "url": "/collections/perfumes-afnan"}},
+        "b4": {"type": "brand", "settings": {"name": "RASASI", "url": "/collections/perfumes-rasasi"}},
+        "b5": {"type": "brand", "settings": {"name": "MAISON ALHAMBRA", "url": "/collections/perfumes-maison-alhambra"}},
+        "b6": {"type": "brand", "settings": {"name": "AL HARAMAIN", "url": "/collections/perfumes-al-haramain"}},
+        "b7": {"type": "brand", "settings": {"name": "NUSUK", "url": "/collections/perfumes-nusuk"}},
+        "b8": {"type": "brand", "settings": {"name": "RIIFFS", "url": "/collections/perfumes-riiffs"}},
+        "b9": {"type": "brand", "settings": {"name": "FRAGRANCE WORLD", "url": "/collections/perfumes-fragrance-world"}},
+        "b10": {"type": "brand", "settings": {"name": "FRENCH AVENUE", "url": "/collections/perfumes-french-avenue"}}
+      },
+      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"],
+      "settings": {"title": "Nuestras Marcas"}
+    },
+    "story": {
+      "type": "ed-clean-story",
+      "settings": {
+        "eyebrow": "Nuestra Historia",
+        "title": "El alma de Dubai, en cada frasco",
+        "text1": "Nacimos del amor por los aromas del Oriente Medio. Desde los zocos de Dubai hasta tu hogar, traemos las fragancias más exclusivas del mundo árabe con autenticidad garantizada.",
+        "text2": "Cada perfume está seleccionado directamente de los mejores maestros perfumeros de Emiratos, Arabia Saudí y Egipto — una experiencia olfativa sin igual.",
+        "stat_number": "5.000+",
+        "stat_label": "Clientes satisfechos",
+        "cta_text": "Conocer nuestra historia",
+        "cta_url": "/pages/sobre-nosotros"
+      }
+    },
+    "newsletter": {
+      "type": "ed-newsletter",
+      "settings": {
+        "eyebrow": "Newsletter",
+        "title": "Recibe las novedades antes que nadie",
+        "subtitle": "Suscríbete y consigue un 10% de descuento en tu primer pedido, además de acceso anticipado a nuevos lanzamientos exclusivos.",
+        "placeholder": "Tu correo electrónico",
+        "button_text": "Suscribirme"
+      }
+    }
+  },
+  "order": [
+    "top_bar",
+    "hero_mosaic",
+    "circle_cats",
+    "bestsellers",
+    "promo_asym",
+    "brand_carousel",
+    "story",
+    "newsletter"
+  ]
+}

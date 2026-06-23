@@ -1,0 +1,201 @@
+<div class="ect-wrap" id="ect-{{ section.id }}">
+  <div class="ect-header">
+    <div class="ect-eyebrow">
+      <span class="ect-eyebrow__line"></span>
+      <span class="ect-eyebrow__text">{{ section.settings.eyebrow | default: 'Nuestras Colecciones' }}</span>
+      <span class="ect-eyebrow__line"></span>
+    </div>
+    <h2 class="ect-title">{{ section.settings.title | default: 'Descubre Tu Fragancia' }}</h2>
+  </div>
+
+  <div class="ect-grid">
+
+    {%- comment -%} TILE 1 – Hombre (large left, spans 2 rows) {%- endcomment -%}
+    {%- assign coll_hombre = collections['perfumes-hombre'] -%}
+    <a class="ect-tile ect-tile--hombre ect-tile--large" href="{{ section.settings.tile1_url | default: coll_hombre.url | default: '/collections/perfumes-hombre' }}" aria-label="{{ section.settings.tile1_name | default: 'Hombre' }}">
+      <div class="ect-tile__bg" id="ect-bg-t1-{{ section.id }}" style="background-image:url('{{ section.settings.tile1_img | default: coll_hombre.image.src | img_url: '800x' }}')"></div>
+      <div class="ect-tile__glare" id="ect-gl-t1-{{ section.id }}"></div>
+      <div class="ect-tile__overlay"></div>
+      <div class="ect-tile__content">
+        <span class="ect-tile__eyebrow">Colección</span>
+        <h3 class="ect-tile__name">{{ section.settings.tile1_name | default: 'Hombre' }}</h3>
+        <p class="ect-tile__desc">{{ section.settings.tile1_desc | default: 'Fragancias masculinas con oud y ambar' }}</p>
+        <span class="ect-tile__cta">Explorar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+    {%- comment -%} TILE 2 – Mujer (top right) {%- endcomment -%}
+    {%- assign coll_mujer = collections['perfumes-mujer'] -%}
+    <a class="ect-tile ect-tile--mujer" href="{{ section.settings.tile2_url | default: coll_mujer.url | default: '/collections/perfumes-mujer' }}" aria-label="{{ section.settings.tile2_name | default: 'Mujer' }}">
+      <div class="ect-tile__bg" id="ect-bg-t2-{{ section.id }}" style="background-image:url('{{ section.settings.tile2_img | default: coll_mujer.image.src | img_url: '600x' }}')"></div>
+      <div class="ect-tile__glare" id="ect-gl-t2-{{ section.id }}"></div>
+      <div class="ect-tile__overlay"></div>
+      <div class="ect-tile__content">
+        <span class="ect-tile__eyebrow">Colección</span>
+        <h3 class="ect-tile__name">{{ section.settings.tile2_name | default: 'Mujer' }}</h3>
+        <p class="ect-tile__desc">{{ section.settings.tile2_desc | default: 'Rosas, jazmín y almizcle oriental' }}</p>
+        <span class="ect-tile__cta">Explorar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+    {%- comment -%} TILE 3 – Sets (bottom right middle) {%- endcomment -%}
+    {%- assign coll_sets = collections['sets-de-regalo-perfumes-arabes'] -%}
+    <a class="ect-tile ect-tile--sets" href="{{ section.settings.tile3_url | default: coll_sets.url | default: '/collections/sets-de-regalo-perfumes-arabes' }}" aria-label="{{ section.settings.tile3_name | default: 'Sets de Regalo' }}">
+      <div class="ect-tile__bg" id="ect-bg-t3-{{ section.id }}" style="background-image:url('{{ section.settings.tile3_img | default: coll_sets.image.src | img_url: '600x' }}')"></div>
+      <div class="ect-tile__glare" id="ect-gl-t3-{{ section.id }}"></div>
+      <div class="ect-tile__overlay"></div>
+      <div class="ect-tile__content">
+        <span class="ect-tile__eyebrow">Colección</span>
+        <h3 class="ect-tile__name">{{ section.settings.tile3_name | default: 'Sets de Regalo' }}</h3>
+        <p class="ect-tile__desc">{{ section.settings.tile3_desc | default: 'El regalo perfecto para cada ocasión' }}</p>
+        <span class="ect-tile__cta">Explorar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+    {%- comment -%} TILE 4 – Oud (large right, spans 2 rows) {%- endcomment -%}
+    {%- assign coll_oud = collections['perfumes-con-oud'] -%}
+    <a class="ect-tile ect-tile--oud ect-tile--large" href="{{ section.settings.tile4_url | default: coll_oud.url | default: '/collections/perfumes-con-oud' }}" aria-label="{{ section.settings.tile4_name | default: 'Oud' }}">
+      <div class="ect-tile__bg" id="ect-bg-t4-{{ section.id }}" style="background-image:url('{{ section.settings.tile4_img | default: coll_oud.image.src | img_url: '800x' }}')"></div>
+      <div class="ect-tile__glare" id="ect-gl-t4-{{ section.id }}"></div>
+      <div class="ect-tile__overlay"></div>
+      <div class="ect-tile__content">
+        <span class="ect-tile__eyebrow">Colección</span>
+        <h3 class="ect-tile__name">{{ section.settings.tile4_name | default: 'Oud' }}</h3>
+        <p class="ect-tile__desc">{{ section.settings.tile4_desc | default: 'La madera más preciada de Arabia' }}</p>
+        <span class="ect-tile__cta">Explorar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<style>
+#ect-{{ section.id }} {background:#0a0a0a;padding:80px 40px;}
+#ect-{{ section.id }} .ect-header {text-align:center;margin-bottom:48px;}
+#ect-{{ section.id }} .ect-eyebrow {display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;}
+#ect-{{ section.id }} .ect-eyebrow__line {flex:0 0 48px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c);}
+#ect-{{ section.id }} .ect-eyebrow__line:last-child {background:linear-gradient(90deg,#c9a84c,transparent);}
+#ect-{{ section.id }} .ect-eyebrow__text {font-family:'Playfair Display',Georgia,serif;font-size:0.75rem;letter-spacing:0.25em;text-transform:uppercase;color:#c9a84c;}
+#ect-{{ section.id }} .ect-title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;color:#fff;margin:0;}
+#ect-{{ section.id }} .ect-grid {display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:320px 320px;gap:12px;max-width:1400px;margin:0 auto;}
+#ect-{{ section.id }} .ect-tile {position:relative;overflow:hidden;border-radius:4px;display:block;text-decoration:none;cursor:pointer;transform-style:preserve-3d;}
+#ect-{{ section.id }} .ect-tile--hombre {grid-column:1;grid-row:1/3;}
+#ect-{{ section.id }} .ect-tile--mujer {grid-column:2;grid-row:1;}
+#ect-{{ section.id }} .ect-tile--sets {grid-column:2;grid-row:2;}
+#ect-{{ section.id }} .ect-tile--oud {grid-column:3;grid-row:1/3;}
+#ect-{{ section.id }} .ect-tile__bg {position:absolute;inset:0;background-color:#1a1a1a;background-size:cover;background-position:center;transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94),filter 0.4s;}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__bg {transform:scale(1.06);filter:brightness(0.9);}
+#ect-{{ section.id }} .ect-tile__glare {position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity 0.3s;background:radial-gradient(circle at 50% 50%,rgba(201,168,76,0.22) 0%,transparent 55%);}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__glare {opacity:1;}
+#ect-{{ section.id }} .ect-tile__overlay {position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,6,0.85) 0%,rgba(6,6,6,0.3) 50%,transparent 100%);z-index:2;transition:opacity 0.4s;}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__overlay {opacity:0.9;}
+#ect-{{ section.id }} .ect-tile__content {position:absolute;bottom:0;left:0;right:0;padding:28px;z-index:4;transform:translateY(8px);transition:transform 0.4s;}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__content {transform:translateY(0);}
+#ect-{{ section.id }} .ect-tile__eyebrow {display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(201,168,76,0.8);margin-bottom:6px;}
+#ect-{{ section.id }} .ect-tile__name {font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;font-weight:400;color:#fff;margin:0 0 8px;line-height:1.1;}
+#ect-{{ section.id }} .ect-tile--large .ect-tile__name {font-size:2.4rem;}
+#ect-{{ section.id }} .ect-tile__desc {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.85rem;color:rgba(255,255,255,0.65);margin:0 0 16px;line-height:1.5;opacity:0;transform:translateY(8px);transition:opacity 0.4s 0.05s,transform 0.4s 0.05s;}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__desc {opacity:1;transform:translateY(0);}
+#ect-{{ section.id }} .ect-tile__cta {display:inline-flex;align-items:center;gap:6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:#c9a84c;opacity:0;transform:translateY(8px);transition:opacity 0.4s 0.1s,transform 0.4s 0.1s;}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__cta {opacity:1;transform:translateY(0);}
+#ect-{{ section.id }} .ect-tile__cta svg {transition:transform 0.3s;}
+#ect-{{ section.id }} .ect-tile:hover .ect-tile__cta svg {transform:translateX(4px);}
+@media(max-width:1024px){
+#ect-{{ section.id }} .ect-grid {grid-template-columns:1fr 1fr;grid-template-rows:300px 300px 300px;}
+#ect-{{ section.id }} .ect-tile--hombre {grid-column:1;grid-row:1/3;}
+#ect-{{ section.id }} .ect-tile--mujer {grid-column:2;grid-row:1;}
+#ect-{{ section.id }} .ect-tile--sets {grid-column:2;grid-row:2;}
+#ect-{{ section.id }} .ect-tile--oud {grid-column:1/3;grid-row:3;}
+}
+@media(max-width:768px){
+#ect-{{ section.id }} {padding:48px 16px;}
+#ect-{{ section.id }} .ect-grid {grid-template-columns:1fr;grid-template-rows:repeat(4,260px);}
+#ect-{{ section.id }} .ect-tile--hombre,#ect-{{ section.id }} .ect-tile--mujer,#ect-{{ section.id }} .ect-tile--sets,#ect-{{ section.id }} .ect-tile--oud {grid-column:1;grid-row:auto;}
+#ect-{{ section.id }} .ect-tile--large .ect-tile__name {font-size:1.8rem;}
+#ect-{{ section.id }} .ect-tile__desc,#ect-{{ section.id }} .ect-tile__cta {opacity:1;transform:translateY(0);}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var tiles = document.querySelectorAll('#ect-' + sid + ' .ect-tile');
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  tiles.forEach(function(tile, idx) {
+    var bgEl = tile.querySelector('.ect-tile__bg');
+    var glareEl = tile.querySelector('.ect-tile__glare');
+    var curRX = 0, curRY = 0;
+    var tgtRX = 0, tgtRY = 0;
+    var isHovered = false;
+    var animating = false;
+
+    function animate() {
+      curRX = lerp(curRX, tgtRX, 0.1);
+      curRY = lerp(curRY, tgtRY, 0.1);
+      tile.style.transform = 'perspective(900px) rotateX(' + curRY + 'deg) rotateY(' + curRX + 'deg)';
+      var diffX = Math.abs(curRX - tgtRX);
+      var diffY = Math.abs(curRY - tgtRY);
+      if (diffX > 0.01 || diffY > 0.01 || isHovered) {
+        requestAnimationFrame(animate);
+      } else {
+        tile.style.transform = '';
+        animating = false;
+      }
+    }
+
+    tile.addEventListener('mousemove', function(e) {
+      var rect = tile.getBoundingClientRect();
+      var relX = (e.clientX - rect.left) / rect.width - 0.5;
+      var relY = (e.clientY - rect.top) / rect.height - 0.5;
+      tgtRX = relX * 12;
+      tgtRY = -relY * 12;
+      isHovered = true;
+      if (!animating) { animating = true; requestAnimationFrame(animate); }
+
+      var glareX = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+      var glareY = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+      glareEl.style.background = 'radial-gradient(circle at ' + glareX + '% ' + glareY + '%, rgba(201,168,76,0.22) 0%, transparent 55%)';
+    });
+
+    tile.addEventListener('mouseleave', function() {
+      tgtRX = 0;
+      tgtRY = 0;
+      isHovered = false;
+      if (!animating) { animating = true; requestAnimationFrame(animate); }
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Collection Tiles",
+  "tag": "section",
+  "class": "ed-section",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Nuestras Colecciones"},
+    {"type":"text","id":"title","label":"Title","default":"Descubre Tu Fragancia"},
+    {"type":"text","id":"tile1_name","label":"Tile 1 Name","default":"Hombre"},
+    {"type":"textarea","id":"tile1_desc","label":"Tile 1 Description","default":"Fragancias masculinas con oud y ambar"},
+    {"type":"url","id":"tile1_url","label":"Tile 1 URL"},
+    {"type":"image_picker","id":"tile1_img","label":"Tile 1 Image"},
+    {"type":"text","id":"tile2_name","label":"Tile 2 Name","default":"Mujer"},
+    {"type":"textarea","id":"tile2_desc","label":"Tile 2 Description","default":"Rosas, jazmín y almizcle oriental"},
+    {"type":"url","id":"tile2_url","label":"Tile 2 URL"},
+    {"type":"image_picker","id":"tile2_img","label":"Tile 2 Image"},
+    {"type":"text","id":"tile3_name","label":"Tile 3 Name","default":"Sets de Regalo"},
+    {"type":"textarea","id":"tile3_desc","label":"Tile 3 Description","default":"El regalo perfecto para cada ocasión"},
+    {"type":"url","id":"tile3_url","label":"Tile 3 URL"},
+    {"type":"image_picker","id":"tile3_img","label":"Tile 3 Image"},
+    {"type":"text","id":"tile4_name","label":"Tile 4 Name","default":"Oud"},
+    {"type":"textarea","id":"tile4_desc","label":"Tile 4 Description","default":"La madera más preciada de Arabia"},
+    {"type":"url","id":"tile4_url","label":"Tile 4 URL"},
+    {"type":"image_picker","id":"tile4_img","label":"Tile 4 Image"}
+  ],
+  "presets": [
+    {"name":"ED – Collection Tiles"}
+  ]
+}
+{% endschema %}

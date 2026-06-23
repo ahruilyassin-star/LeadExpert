@@ -1,0 +1,73 @@
+<section class="enl-wrap" id="enl-{{ section.id }}">
+  <div class="enl-inner">
+    <div class="enl-content">
+      <span class="enl-eyebrow">{{ section.settings.eyebrow | default: 'Newsletter' }}</span>
+      <h2 class="enl-title">{{ section.settings.title | default: 'Recibe las novedades antes que nadie' }}</h2>
+      <p class="enl-sub">{{ section.settings.subtitle | default: 'Suscríbete y consigue un 10% de descuento en tu primer pedido, además de acceso anticipado a nuevos lanzamientos.' }}</p>
+      {% form 'customer', class: 'enl-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="enl-form__row">
+          <input class="enl-form__input" type="email" name="contact[email]" placeholder="{{ section.settings.placeholder | default: 'Tu correo electrónico' }}" aria-label="Email" required>
+          <button class="enl-form__btn" type="submit">
+            <span>{{ section.settings.button_text | default: 'Suscribirme' }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+        {% if form.errors %}
+          <p class="enl-msg enl-msg--err">{{ form.errors | default_errors }}</p>
+        {% endif %}
+        {% if form.posted_successfully? %}
+          <p class="enl-msg enl-msg--ok">¡Gracias! Te has suscrito correctamente.</p>
+        {% endif %}
+      {% endform %}
+      <p class="enl-fine">Al suscribirte aceptas nuestra <a href="/policies/privacy-policy">política de privacidad</a>. Puedes darte de baja en cualquier momento.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+#enl-{{ section.id }} {background:#0a0a0a;padding:96px 48px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#enl-{{ section.id }} .enl-inner {max-width:720px;margin:0 auto;text-align:center;}
+#enl-{{ section.id }} .enl-eyebrow {display:block;font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:18px;}
+#enl-{{ section.id }} .enl-title {font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.2rem,4vw,3.4rem);font-weight:400;color:#fff;margin:0 0 18px;letter-spacing:-0.02em;line-height:1.15;}
+#enl-{{ section.id }} .enl-sub {font-size:1rem;line-height:1.65;color:rgba(255,255,255,0.7);margin:0 0 40px;max-width:540px;margin-left:auto;margin-right:auto;}
+#enl-{{ section.id }} .enl-form {margin-bottom:18px;}
+#enl-{{ section.id }} .enl-form__row {display:flex;gap:0;max-width:520px;margin:0 auto;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);transition:border-color 0.3s;}
+#enl-{{ section.id }} .enl-form__row:focus-within {border-color:#fff;}
+#enl-{{ section.id }} .enl-form__input {flex:1;background:transparent;border:none;padding:18px 22px;color:#fff;font-size:0.95rem;font-family:inherit;outline:none;letter-spacing:0.01em;}
+#enl-{{ section.id }} .enl-form__input::placeholder {color:rgba(255,255,255,0.45);}
+#enl-{{ section.id }} .enl-form__btn {display:inline-flex;align-items:center;gap:10px;background:#fff;color:#0a0a0a;border:none;padding:0 28px;font-size:0.82rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);font-family:inherit;}
+#enl-{{ section.id }} .enl-form__btn:hover {background:#ebebeb;}
+#enl-{{ section.id }} .enl-form__btn svg {transition:transform 0.3s;}
+#enl-{{ section.id }} .enl-form__btn:hover svg {transform:translateX(4px);}
+#enl-{{ section.id }} .enl-msg {font-size:0.85rem;margin:12px 0 0;}
+#enl-{{ section.id }} .enl-msg--ok {color:#7ed957;}
+#enl-{{ section.id }} .enl-msg--err {color:#ff6b6b;}
+#enl-{{ section.id }} .enl-fine {font-size:0.74rem;color:rgba(255,255,255,0.4);margin:0;letter-spacing:0.02em;}
+#enl-{{ section.id }} .enl-fine a {color:rgba(255,255,255,0.65);text-decoration:underline;text-underline-offset:2px;}
+#enl-{{ section.id }} .enl-fine a:hover {color:#fff;}
+@media(max-width:640px){
+#enl-{{ section.id }} {padding:72px 20px;}
+#enl-{{ section.id }} .enl-form__row {flex-direction:column;}
+#enl-{{ section.id }} .enl-form__btn {padding:16px;justify-content:center;}
+#enl-{{ section.id }} .enl-form__input {text-align:center;}
+}
+</style>
+
+{% schema %}
+{
+  "name": "ED – Newsletter",
+  "tag": "section",
+  "class": "ed-section",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Newsletter"},
+    {"type":"text","id":"title","label":"Title","default":"Recibe las novedades antes que nadie"},
+    {"type":"textarea","id":"subtitle","label":"Subtitle","default":"Suscríbete y consigue un 10% de descuento en tu primer pedido, además de acceso anticipado a nuevos lanzamientos."},
+    {"type":"text","id":"placeholder","label":"Input placeholder","default":"Tu correo electrónico"},
+    {"type":"text","id":"button_text","label":"Button text","default":"Suscribirme"}
+  ],
+  "presets": [
+    {"name":"ED – Newsletter"}
+  ]
+}
+{% endschema %}
