@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /wp-content/uploads/
+Allow: /wp-content/themes/
+
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
+Disallow: /order-received/
+Disallow: /?add-to-cart=
+Disallow: /?s=
+Disallow: /search/
+Disallow: /tag/
+Disallow: /*?filter_*
+Disallow: /*?orderby=
+Disallow: /*&orderby=
+Disallow: /page/
+
+# Allow Googlebot full access to important pages
+User-agent: Googlebot
+Allow: /
+Allow: /shop/
+Allow: /product/
+Allow: /product-category/
+
+# Sitemaps
+Sitemap: https://webdesign.leadexpert.be/sitemap_index.xml
+Sitemap: https://webdesign.leadexpert.be/product-sitemap.xml
