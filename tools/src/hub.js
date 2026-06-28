@@ -24,6 +24,18 @@ export const TOOLS = [
     featured: true,
     badge: 'Nieuw',
   },
+  {
+    id: 'nieuws',
+    title: 'Belgisch Nieuws',
+    description: 'Lees het laatste Belgische nieuws gratis — VRT Nieuws, HLN, Nieuwsblad, Sporza en meer. Geen abonnement, geen paywall.',
+    icon: '📰',
+    path: '/nieuws',
+    color: '#d10a10',
+    gradient: 'linear-gradient(135deg,#7f1d1d,#d10a10)',
+    tags: ['Nieuws', 'België', 'Gratis'],
+    featured: true,
+    badge: 'Gratis',
+  },
   // Add future tools here:
   // { id: 'vastgoed', title: 'Vastgoed Zoeker', ... },
 ];
