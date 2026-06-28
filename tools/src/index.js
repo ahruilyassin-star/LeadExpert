@@ -23,7 +23,7 @@ export default {
       });
     }
 
-    // ── Lead capture API ───────────────────────────────────────────────────
+    // ── Lead capture API ──────────────────────────────────────────────────────────
     if (path === '/api/lead' && request.method === 'POST') {
       return handleLead(request, env);
     }
@@ -31,12 +31,12 @@ export default {
       return handleLeadsList(url, env);
     }
 
-    // ── Growth Engine control center ─────────────────────────────────────────
+    // ── Growth Engine control center ───────────────────────────────────────────────────
     if (path === '/growth' || path === '/growth/') {
       return html(renderGrowth());
     }
 
-    // ── Funnel pages: /f/{lang}/{service}/{sector}/{city} ────────────────────
+    // ── Funnel pages: /f/{lang}/{service}/{sector}/{city} ───────────────────────────────────
     if (path.startsWith('/f/')) {
       const parts = path.replace(/^\/f\//, '').replace(/\/$/, '').split('/');
       if (parts.length === 4) {
@@ -48,27 +48,27 @@ export default {
       return new Response(render404(), { status: 404, headers: { 'Content-Type': 'text/html;charset=UTF-8' } });
     }
 
-    // ── Belgisch Nieuws aggregator ───────────────────────────────────────────
+    // ── Belgisch Nieuws aggregator ───────────────────────────────────────────────────
     if (path === '/nieuws' || path === '/nieuws/') {
       return html(await renderNieuws(url));
     }
 
-    // ── Auto-zoeker API ──────────────────────────────────────────────────────
+    // ── Auto-zoeker API ─────────────────────────────────────────────────────────────
     if (path === '/auto-zoeker/api/search') {
       return handleCarSearch(url);
     }
 
-    // ── Auto-zoeker app ──────────────────────────────────────────────────────
+    // ── Auto-zoeker app ──────────────────────────────────────────────────────────────
     if (path === '/auto-zoeker' || path === '/auto-zoeker/') {
       return html(renderCarPage());
     }
 
-    // ── Hub (root) ────────────────────────────────────────────────────────────
+    // ── Hub (root) ───────────────────────────────────────────────────────────────────
     if (path === '/' || path === '') {
       return html(renderHub());
     }
 
-    // ── 404 ──────────────────────────────────────────────────────────────────
+    // ── 404 ───────────────────────────────────────────────────────────────────────
     return new Response(render404(), {
       status: 404,
       headers: { 'Content-Type': 'text/html;charset=UTF-8' },

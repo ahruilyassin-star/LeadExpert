@@ -28,7 +28,7 @@ function xmlText(xml, tag) {
 }
 
 function xmlAttr(xml, tag, attr) {
-  const re = new RegExp(`<${tag}[^>]*\\s${attr}=["']([^"']*)["'][^>]*>`, 'i');
+  const re = new RegExp(`<${tag}[^>]*\\s${attr}=["']([^"']*)["]'[^>]*>`, 'i');
   const m = xml.match(re);
   return m ? m[1] : '';
 }
@@ -138,6 +138,8 @@ export async function renderNieuws(url) {
     ? articles.map((a, i) => articleCard(a, i)).join('')
     : `<div class="empty">Geen artikels gevonden${q ? ` voor "${escHtml(q)}"` : ''}. Probeer later opnieuw.</div>`;
 
+  const feedNames = (FEEDS[validCat] || FEEDS.nieuws).map(f => f.name).join(', ');
+
   return `<!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -147,43 +149,21 @@ export async function renderNieuws(url) {
 <meta name="description" content="Lees het laatste Belgische nieuws gratis — VRT Nieuws, HLN, Nieuwsblad, Sporza.">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f4f4f5;
-    --surface: #fff;
-    --border: #e4e4e7;
-    --text: #18181b;
-    --muted: #71717a;
-    --accent: #d10a10;
-    --nav-bg: #111;
-    --tab-active: #fff;
-    --tab-text: #aaa;
-    --shadow: 0 1px 4px rgba(0,0,0,.08);
-    --radius: 10px;
+    --bg: #f4f4f5; --surface: #fff; --border: #e4e4e7; --text: #18181b;
+    --muted: #71717a; --accent: #d10a10; --nav-bg: #111;
+    --tab-active: #fff; --tab-text: #aaa;
+    --shadow: 0 1px 4px rgba(0,0,0,.08); --radius: 10px;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #09090b;
-      --surface: #18181b;
-      --border: #27272a;
-      --text: #fafafa;
-      --muted: #a1a1aa;
-      --shadow: 0 1px 4px rgba(0,0,0,.4);
-    }
+    :root { --bg: #09090b; --surface: #18181b; --border: #27272a;
+      --text: #fafafa; --muted: #a1a1aa; --shadow: 0 1px 4px rgba(0,0,0,.4); }
   }
-
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg); color: var(--text); min-height: 100vh; }
-
-  /* ── Header ── */
-  .header {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--nav-bg);
-    padding: 0 16px;
-    display: flex; align-items: center; gap: 12px;
-    height: 56px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.35);
-  }
+  .header { position: sticky; top: 0; z-index: 100; background: var(--nav-bg);
+    padding: 0 16px; display: flex; align-items: center; gap: 12px;
+    height: 56px; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
   .logo { font-size: 1.25rem; font-weight: 900; color: #fff; text-decoration: none;
     letter-spacing: -.5px; display: flex; align-items: center; gap: 6px; }
   .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
@@ -192,8 +172,6 @@ export async function renderNieuws(url) {
     background: #2a2a2a; color: #fff; font-size: .9rem; outline: none; }
   .search::placeholder { color: #666; }
   .search:focus { background: #333; }
-
-  /* ── Category tabs ── */
   .tabs { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none;
     background: var(--nav-bg); border-bottom: 1px solid #222; }
   .tabs::-webkit-scrollbar { display: none; }
@@ -202,25 +180,19 @@ export async function renderNieuws(url) {
     border-bottom: 3px solid transparent; transition: color .15s, border-color .15s; }
   .tab.active { color: var(--tab-active); border-bottom-color: var(--accent); }
   .tab:hover:not(.active) { color: #ccc; }
-
-  /* ── Grid ── */
   .container { max-width: 960px; margin: 0 auto; padding: 16px; }
-  .grid { display: grid; gap: 14px;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
   .grid .card:first-child { grid-column: 1 / -1; flex-direction: row; }
   .grid .card:first-child .card-img-wrap { width: 45%; min-width: 200px; flex-shrink: 0; }
   .grid .card:first-child .card-img { height: 220px; }
   .grid .card:first-child .card-title { font-size: 1.4rem; }
-
-  /* ── Card ── */
   .card { display: flex; flex-direction: column; background: var(--surface);
     border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit;
     box-shadow: var(--shadow); border: 1px solid var(--border);
     transition: transform .15s, box-shadow .15s; }
   .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
   .card-img-wrap { overflow: hidden; }
-  .card-img { width: 100%; height: 180px; object-fit: cover; display: block;
-    transition: transform .3s; }
+  .card-img { width: 100%; height: 180px; object-fit: cover; display: block; transition: transform .3s; }
   .card:hover .card-img { transform: scale(1.03); }
   .card-body { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
   .card-meta { display: flex; align-items: center; gap: 8px; }
@@ -229,13 +201,10 @@ export async function renderNieuws(url) {
   .time { font-size: .75rem; color: var(--muted); }
   .card-title { font-size: 1rem; font-weight: 700; line-height: 1.35; flex: 1; }
   .card-desc { font-size: .82rem; color: var(--muted); line-height: 1.5; }
-
-  /* ── Footer / misc ── */
   .footer { text-align: center; padding: 32px 16px; color: var(--muted); font-size: .8rem; }
   .footer a { color: var(--muted); }
   .empty { padding: 48px; text-align: center; color: var(--muted); font-size: 1rem; grid-column: 1/-1; }
   .count { font-size: .8rem; color: var(--muted); margin-bottom: 12px; }
-
   @media (max-width: 600px) {
     .grid .card:first-child { flex-direction: column; }
     .grid .card:first-child .card-img-wrap { width: 100%; }
@@ -246,11 +215,8 @@ export async function renderNieuws(url) {
 </style>
 </head>
 <body>
-
 <header class="header">
-  <a class="logo" href="/nieuws">
-    <span class="logo-dot"></span>BNieuws
-  </a>
+  <a class="logo" href="/nieuws"><span class="logo-dot"></span>BNieuws</a>
   <div class="search-wrap">
     <form method="GET" action="/nieuws">
       <input type="hidden" name="cat" value="${escHtml(validCat)}">
@@ -258,20 +224,16 @@ export async function renderNieuws(url) {
     </form>
   </div>
 </header>
-
 <nav class="tabs">${navTabs}</nav>
-
 <main class="container">
-  <p class="count">${articles.length} artikel${articles.length !== 1 ? 's' : ''} — bronnen: ${CATS.find(c => c.id === validCat) ? FEEDS[validCat].map(f => f.name).join(', ') : ''}</p>
+  <p class="count">${articles.length} artikel${articles.length !== 1 ? 's' : ''} — bronnen: ${feedNames}</p>
   <div class="grid">${cards}</div>
 </main>
-
 <footer class="footer">
   <p>BNieuws leest gratis publieke RSS-feeds van Belgische nieuwssites.<br>
   Klik een artikel aan om het volledig te lezen op de originele website.</p>
   <p style="margin-top:8px"><a href="/">← LeadExpert Tools</a></p>
 </footer>
-
 </body>
 </html>`;
 }
