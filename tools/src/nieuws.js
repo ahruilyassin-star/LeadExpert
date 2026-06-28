@@ -59,7 +59,6 @@ async function fetchFeed({ src, name, accent }) {
   try {
     const r = await fetch(src, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; BelgischNieuws/1.0)' },
-      cf: { cacheTtl: 300, cacheEverything: true },
     });
     if (!r.ok) return [];
     const text = await r.text();
