@@ -2,6 +2,7 @@
 // Generates the full static site into dist/:
 //   dist/index.html                             → homepage (leadexpert.be/)
 //   dist/growth/index.html                      → growth dashboard
+//   dist/nieuws/index.html                      → belgisch nieuws (client-side)
 //   dist/{lang}/{service}/{sector}/{city}/index.html  → all funnel pages
 //   dist/sitemap.xml                            → sitemap
 //   dist/robots.txt                             → robots
@@ -14,6 +15,7 @@ import { renderFunnel } from './src/funnel.js';
 import { renderGrowth } from './src/growth.js';
 import { renderPromote } from './src/promote.js';
 import { renderHome } from './src/home.js';
+import { renderNieuwsClient } from './src/nieuws-client.js';
 import {
   isValidCombo, LANG_KEYS, SERVICE_KEYS, SECTOR_KEYS, CITIES_BY_LANG, BRAND,
 } from './src/catalog.js';
@@ -33,6 +35,10 @@ console.log('✓  / (homepage)');
 // ── growth dashboard
 write(join(dist, 'growth', 'index.html'), renderGrowth());
 console.log('✓  /growth');
+
+// ── belgisch nieuws (client-side, fetches RSS in-browser)
+write(join(dist, 'nieuws', 'index.html'), renderNieuwsClient());
+console.log('✓  /nieuws');
 
 // ── promote / distribution cockpit
 write(join(dist, 'promote', 'index.html'), renderPromote());
@@ -74,4 +80,4 @@ write(join(dist, 'robots.txt'),
   `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`);
 console.log('✓  robots.txt');
 
-console.log(`\nDone! ${count + 2} pages → dist/`);
+console.log(`\nDone! ${count + 3} pages → dist/`);
