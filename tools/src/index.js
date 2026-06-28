@@ -5,6 +5,7 @@ import { renderGrowth } from './growth.js';
 import { renderFunnel } from './funnel.js';
 import { isValidCombo } from './catalog.js';
 import { handleLead, handleLeadsList } from './leads.js';
+import { renderNieuws } from './nieuws.js';
 
 export default {
   async fetch(request, env) {
@@ -45,6 +46,11 @@ export default {
         }
       }
       return new Response(render404(), { status: 404, headers: { 'Content-Type': 'text/html;charset=UTF-8' } });
+    }
+
+    // ── Belgisch Nieuws aggregator ───────────────────────────────────────────
+    if (path === '/nieuws' || path === '/nieuws/') {
+      return html(await renderNieuws(url));
     }
 
     // ── Auto-zoeker API ──────────────────────────────────────────────────────
