@@ -4,6 +4,7 @@ import { renderGrowth } from '../../tools/src/growth.js';
 import { renderFunnel } from '../../tools/src/funnel.js';
 import { isValidCombo } from '../../tools/src/catalog.js';
 import { handleLead, handleLeadsList } from '../../tools/src/leads.js';
+import { renderNieuws } from '../../tools/src/nieuws.js';
 
 const html = (body) => new Response(body, { headers: { 'Content-Type': 'text/html;charset=UTF-8' } });
 
@@ -39,6 +40,8 @@ export default async function handler(request) {
 
   if (path === '/api/lead' && request.method === 'POST') return handleLead(request, env);
   if (path === '/api/leads') return handleLeadsList(url, env);
+
+  if (path === '/nieuws' || path === '/nieuws/') return html(await renderNieuws(url));
 
   if (path === '/' || path === '/growth' || path === '/growth/') return html(renderGrowth());
 
