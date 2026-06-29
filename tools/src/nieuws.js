@@ -27,6 +27,12 @@ const FEEDS = {
     { name: 'VRT Wereld', src: 'https://www.vrt.be/vrtnws/nl/buitenland.rss.xml', accent: '#e8232a' },
     { name: 'Nieuwsblad Wereld', src: 'https://www.nieuwsblad.be/cnt/buitenland/rss.xml', accent: '#1a237e' },
   ],
+  islam: [
+    { name: 'Islam.nl', src: 'https://www.islam.nl/feed/', accent: '#1b7a1b' },
+    { name: 'Muslimpost', src: 'https://muslimpost.nl/feed/', accent: '#2e5c0a' },
+    { name: 'Al Jazeera', src: 'https://www.aljazeera.com/xml/rss/all.xml', accent: '#8b6914' },
+    { name: 'Ummah.nl', src: 'https://www.ummah.nl/?format=feed&type=rss', accent: '#4a7c0a' },
+  ],
 };
 
 function xmlText(xml, tag) {
