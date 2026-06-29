@@ -410,7 +410,10 @@ function render() {
     var emptyMsg = currentCat === 'opgeslagen'
       ? 'Nog niets opgeslagen.<br>Klik op het bladwijzer-icoon op een artikel om het te bewaren.'
       : searchQ ? 'Geen resultaten voor "' + esc(searchQ) + '".' : 'Geen artikels gevonden. Probeer later opnieuw.';
-    grid.innerHTML = '<div class="empty">' + emptyMsg + '</div>';
+    var reloadBtn = (!searchQ && currentCat !== 'opgeslagen')
+      ? '<br><br><button onclick="location.reload(true)" style="margin-top:8px;padding:8px 20px;background:#d10a10;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-weight:600">Herlaad pagina</button>'
+      : '';
+    grid.innerHTML = '<div class="empty">' + emptyMsg + reloadBtn + '</div>';
   } else {
     grid.innerHTML = arts.map(function(a, i) { return card(a, i); }).join('');
   }
