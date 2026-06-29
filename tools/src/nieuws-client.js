@@ -51,18 +51,18 @@ export function renderNieuwsClient(newsData = null) {
 '.theme-btn { background: none; border: none; color: #ccc; font-size: 1.2rem;\n' +
 '  cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1; }\n' +
 '\n' +
-'/* Category tiles */\n' +
-'.cats { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none;\n' +
-'  padding: 14px 16px; background: var(--nav); border-bottom: 1px solid #222; }\n' +
+'/* Category tabs */\n' +
+'.cats { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none;\n' +
+'  padding: 10px 12px; background: var(--nav); border-bottom: 1px solid #222; }\n' +
 '.cats::-webkit-scrollbar { display: none; }\n' +
-'.cat { flex-shrink: 0; display: flex; flex-direction: column; align-items: center;\n' +
-'  gap: 6px; background: none; border: none; cursor: pointer; padding: 0; color: #888; }\n' +
-'.cat-icon { width: 56px; height: 56px; border-radius: 14px; display: flex;\n' +
-'  align-items: center; justify-content: center; font-size: 1.6rem;\n' +
-'  border: 2px solid transparent; transition: border-color .15s; }\n' +
-'.cat.active .cat-icon { border-color: var(--accent); }\n' +
-'.cat.active { color: #fff; }\n' +
-'.cat-label { font-size: .62rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }\n' +
+'.cat { flex-shrink: 0; display: flex; align-items: center; gap: 6px;\n' +
+'  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);\n' +
+'  border-radius: 8px; cursor: pointer; padding: 7px 13px; color: #888;\n' +
+'  transition: background .15s, color .15s, border-color .15s; }\n' +
+'.cat-icon { font-size: .95rem; line-height: 1; }\n' +
+'.cat-label { font-size: .72rem; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }\n' +
+'.cat.active { background: rgba(255,255,255,.15); color: #fff; border-color: rgba(255,255,255,.28); }\n' +
+'.cat:hover:not(.active) { background: rgba(255,255,255,.1); color: #bbb; }\n' +
 '\n' +
 '/* Source filter bar */\n' +
 '.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 16px 6px;\n' +
@@ -151,28 +151,22 @@ export function renderNieuwsClient(newsData = null) {
 '\n' +
 '<nav class="cats" id="cats">\n' +
 '  <button class="cat active" data-cat="nieuws">\n' +
-'    <div class="cat-icon" style="background:#3a0a0b">📰</div>\n' +
-'    <span class="cat-label">Actueel</span>\n' +
+'    <span class="cat-icon">📰</span><span class="cat-label">Actueel</span>\n' +
 '  </button>\n' +
 '  <button class="cat" data-cat="tech">\n' +
-'    <div class="cat-icon" style="background:#1e1060">🤖</div>\n' +
-'    <span class="cat-label">Tech &amp; AI</span>\n' +
+'    <span class="cat-icon">💻</span><span class="cat-label">Tech &amp; AI</span>\n' +
 '  </button>\n' +
 '  <button class="cat" data-cat="buitenland">\n' +
-'    <div class="cat-icon" style="background:#062a32">🌍</div>\n' +
-'    <span class="cat-label">Wereld</span>\n' +
+'    <span class="cat-icon">🌍</span><span class="cat-label">Wereld</span>\n' +
 '  </button>\n' +
 '  <button class="cat" data-cat="showbizz">\n' +
-'    <div class="cat-icon" style="background:#3d1800">🎬</div>\n' +
-'    <span class="cat-label">Showbizz</span>\n' +
+'    <span class="cat-icon">🎬</span><span class="cat-label">Showbizz</span>\n' +
 '  </button>\n' +
 '  <button class="cat" data-cat="islam">\n' +
-'    <div class="cat-icon" style="background:#0a2a0a">🕌</div>\n' +
-'    <span class="cat-label">Islam</span>\n' +
+'    <span class="cat-icon">🕌</span><span class="cat-label">Islam</span>\n' +
 '  </button>\n' +
 '  <button class="cat" data-cat="opgeslagen">\n' +
-'    <div class="cat-icon" style="background:#1a1a2e">🔖</div>\n' +
-'    <span class="cat-label">Opgeslagen</span>\n' +
+'    <span class="cat-icon">🔖</span><span class="cat-label">Opgeslagen</span>\n' +
 '  </button>\n' +
 '</nav>\n' +
 '\n' +
