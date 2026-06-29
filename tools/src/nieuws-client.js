@@ -169,14 +169,19 @@ function xmlAttr(xml, tag, attr) {
 
 function parseItems(feedXml, feedName, accent) {
   var items = [];
-  var itemRe = /<item[^>]*>([\\s\\S]*?)<\\/item>/gi;
+  var isAtom = feedXml.indexOf('<entry') >= 0 && feedXml.indexOf('<item') < 0;
+  var itemRe = isAtom ? /<entry[^>]*>([\\s\\S]*?)<\\/entry>/gi : /<item[^>]*>([\\s\\S]*?)<\\/item>/gi;
   var m;
   while ((m = itemRe.exec(feedXml)) !== null) {
     var block = m[1];
     var title = xmlText(block, 'title');
     var link = xmlText(block, 'link');
-    var desc = xmlText(block, 'description').replace(/<[^>]+>/g, '').slice(0, 180);
-    var pubDate = xmlText(block, 'pubDate') || xmlText(block, 'published');
+    if (!link) {
+      var lm = block.match(/<link[^>]+href=["']([^"']+)["'][^>]*>/i);
+      if (lm) link = lm[1];
+    }
+    var desc = (xmlText(block, 'description') || xmlText(block, 'summary') || xmlText(block, 'content')).replace(/<[^>]+>/g, '').slice(0, 180);
+    var pubDate = xmlText(block, 'pubDate') || xmlText(block, 'published') || xmlText(block, 'updated');
     var encRe = /enclosure[^>]+url=["']([^"']+)["']/i;
     var mediaRe = /media:(?:content|thumbnail)[^>]+url=["']([^"']+)["']/i;
     var imgRe = /<img[^>]+src=["']([^"']+)["']/i;
@@ -196,13 +201,20 @@ function parseItems(feedXml, feedName, accent) {
 }
 
 async function fetchFeed(feed) {
+  var xml = '';
   try {
-    var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url);
-    var r = await fetch(proxyUrl);
-    var data = await r.json();
-    if (!data || !data.contents) return [];
-    return parseItems(data.contents, feed.name, feed.accent);
-  } catch (e) { return []; }
+    var r1 = await fetch('https://corsproxy.io/?' + encodeURIComponent(feed.url));
+    if (r1.ok) xml = await r1.text();
+  } catch(e) {}
+  if (!xml || (xml.indexOf('<item') < 0 && xml.indexOf('<entry') < 0)) {
+    try {
+      var r2 = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url));
+      var data = await r2.json();
+      if (data && data.contents) xml = data.contents;
+    } catch(e) {}
+  }
+  if (!xml) return [];
+  return parseItems(xml, feed.name, feed.accent);
 }
 
 function card(a, idx) {
