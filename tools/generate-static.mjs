@@ -36,17 +36,15 @@ console.log('✓  / (homepage)');
 write(join(dist, 'growth', 'index.html'), renderGrowth());
 console.log('✓  /growth');
 
-// ── belgisch nieuws — pre-fetch all RSS at build time, embed as static JSON
-write(join(dist, 'nieuws', 'index.html'), renderNieuwsClient());
-console.log('✓  /nieuws (index.html)');
-
+// ── belgisch nieuws — pre-fetch RSS at build time, embed data inline in HTML
 const newsData = {};
 for (const cat of ['nieuws', 'sport', 'showbizz', 'buitenland']) {
   newsData[cat] = await getArticles(cat);
   console.log(`  • ${cat}: ${newsData[cat].length} articles`);
 }
+write(join(dist, 'nieuws', 'index.html'), renderNieuwsClient(newsData));
 write(join(dist, 'nieuws', 'data.json'), JSON.stringify(newsData));
-console.log('✓  /nieuws/data.json');
+console.log('✓  /nieuws (data embedded inline + data.json)');
 
 // ── promote / distribution cockpit
 write(join(dist, 'promote', 'index.html'), renderPromote());

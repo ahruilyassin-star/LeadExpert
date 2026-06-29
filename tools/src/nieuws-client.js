@@ -1,7 +1,10 @@
-// Client-side Belgian news reader — data is pre-fetched at build time into /nieuws/data.json.
-// No CORS proxy needed: data.json is served from the same origin.
+// Client-side Belgian news reader — news data is embedded inline at build time.
+// Falls back to fetching /nieuws/data.json if no inline data is present.
 
-export function renderNieuwsClient() {
+export function renderNieuwsClient(newsData = null) {
+  const inlineData = newsData
+    ? `<script>window.__NEWS_DATA__=${JSON.stringify(newsData).replace(/<\/script>/gi, '<\\/script>')};<\/script>`
+    : '';
   return `<!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -99,13 +102,7 @@ export function renderNieuwsClient() {
 
 <main class="container">
   <p class="count" id="count"></p>
-  <div class="grid" id="grid">
-    <div class="spinner">
-      <div class="spinner-dot"></div>
-      <div class="spinner-dot"></div>
-      <div class="spinner-dot"></div>
-    </div>
-  </div>
+  <div class="grid" id="grid"></div>
 </main>
 
 <footer class="footer">
@@ -114,6 +111,7 @@ export function renderNieuwsClient() {
   <p style="margin-top:8px"><a href="/">&#8592; LeadExpert</a></p>
 </footer>
 
+${inlineData}
 <script>
 var SOURCES = {
   nieuws: 'VRT Nieuws, HLN, Nieuwsblad, De Morgen',
@@ -122,7 +120,7 @@ var SOURCES = {
   buitenland: 'VRT Wereld'
 };
 
-var newsData = null;
+var newsData = window.__NEWS_DATA__ || null;
 var currentCat = 'nieuws';
 var allArticles = [];
 var searchQ = '';
@@ -183,10 +181,10 @@ function render() {
 async function loadCat(cat) {
   currentCat = cat;
   allArticles = [];
-  document.getElementById('grid').innerHTML = '<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>';
-  document.getElementById('count').textContent = 'Laden…';
 
   if (!newsData) {
+    document.getElementById('grid').innerHTML = '<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>';
+    document.getElementById('count').textContent = 'Laden…';
     try {
       var r = await fetch('/nieuws/data.json');
       if (!r.ok) throw new Error('HTTP ' + r.status);
