@@ -1,5 +1,4 @@
 // Netlify Edge Function — serves the LeadExpert Growth Engine + funnels.
-// Same render/handler code as the Cloudflare Worker (Web standard Request/Response).
 import { renderGrowth } from '../../tools/src/growth.js';
 import { renderFunnel } from '../../tools/src/funnel.js';
 import { isValidCombo } from '../../tools/src/catalog.js';
