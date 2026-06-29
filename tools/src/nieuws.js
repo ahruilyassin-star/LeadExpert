@@ -68,7 +68,7 @@ async function fetchFeed({ src, name, accent }) {
   }
 }
 
-async function getArticles(category) {
+export async function getArticles(category) {
   const feeds = FEEDS[category] || FEEDS.nieuws;
   const results = await Promise.allSettled(feeds.map(fetchFeed));
   const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);

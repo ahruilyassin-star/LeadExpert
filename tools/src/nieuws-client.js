@@ -1,6 +1,5 @@
-// Client-side Belgian news reader — static page, RSS fetched in-browser.
-// Uses allorigins.win as a CORS proxy and parses the raw RSS XML in-browser.
-// No template literals inside the script block (they'd nest inside the outer backtick).
+// Client-side Belgian news reader — data is pre-fetched at build time into /nieuws/data.json.
+// No CORS proxy needed: data.json is served from the same origin.
 
 export function renderNieuwsClient() {
   return `<!DOCTYPE html>
@@ -87,7 +86,7 @@ export function renderNieuwsClient() {
 <header class="header">
   <a class="logo" href="/nieuws"><span class="logo-dot"></span>BNieuws</a>
   <div class="search-wrap">
-    <input class="search" id="searchInput" type="search" placeholder="Zoeken…" autocomplete="off">
+    <input class="search" id="searchInput" type="search" placeholder="Zoeken..." autocomplete="off">
   </div>
 </header>
 
@@ -112,30 +111,18 @@ export function renderNieuwsClient() {
 <footer class="footer">
   <p>BNieuws leest gratis publieke RSS-feeds van Belgische nieuwssites.<br>
   Klik een artikel aan om het volledig te lezen op de originele website.</p>
-  <p style="margin-top:8px"><a href="/">← LeadExpert</a></p>
+  <p style="margin-top:8px"><a href="/">&#8592; LeadExpert</a></p>
 </footer>
 
 <script>
-var FEEDS = {
-  nieuws: [
-    { name: 'VRT Nieuws', url: 'https://www.vrt.be/vrtnws/nl.rss.xml', accent: '#e8232a' },
-    { name: 'HLN', url: 'https://www.hln.be/rss.xml', accent: '#d10a10' },
-    { name: 'Nieuwsblad', url: 'https://www.nieuwsblad.be/rss.xml', accent: '#1a237e' },
-    { name: 'De Morgen', url: 'https://www.demorgen.be/rss.xml', accent: '#d32f2f' }
-  ],
-  sport: [
-    { name: 'Sporza', url: 'https://sporza.be/nl.rss.xml', accent: '#e65100' },
-    { name: 'HLN Sport', url: 'https://www.hln.be/sport/rss.xml', accent: '#d10a10' }
-  ],
-  showbizz: [
-    { name: 'HLN Showbizz', url: 'https://www.hln.be/showbizz/rss.xml', accent: '#d10a10' },
-    { name: 'Nieuwsblad Showbizz', url: 'https://www.nieuwsblad.be/cnt/showbizz/rss.xml', accent: '#1a237e' }
-  ],
-  buitenland: [
-    { name: 'VRT Wereld', url: 'https://www.vrt.be/vrtnws/nl/buitenland.rss.xml', accent: '#e8232a' }
-  ]
+var SOURCES = {
+  nieuws: 'VRT Nieuws, HLN, Nieuwsblad, De Morgen',
+  sport: 'Sporza, HLN Sport',
+  showbizz: 'HLN Showbizz, Nieuwsblad Showbizz',
+  buitenland: 'VRT Wereld'
 };
 
+var newsData = null;
 var currentCat = 'nieuws';
 var allArticles = [];
 var searchQ = '';
@@ -154,77 +141,14 @@ function timeAgo(ts) {
   return Math.floor(h / 24) + 'd';
 }
 
-function xmlText(xml, tag) {
-  var cdataRe = new RegExp('<' + tag + '[^>]*><!\\\\[CDATA\\\\[([\\\\s\\\\S]*?)\\\\]\\\\]><\\\\/' + tag + '>', 'i');
-  var plainRe = new RegExp('<' + tag + '[^>]*>([\\\\s\\\\S]*?)<\\\\/' + tag + '>', 'i');
-  var m = xml.match(cdataRe) || xml.match(plainRe);
-  return m ? m[1].trim() : '';
-}
-
-function xmlAttr(xml, tag, attr) {
-  var re = new RegExp('<' + tag + '[^>]*\\\\s' + attr + '=["\\'\\']([^"\\'\\'][^"\\'\\'][^"\\'\\'][^"\\'\\'][^"\\'\\'][^"\\'\\']*)["\\'\\'][^>]*>', 'i');
-  var m = xml.match(re);
-  return m ? m[1] : '';
-}
-
-function parseItems(feedXml, feedName, accent) {
-  var items = [];
-  var isAtom = feedXml.indexOf('<entry') >= 0 && feedXml.indexOf('<item') < 0;
-  var itemRe = isAtom ? /<entry[^>]*>([\\s\\S]*?)<\\/entry>/gi : /<item[^>]*>([\\s\\S]*?)<\\/item>/gi;
-  var m;
-  while ((m = itemRe.exec(feedXml)) !== null) {
-    var block = m[1];
-    var title = xmlText(block, 'title');
-    var link = xmlText(block, 'link');
-    if (!link) {
-      var lm = block.match(/<link[^>]+href=["']([^"']+)["'][^>]*>/i);
-      if (lm) link = lm[1];
-    }
-    var desc = (xmlText(block, 'description') || xmlText(block, 'summary') || xmlText(block, 'content')).replace(/<[^>]+>/g, '').slice(0, 180);
-    var pubDate = xmlText(block, 'pubDate') || xmlText(block, 'published') || xmlText(block, 'updated');
-    var encRe = /enclosure[^>]+url=["']([^"']+)["']/i;
-    var mediaRe = /media:(?:content|thumbnail)[^>]+url=["']([^"']+)["']/i;
-    var imgRe = /<img[^>]+src=["']([^"']+)["']/i;
-    var encM = block.match(encRe);
-    var mediaM = block.match(mediaRe);
-    var imgM = block.match(imgRe);
-    var img = (encM && encM[1]) || (mediaM && mediaM[1]) || (imgM && imgM[1]) || '';
-    if (title && link) {
-      items.push({
-        title: title, link: link, desc: desc, img: img,
-        source: feedName, accent: accent,
-        ts: pubDate ? new Date(pubDate).getTime() : 0
-      });
-    }
-  }
-  return items;
-}
-
-async function fetchFeed(feed) {
-  var xml = '';
-  try {
-    var r1 = await fetch('https://corsproxy.io/?' + encodeURIComponent(feed.url));
-    if (r1.ok) xml = await r1.text();
-  } catch(e) {}
-  if (!xml || (xml.indexOf('<item') < 0 && xml.indexOf('<entry') < 0)) {
-    try {
-      var r2 = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url));
-      var data = await r2.json();
-      if (data && data.contents) xml = data.contents;
-    } catch(e) {}
-  }
-  if (!xml) return [];
-  return parseItems(xml, feed.name, feed.accent);
-}
-
 function card(a, idx) {
   var time = timeAgo(a.ts);
   var loading = idx < 6 ? 'eager' : 'lazy';
   var imgWrap = a.img
-    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.closest(\\'.card-img-wrap\\').style.display=\\'none\\'"></div>'
+    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.closest(\'.card-img-wrap\').style.display=\'none\'"></div>'
     : '';
   var timeHtml = time ? '<span class="time">' + time + ' geleden</span>' : '';
-  var descHtml = a.desc ? '<p class="card-desc">' + esc(a.desc) + '…</p>' : '';
+  var descHtml = a.desc ? '<p class="card-desc">' + esc(a.desc) + '...</p>' : '';
   return '<a class="card" href="' + esc(a.link) + '" target="_blank" rel="noopener">' +
     imgWrap +
     '<div class="card-body">' +
@@ -234,8 +158,7 @@ function card(a, idx) {
     '</div>' +
     '<h2 class="card-title">' + esc(a.title) + '</h2>' +
     descHtml +
-    '</div>' +
-    '</a>';
+    '</div></a>';
 }
 
 function render() {
@@ -244,11 +167,11 @@ function render() {
   var arts = allArticles;
   if (searchQ) {
     arts = arts.filter(function(a) {
-      return a.title.toLowerCase().indexOf(searchQ) >= 0 || a.desc.toLowerCase().indexOf(searchQ) >= 0;
+      return a.title.toLowerCase().indexOf(searchQ) >= 0 ||
+             (a.desc || '').toLowerCase().indexOf(searchQ) >= 0;
     });
   }
-  var sources = FEEDS[currentCat].map(function(f) { return f.name; }).join(', ');
-  countEl.textContent = arts.length + ' artikel' + (arts.length !== 1 ? 's' : '') + ' — bronnen: ' + sources;
+  countEl.textContent = arts.length + ' artikel' + (arts.length !== 1 ? 's' : '') + ' — bronnen: ' + (SOURCES[currentCat] || '');
   if (!arts.length) {
     var msg = searchQ ? ' voor "' + esc(searchQ) + '"' : '';
     grid.innerHTML = '<div class="empty">Geen artikels gevonden' + msg + '. Probeer later opnieuw.</div>';
@@ -262,11 +185,21 @@ async function loadCat(cat) {
   allArticles = [];
   document.getElementById('grid').innerHTML = '<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>';
   document.getElementById('count').textContent = 'Laden…';
-  var results = await Promise.allSettled(FEEDS[cat].map(fetchFeed));
-  allArticles = results
-    .flatMap(function(r) { return r.status === 'fulfilled' ? r.value : []; })
-    .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); })
-    .slice(0, 60);
+
+  if (!newsData) {
+    try {
+      var r = await fetch('/nieuws/data.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      newsData = await r.json();
+    } catch(e) {
+      newsData = {};
+      document.getElementById('grid').innerHTML = '<div class="empty">Kon nieuws niet laden. Probeer de pagina te herladen.</div>';
+      document.getElementById('count').textContent = '';
+      return;
+    }
+  }
+
+  allArticles = (newsData[cat] || []);
   render();
 }
 

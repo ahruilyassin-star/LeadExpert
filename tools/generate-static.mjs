@@ -15,6 +15,7 @@ import { renderGrowth } from './src/growth.js';
 import { renderPromote } from './src/promote.js';
 import { renderHome } from './src/home.js';
 import { renderNieuwsClient } from './src/nieuws-client.js';
+import { getArticles } from './src/nieuws.js';
 import {
   isValidCombo, LANG_KEYS, SERVICE_KEYS, SECTOR_KEYS, CITIES_BY_LANG, BRAND,
 } from './src/catalog.js';
@@ -35,9 +36,17 @@ console.log('✓  / (homepage)');
 write(join(dist, 'growth', 'index.html'), renderGrowth());
 console.log('✓  /growth');
 
-// ── belgisch nieuws (client-side, fetches RSS in-browser)
+// ── belgisch nieuws — pre-fetch all RSS at build time, embed as static JSON
 write(join(dist, 'nieuws', 'index.html'), renderNieuwsClient());
-console.log('✓  /nieuws');
+console.log('✓  /nieuws (index.html)');
+
+const newsData = {};
+for (const cat of ['nieuws', 'sport', 'showbizz', 'buitenland']) {
+  newsData[cat] = await getArticles(cat);
+  console.log(`  • ${cat}: ${newsData[cat].length} articles`);
+}
+write(join(dist, 'nieuws', 'data.json'), JSON.stringify(newsData));
+console.log('✓  /nieuws/data.json');
 
 // ── promote / distribution cockpit
 write(join(dist, 'promote', 'index.html'), renderPromote());
