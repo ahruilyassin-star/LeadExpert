@@ -1,6 +1,6 @@
-// Client-side Belgian news reader — static page, RSS fetched in-browser via rss2json.com
-// NOTE: The <script> block uses string concatenation (no template literals) to avoid
-// nesting backticks inside the outer template literal returned by renderNieuwsClient().
+// Client-side Belgian news reader — static page, RSS fetched in-browser.
+// Uses allorigins.win as a CORS proxy and parses the raw RSS XML in-browser.
+// No template literals inside the script block (they'd nest inside the outer backtick).
 
 export function renderNieuwsClient() {
   return `<!DOCTYPE html>
@@ -136,7 +136,6 @@ var FEEDS = {
   ]
 };
 
-var PROXY = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=';
 var currentCat = 'nieuws';
 var allArticles = [];
 var searchQ = '';
@@ -155,14 +154,65 @@ function timeAgo(ts) {
   return Math.floor(h / 24) + 'd';
 }
 
+function xmlText(xml, tag) {
+  var cdataRe = new RegExp('<' + tag + '[^>]*><!\\\\[CDATA\\\\[([\\\\s\\\\S]*?)\\\\]\\\\]><\\\\/' + tag + '>', 'i');
+  var plainRe = new RegExp('<' + tag + '[^>]*>([\\\\s\\\\S]*?)<\\\\/' + tag + '>', 'i');
+  var m = xml.match(cdataRe) || xml.match(plainRe);
+  return m ? m[1].trim() : '';
+}
+
+function xmlAttr(xml, tag, attr) {
+  var re = new RegExp('<' + tag + '[^>]*\\\\s' + attr + '=["\\'\\']([^"\\'\\'][^"\\'\\'][^"\\'\\'][^"\\'\\'][^"\\'\\'][^"\\'\\']*)["\\'\\'][^>]*>', 'i');
+  var m = xml.match(re);
+  return m ? m[1] : '';
+}
+
+function parseItems(feedXml, feedName, accent) {
+  var items = [];
+  var itemRe = /<item[^>]*>([\s\S]*?)<\/item>/gi;
+  var m;
+  while ((m = itemRe.exec(feedXml)) !== null) {
+    var block = m[1];
+    var title = xmlText(block, 'title');
+    var link = xmlText(block, 'link');
+    var desc = xmlText(block, 'description').replace(/<[^>]+>/g, '').slice(0, 180);
+    var pubDate = xmlText(block, 'pubDate') || xmlText(block, 'published');
+    var encRe = /enclosure[^>]+url=["']([^"']+)["']/i;
+    var mediaRe = /media:(?:content|thumbnail)[^>]+url=["']([^"']+)["']/i;
+    var imgRe = /<img[^>]+src=["']([^"']+)["']/i;
+    var encM = block.match(encRe);
+    var mediaM = block.match(mediaRe);
+    var imgM = block.match(imgRe);
+    var img = (encM && encM[1]) || (mediaM && mediaM[1]) || (imgM && imgM[1]) || '';
+    if (title && link) {
+      items.push({
+        title: title, link: link, desc: desc, img: img,
+        source: feedName, accent: accent,
+        ts: pubDate ? new Date(pubDate).getTime() : 0
+      });
+    }
+  }
+  return items;
+}
+
+async function fetchFeed(feed) {
+  try {
+    var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url);
+    var r = await fetch(proxyUrl);
+    var data = await r.json();
+    if (!data || !data.contents) return [];
+    return parseItems(data.contents, feed.name, feed.accent);
+  } catch (e) { return []; }
+}
+
 function card(a, idx) {
   var time = timeAgo(a.ts);
   var loading = idx < 6 ? 'eager' : 'lazy';
   var imgWrap = a.img
-    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.closest(\'.card-img-wrap\').style.display=\'none\'"></div>'
+    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.closest(\\'.card-img-wrap\\').style.display=\\'none\\'"></div>'
     : '';
   var timeHtml = time ? '<span class="time">' + time + ' geleden</span>' : '';
-  var descHtml = a.desc ? '<p class="card-desc">' + esc(a.desc) + '\\u2026</p>' : '';
+  var descHtml = a.desc ? '<p class="card-desc">' + esc(a.desc) + '…</p>' : '';
   return '<a class="card" href="' + esc(a.link) + '" target="_blank" rel="noopener">' +
     imgWrap +
     '<div class="card-body">' +
@@ -174,29 +224,6 @@ function card(a, idx) {
     descHtml +
     '</div>' +
     '</a>';
-}
-
-async function fetchFeed(feed) {
-  try {
-    var r = await fetch(PROXY + encodeURIComponent(feed.url));
-    var data = await r.json();
-    if (data.status !== 'ok') return [];
-    return data.items.map(function(item) {
-      var img = item.thumbnail || '';
-      if (!img && item.enclosure && item.enclosure.link && /\\.(jpg|jpeg|png|webp)/i.test(item.enclosure.link)) {
-        img = item.enclosure.link;
-      }
-      return {
-        title: item.title || '',
-        link: item.link || '',
-        desc: (item.description || '').replace(/<[^>]+>/g, '').slice(0, 180),
-        img: img,
-        ts: item.pubDate ? new Date(item.pubDate).getTime() : 0,
-        source: feed.name,
-        accent: feed.accent
-      };
-    });
-  } catch (e) { return []; }
 }
 
 function render() {
