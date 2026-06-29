@@ -15,6 +15,12 @@ const FEEDS = {
     { name: 'HLN Showbizz', src: 'https://www.hln.be/showbizz/rss.xml', accent: '#d10a10' },
     { name: 'Nieuwsblad Showbizz', src: 'https://www.nieuwsblad.be/cnt/showbizz/rss.xml', accent: '#1a237e' },
   ],
+  tech: [
+    { name: 'Tweakers', src: 'https://feeds.tweakers.net/nieuws.rss', accent: '#cc0000' },
+    { name: 'TechCrunch', src: 'https://techcrunch.com/feed/', accent: '#0a7e07' },
+    { name: 'The Verge', src: 'https://www.theverge.com/rss/index.xml', accent: '#e40078' },
+    { name: 'Ars Technica', src: 'https://feeds.arstechnica.com/arstechnica/index', accent: '#e85d04' },
+  ],
   buitenland: [
     { name: 'HLN Buitenland', src: 'https://www.hln.be/buitenland/rss.xml', accent: '#d10a10' },
     { name: 'De Morgen Wereld', src: 'https://www.demorgen.be/wereld/rss.xml', accent: '#d32f2f' },

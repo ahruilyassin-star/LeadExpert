@@ -37,14 +37,18 @@ export function renderNieuwsClient(newsData = null) {
     background: #2a2a2a; color: #fff; font-size: .9rem; outline: none; }
   .search::placeholder { color: #666; }
   .search:focus { background: #333; }
-  .tabs { display: flex; overflow-x: auto; scrollbar-width: none;
-    background: var(--nav-bg); border-bottom: 1px solid #222; }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab { flex-shrink: 0; padding: 10px 18px; color: var(--tab-text); text-decoration: none;
-    font-size: .8rem; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
-    border-bottom: 3px solid transparent; transition: color .15s, border-color .15s; cursor: pointer; }
-  .tab.active { color: var(--tab-active); border-bottom-color: var(--accent); }
-  .tab:hover:not(.active) { color: #ccc; }
+  .cats { display: flex; gap: 10px; padding: 14px 16px; overflow-x: auto;
+    scrollbar-width: none; background: var(--nav-bg); border-bottom: 1px solid #222; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat { flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+    gap: 6px; background: none; border: none; cursor: pointer; padding: 4px 6px; }
+  .cat-icon { width: 60px; height: 60px; border-radius: 18px; display: flex;
+    align-items: center; justify-content: center; font-size: 28px; line-height: 1;
+    border: 2.5px solid transparent; transition: border-color .15s, transform .15s; }
+  .cat.active .cat-icon { border-color: var(--accent); transform: scale(1.07); }
+  .cat-label { font-size: .62rem; font-weight: 700; color: #777; text-transform: uppercase;
+    letter-spacing: .5px; white-space: nowrap; }
+  .cat.active .cat-label { color: #fff; }
   .container { max-width: 960px; margin: 0 auto; padding: 16px; }
   .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
   .grid .card:first-child { grid-column: 1 / -1; flex-direction: row; }
@@ -93,11 +97,23 @@ export function renderNieuwsClient(newsData = null) {
   </div>
 </header>
 
-<nav class="tabs" id="tabs">
-  <span class="tab active" data-cat="nieuws">Nieuws</span>
-  <span class="tab" data-cat="sport">Sport</span>
-  <span class="tab" data-cat="showbizz">Showbizz</span>
-  <span class="tab" data-cat="buitenland">Buitenland</span>
+<nav class="cats" id="cats">
+  <button class="cat active" data-cat="nieuws">
+    <div class="cat-icon" style="background:#3a0a0b">📰</div>
+    <span class="cat-label">Actueel</span>
+  </button>
+  <button class="cat" data-cat="tech">
+    <div class="cat-icon" style="background:#1e1060">🤖</div>
+    <span class="cat-label">Tech &amp; AI</span>
+  </button>
+  <button class="cat" data-cat="buitenland">
+    <div class="cat-icon" style="background:#062a32">🌍</div>
+    <span class="cat-label">Wereld</span>
+  </button>
+  <button class="cat" data-cat="showbizz">
+    <div class="cat-icon" style="background:#3d1800">🎬</div>
+    <span class="cat-label">Showbizz</span>
+  </button>
 </nav>
 
 <main class="container">
@@ -115,9 +131,9 @@ ${inlineData}
 <script>
 var SOURCES = {
   nieuws: 'VRT Nieuws, HLN, Nieuwsblad, De Morgen',
-  sport: 'Sporza, HLN Sport',
+  tech: 'Tweakers, TechCrunch, The Verge, Ars Technica',
   showbizz: 'HLN Showbizz, Nieuwsblad Showbizz',
-  buitenland: 'VRT Wereld'
+  buitenland: 'HLN, De Morgen, VRT Wereld'
 };
 
 var newsData = window.__NEWS_DATA__ || null;
@@ -201,14 +217,14 @@ async function loadCat(cat) {
   render();
 }
 
-document.getElementById('tabs').addEventListener('click', function(e) {
-  var tab = e.target.closest('[data-cat]');
-  if (!tab) return;
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  tab.classList.add('active');
+document.getElementById('cats').addEventListener('click', function(e) {
+  var cat = e.target.closest('[data-cat]');
+  if (!cat) return;
+  document.querySelectorAll('.cat').forEach(function(c) { c.classList.remove('active'); });
+  cat.classList.add('active');
   searchQ = '';
   document.getElementById('searchInput').value = '';
-  loadCat(tab.dataset.cat);
+  loadCat(cat.dataset.cat);
 });
 
 var searchTimer;

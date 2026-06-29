@@ -38,7 +38,7 @@ console.log('✓  /growth');
 
 // ── belgisch nieuws — pre-fetch RSS at build time, embed data inline in HTML
 const newsData = {};
-for (const cat of ['nieuws', 'sport', 'showbizz', 'buitenland']) {
+for (const cat of ['nieuws', 'tech', 'showbizz', 'buitenland']) {
   newsData[cat] = await getArticles(cat);
   console.log(`  • ${cat}: ${newsData[cat].length} articles`);
 }
