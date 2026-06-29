@@ -143,7 +143,7 @@ function card(a, idx) {
   var time = timeAgo(a.ts);
   var loading = idx < 6 ? 'eager' : 'lazy';
   var imgWrap = a.img
-    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.closest(\'.card-img-wrap\').style.display=\'none\'"></div>'
+    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.parentNode.style.display=\\'none\\'"></div>'
     : '';
   var timeHtml = time ? '<span class="time">' + time + ' geleden</span>' : '';
   var descHtml = a.desc ? '<p class="card-desc">' + esc(a.desc) + '...</p>' : '';
