@@ -208,6 +208,7 @@ export function renderHome() {
   <div class="nav-links">
     <a href="#services" class="nav-link">Services</a>
     <a href="#hoe" class="nav-link">Hoe het werkt</a>
+    <a href="/nieuws" class="nav-link">📰 Nieuws</a>
     <a href="#contact" class="nav-cta">Gratis starten</a>
   </div>
 </nav>
@@ -297,7 +298,7 @@ export function renderHome() {
       </div>
     </div>
     <div class="foot-bottom">
-      <span>&copy; ${new Date().getFullYear()} ${esc(BRAND.name)} &middot; Alle rechten voorbehouden &middot; <a href="/privacy">Privacy</a></span>
+      <span>&copy; ${new Date().getFullYear()} ${esc(BRAND.name)} &middot; Alle rechten voorbehouden &middot; <a href="/privacy">Privacy</a> &middot; <a href="/nieuws">Belgisch Nieuws</a></span>
       <span style="color:var(--cyan);font-weight:700">${esc(f.testFirst)}</span>
     </div>
   </div>
