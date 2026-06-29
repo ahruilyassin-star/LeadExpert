@@ -16,7 +16,10 @@ const FEEDS = {
     { name: 'Nieuwsblad Showbizz', src: 'https://www.nieuwsblad.be/cnt/showbizz/rss.xml', accent: '#1a237e' },
   ],
   buitenland: [
+    { name: 'HLN Buitenland', src: 'https://www.hln.be/buitenland/rss.xml', accent: '#d10a10' },
+    { name: 'De Morgen Wereld', src: 'https://www.demorgen.be/wereld/rss.xml', accent: '#d32f2f' },
     { name: 'VRT Wereld', src: 'https://www.vrt.be/vrtnws/nl/buitenland.rss.xml', accent: '#e8232a' },
+    { name: 'Nieuwsblad Wereld', src: 'https://www.nieuwsblad.be/cnt/buitenland/rss.xml', accent: '#1a237e' },
   ],
 };
 
