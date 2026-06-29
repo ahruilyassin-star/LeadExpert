@@ -2,10 +2,10 @@ name: Build & Deploy to GitHub Pages
 
 on:
   push:
-    branches: [claude/new-session-fva7gp, main]
+    branches: [claude/new-session-fva7gp, main, claude/belgian-news-scraper-o94042]
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 * * * *'
 
 permissions:
   contents: write
