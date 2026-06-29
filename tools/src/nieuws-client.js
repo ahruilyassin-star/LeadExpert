@@ -435,12 +435,11 @@ async function loadCat(cat) {
     return;
   }
 
-  var hasArticles = newsData && newsData[cat] && newsData[cat].length > 0;
-  if (!hasArticles) {
+  if (!newsData) {
     document.getElementById('grid').innerHTML = '<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>';
     document.getElementById('count').textContent = 'Laden…';
     try {
-      var r = await fetch('/nieuws/data.json?t=' + Math.floor(Date.now() / 300000));
+      var r = await fetch('/nieuws/data.json');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       newsData = await r.json();
     } catch(e) {
@@ -451,7 +450,7 @@ async function loadCat(cat) {
     }
   }
 
-  allArticles = (newsData && newsData[cat]) ? newsData[cat] : [];
+  allArticles = newsData[cat] || [];
   renderSourceChips(allArticles);
   render();
 }
