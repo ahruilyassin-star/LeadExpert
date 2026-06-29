@@ -166,8 +166,12 @@ export function renderNieuwsClient(newsData = null) {
 '    <div class="cat-icon" style="background:#3d1800">🎬</div>\n' +
 '    <span class="cat-label">Showbizz</span>\n' +
 '  </button>\n' +
+'  <button class="cat" data-cat="islam">\n' +
+'    <div class="cat-icon" style="background:#0a2a0a">🕌</div>\n' +
+'    <span class="cat-label">Islam</span>\n' +
+'  </button>\n' +
 '  <button class="cat" data-cat="opgeslagen">\n' +
-'    <div class="cat-icon" style="background:#0a2a0a">🔖</div>\n' +
+'    <div class="cat-icon" style="background:#1a1a2e">🔖</div>\n' +
 '    <span class="cat-label">Opgeslagen</span>\n' +
 '  </button>\n' +
 '</nav>\n' +
@@ -460,6 +464,12 @@ inlineData + '\n' +
 '    }\n' +
 '  } catch(e) {}\n' +
 '}, 20 * 60 * 1000);\n' +
+'\n' +
+'if ("serviceWorker" in navigator) {\n' +
+'  window.addEventListener("load", function() {\n' +
+'    navigator.serviceWorker.register("/nieuws/sw.js", { scope: "/nieuws/" }).catch(function() {});\n' +
+'  });\n' +
+'}\n' +
 '\n' +
 'loadCat("nieuws");\n' +
 '<\/script>\n' +
