@@ -1,4 +1,6 @@
-// Client-side Belgian news reader — rendered as a static page, data fetched in-browser via rss2json.com
+// Client-side Belgian news reader — static page, RSS fetched in-browser via rss2json.com
+// NOTE: The <script> block uses string concatenation (no template literals) to avoid
+// nesting backticks inside the outer template literal returned by renderNieuwsClient().
 
 export function renderNieuwsClient() {
   return `<!DOCTYPE html>
@@ -83,9 +85,7 @@ export function renderNieuwsClient() {
 <body>
 
 <header class="header">
-  <a class="logo" href="/nieuws">
-    <span class="logo-dot"></span>BNieuws
-  </a>
+  <a class="logo" href="/nieuws"><span class="logo-dot"></span>BNieuws</a>
   <div class="search-wrap">
     <input class="search" id="searchInput" type="search" placeholder="Zoeken…" autocomplete="off">
   </div>
@@ -100,7 +100,13 @@ export function renderNieuwsClient() {
 
 <main class="container">
   <p class="count" id="count"></p>
-  <div class="grid" id="grid"><div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
+  <div class="grid" id="grid">
+    <div class="spinner">
+      <div class="spinner-dot"></div>
+      <div class="spinner-dot"></div>
+      <div class="spinner-dot"></div>
+    </div>
+  </div>
 </main>
 
 <footer class="footer">
@@ -110,94 +116,105 @@ export function renderNieuwsClient() {
 </footer>
 
 <script>
-const FEEDS = {
+var FEEDS = {
   nieuws: [
     { name: 'VRT Nieuws', url: 'https://www.vrt.be/vrtnws/nl.rss.xml', accent: '#e8232a' },
     { name: 'HLN', url: 'https://www.hln.be/rss.xml', accent: '#d10a10' },
     { name: 'Nieuwsblad', url: 'https://www.nieuwsblad.be/rss.xml', accent: '#1a237e' },
-    { name: 'De Morgen', url: 'https://www.demorgen.be/rss.xml', accent: '#d32f2f' },
+    { name: 'De Morgen', url: 'https://www.demorgen.be/rss.xml', accent: '#d32f2f' }
   ],
   sport: [
     { name: 'Sporza', url: 'https://sporza.be/nl.rss.xml', accent: '#e65100' },
-    { name: 'HLN Sport', url: 'https://www.hln.be/sport/rss.xml', accent: '#d10a10' },
+    { name: 'HLN Sport', url: 'https://www.hln.be/sport/rss.xml', accent: '#d10a10' }
   ],
   showbizz: [
     { name: 'HLN Showbizz', url: 'https://www.hln.be/showbizz/rss.xml', accent: '#d10a10' },
-    { name: 'Nieuwsblad Showbizz', url: 'https://www.nieuwsblad.be/cnt/showbizz/rss.xml', accent: '#1a237e' },
+    { name: 'Nieuwsblad Showbizz', url: 'https://www.nieuwsblad.be/cnt/showbizz/rss.xml', accent: '#1a237e' }
   ],
   buitenland: [
-    { name: 'VRT Wereld', url: 'https://www.vrt.be/vrtnws/nl/buitenland.rss.xml', accent: '#e8232a' },
-  ],
+    { name: 'VRT Wereld', url: 'https://www.vrt.be/vrtnws/nl/buitenland.rss.xml', accent: '#e8232a' }
+  ]
 };
 
-const PROXY = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=';
-
-let currentCat = 'nieuws';
-let allArticles = [];
-let searchQ = '';
+var PROXY = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=';
+var currentCat = 'nieuws';
+var allArticles = [];
+var searchQ = '';
 
 function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function timeAgo(ts) {
   if (!ts) return '';
-  const m = Math.floor((Date.now() - ts) / 60000);
+  var m = Math.floor((Date.now() - ts) / 60000);
   if (m < 2) return 'net';
   if (m < 60) return m + 'm';
-  const h = Math.floor(m / 60);
+  var h = Math.floor(m / 60);
   if (h < 24) return h + 'u';
   return Math.floor(h / 24) + 'd';
 }
 
 function card(a, idx) {
-  const time = timeAgo(a.ts);
-  const imgWrap = a.img ? `<div class="card-img-wrap"><img class="card-img" src="${esc(a.img)}" alt="" loading="${idx < 6 ? 'eager' : 'lazy'}" onerror="this.closest('.card-img-wrap').style.display='none'"></div>` : '';
-  return `<a class="card" href="${esc(a.link)}" target="_blank" rel="noopener">
-    ${imgWrap}
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="source-badge" style="background:${a.accent}">${esc(a.source)}</span>
-        ${time ? `<span class="time">${time} geleden</span>` : ''}
-      </div>
-      <h2 class="card-title">${esc(a.title)}</h2>
-      ${a.desc ? `<p class="card-desc">${esc(a.desc)}…</p>` : ''}
-    </div>
-  </a>`;
+  var time = timeAgo(a.ts);
+  var loading = idx < 6 ? 'eager' : 'lazy';
+  var imgWrap = a.img
+    ? '<div class="card-img-wrap"><img class="card-img" src="' + esc(a.img) + '" alt="" loading="' + loading + '" onerror="this.closest(\'.card-img-wrap\').style.display=\'none\'"></div>'
+    : '';
+  var timeHtml = time ? '<span class="time">' + time + ' geleden</span>' : '';
+  var descHtml = a.desc ? '<p class="card-desc">' + esc(a.desc) + '…</p>' : '';
+  return '<a class="card" href="' + esc(a.link) + '" target="_blank" rel="noopener">' +
+    imgWrap +
+    '<div class="card-body">' +
+    '<div class="card-meta">' +
+    '<span class="source-badge" style="background:' + a.accent + '">' + esc(a.source) + '</span>' +
+    timeHtml +
+    '</div>' +
+    '<h2 class="card-title">' + esc(a.title) + '</h2>' +
+    descHtml +
+    '</div>' +
+    '</a>';
 }
 
 async function fetchFeed(feed) {
   try {
-    const r = await fetch(PROXY + encodeURIComponent(feed.url));
-    const data = await r.json();
+    var r = await fetch(PROXY + encodeURIComponent(feed.url));
+    var data = await r.json();
     if (data.status !== 'ok') return [];
-    return data.items.map(item => ({
-      title: item.title || '',
-      link: item.link || '',
-      desc: (item.description || '').replace(/<[^>]+>/g, '').slice(0, 180),
-      img: item.thumbnail || (item.enclosure && item.enclosure.link && item.enclosure.link.match(/\.(jpg|jpeg|png|webp)/i) ? item.enclosure.link : '') || '',
-      pubDate: item.pubDate,
-      ts: item.pubDate ? new Date(item.pubDate).getTime() : 0,
-      source: feed.name,
-      accent: feed.accent,
-    }));
-  } catch { return []; }
+    return data.items.map(function(item) {
+      var img = item.thumbnail || '';
+      if (!img && item.enclosure && item.enclosure.link && /\.(jpg|jpeg|png|webp)/i.test(item.enclosure.link)) {
+        img = item.enclosure.link;
+      }
+      return {
+        title: item.title || '',
+        link: item.link || '',
+        desc: (item.description || '').replace(/<[^>]+>/g, '').slice(0, 180),
+        img: img,
+        ts: item.pubDate ? new Date(item.pubDate).getTime() : 0,
+        source: feed.name,
+        accent: feed.accent
+      };
+    });
+  } catch (e) { return []; }
 }
 
 function render() {
-  const grid = document.getElementById('grid');
-  const count = document.getElementById('count');
-  let arts = allArticles;
+  var grid = document.getElementById('grid');
+  var countEl = document.getElementById('count');
+  var arts = allArticles;
   if (searchQ) {
-    arts = arts.filter(a =>
-      a.title.toLowerCase().includes(searchQ) || a.desc.toLowerCase().includes(searchQ));
+    arts = arts.filter(function(a) {
+      return a.title.toLowerCase().indexOf(searchQ) >= 0 || a.desc.toLowerCase().indexOf(searchQ) >= 0;
+    });
   }
-  count.textContent = arts.length + ' artikel' + (arts.length !== 1 ? 's' : '') +
-    ' — bronnen: ' + FEEDS[currentCat].map(f => f.name).join(', ');
+  var sources = FEEDS[currentCat].map(function(f) { return f.name; }).join(', ');
+  countEl.textContent = arts.length + ' artikel' + (arts.length !== 1 ? 's' : '') + ' — bronnen: ' + sources;
   if (!arts.length) {
-    grid.innerHTML = '<div class="empty">Geen artikels gevonden' + (searchQ ? ` voor "${esc(searchQ)}"` : '') + '. Probeer later opnieuw.</div>';
+    var msg = searchQ ? ' voor "' + esc(searchQ) + '"' : '';
+    grid.innerHTML = '<div class="empty">Geen artikels gevonden' + msg + '. Probeer later opnieuw.</div>';
   } else {
-    grid.innerHTML = arts.map((a, i) => card(a, i)).join('');
+    grid.innerHTML = arts.map(function(a, i) { return card(a, i); }).join('');
   }
 }
 
@@ -206,34 +223,33 @@ async function loadCat(cat) {
   allArticles = [];
   document.getElementById('grid').innerHTML = '<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>';
   document.getElementById('count').textContent = 'Laden…';
-  const results = await Promise.allSettled(FEEDS[cat].map(fetchFeed));
-  allArticles = results.flatMap(r => r.status === 'fulfilled' ? r.value : [])
-    .sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 60);
+  var results = await Promise.allSettled(FEEDS[cat].map(fetchFeed));
+  allArticles = results
+    .flatMap(function(r) { return r.status === 'fulfilled' ? r.value : []; })
+    .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); })
+    .slice(0, 60);
   render();
 }
 
-// Category tabs
-document.getElementById('tabs').addEventListener('click', e => {
-  const tab = e.target.closest('[data-cat]');
+document.getElementById('tabs').addEventListener('click', function(e) {
+  var tab = e.target.closest('[data-cat]');
   if (!tab) return;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   tab.classList.add('active');
   searchQ = '';
   document.getElementById('searchInput').value = '';
   loadCat(tab.dataset.cat);
 });
 
-// Search
-let searchTimer;
-document.getElementById('searchInput').addEventListener('input', e => {
+var searchTimer;
+document.getElementById('searchInput').addEventListener('input', function(e) {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
+  searchTimer = setTimeout(function() {
     searchQ = e.target.value.toLowerCase().trim();
     render();
   }, 250);
 });
 
-// Init
 loadCat('nieuws');
 </script>
 </body>
