@@ -169,7 +169,7 @@ function xmlAttr(xml, tag, attr) {
 
 function parseItems(feedXml, feedName, accent) {
   var items = [];
-  var itemRe = /<item[^>]*>([\s\S]*?)<\/item>/gi;
+  var itemRe = /<item[^>]*>([\\s\\S]*?)<\\/item>/gi;
   var m;
   while ((m = itemRe.exec(feedXml)) !== null) {
     var block = m[1];
