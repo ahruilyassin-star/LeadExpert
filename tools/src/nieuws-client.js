@@ -50,6 +50,25 @@ export function renderNieuwsClient(newsData = null) {
 '.search:focus { background: #333; }\n' +
 '.theme-btn { background: none; border: none; color: #ccc; font-size: 1.2rem;\n' +
 '  cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1; }\n' +
+'.menu-btn { background: none; border: none; color: #ccc; font-size: 1.4rem;\n' +
+'  cursor: pointer; padding: 4px 8px; flex-shrink: 0; line-height: 1;\n' +
+'  -webkit-tap-highlight-color: transparent; }\n' +
+'\n' +
+'/* Nav menu overlay */\n' +
+'.nav-overlay { display: none; position: fixed; inset: 0; z-index: 300;\n' +
+'  background: rgba(0,0,0,.55); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }\n' +
+'.nav-overlay.open { display: block; }\n' +
+'.nav-panel { position: absolute; top: 56px; left: 0; right: 0;\n' +
+'  background: #1a1a1a; padding: 6px 0 16px;\n' +
+'  box-shadow: 0 8px 24px rgba(0,0,0,.5); border-bottom: 1px solid #333; }\n' +
+'.nav-link { display: flex; align-items: center; gap: 14px; width: 100%;\n' +
+'  padding: 14px 20px; background: none; border: none; color: #aaa;\n' +
+'  cursor: pointer; font-size: 1rem; font-weight: 500; text-align: left;\n' +
+'  -webkit-tap-highlight-color: transparent; transition: background .12s, color .12s; }\n' +
+'.nav-link:hover, .nav-link:active { background: rgba(255,255,255,.07); color: #fff; }\n' +
+'.nav-link.nl-active { color: #fff; font-weight: 700; border-left: 3px solid var(--accent); }\n' +
+'.nav-link:not(.nl-active) { border-left: 3px solid transparent; }\n' +
+'.nl-icon { font-size: 1.25rem; width: 28px; text-align: center; flex-shrink: 0; }\n' +
 '\n' +
 '/* Category tabs */\n' +
 '.cats { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none;\n' +
@@ -174,7 +193,19 @@ export function renderNieuwsClient(newsData = null) {
 '    <input class="search" type="search" id="search" placeholder="Zoeken…" autocomplete="off">\n' +
 '  </div>\n' +
 '  <button class="theme-btn" id="themeBtn" title="Donkere modus">🌙</button>\n' +
+'  <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>\n' +
 '</header>\n' +
+'\n' +
+'<div class="nav-overlay" id="navOverlay">\n' +
+'  <div class="nav-panel">\n' +
+'    <button class="nav-link nl-active" data-navcat="nieuws"><span class="nl-icon">📰</span>Actueel</button>\n' +
+'    <button class="nav-link" data-navcat="tech"><span class="nl-icon">💻</span>Tech &amp; AI</button>\n' +
+'    <button class="nav-link" data-navcat="buitenland"><span class="nl-icon">🌍</span>Wereld</button>\n' +
+'    <button class="nav-link" data-navcat="showbizz"><span class="nl-icon">🎬</span>Showbizz</button>\n' +
+'    <button class="nav-link" data-navcat="islam"><span class="nl-icon">🕌</span>Islam</button>\n' +
+'    <button class="nav-link" data-navcat="opgeslagen"><span class="nl-icon">🔖</span>Opgeslagen</button>\n' +
+'  </div>\n' +
+'</div>\n' +
 '\n' +
 '<nav class="cats" id="cats">\n' +
 '  <button class="cat active" data-cat="nieuws">\n' +
@@ -429,12 +460,19 @@ inlineData + '\n' +
 '  });\n' +
 '}\n' +
 '\n' +
+'function syncNavMenu(cat) {\n' +
+'  document.querySelectorAll(".nav-link").forEach(function(link) {\n' +
+'    link.classList.toggle("nl-active", link.dataset.navcat === cat);\n' +
+'  });\n' +
+'}\n' +
+'\n' +
 '/* ---- Load category ---- */\n' +
 'async function loadCat(cat) {\n' +
 '  currentCat = cat;\n' +
 '  allArticles = [];\n' +
 '  sourceFilter = "";\n' +
 '  syncBottomNav(cat);\n' +
+'  syncNavMenu(cat);\n' +
 '  renderSourceChips([]);\n' +
 '\n' +
 '  if (cat === "opgeslagen") {\n' +
@@ -521,6 +559,35 @@ inlineData + '\n' +
 '    navigator.serviceWorker.register("/nieuws/sw.js", { scope: "/nieuws/" }).catch(function() {});\n' +
 '  });\n' +
 '}\n' +
+'\n' +
+'/* ---- Menu button ---- */\n' +
+'function openNavMenu() {\n' +
+'  document.getElementById("navOverlay").classList.add("open");\n' +
+'  document.getElementById("menuBtn").textContent = "✕";\n' +
+'}\n' +
+'function closeNavMenu() {\n' +
+'  document.getElementById("navOverlay").classList.remove("open");\n' +
+'  document.getElementById("menuBtn").textContent = "☰";\n' +
+'}\n' +
+'document.getElementById("menuBtn").addEventListener("click", function() {\n' +
+'  if (document.getElementById("navOverlay").classList.contains("open")) closeNavMenu();\n' +
+'  else openNavMenu();\n' +
+'});\n' +
+'document.getElementById("navOverlay").addEventListener("click", function(e) {\n' +
+'  var link = e.target.closest(".nav-link");\n' +
+'  if (link) {\n' +
+'    var cat = link.dataset.navcat;\n' +
+'    closeNavMenu();\n' +
+'    document.querySelectorAll(".cat").forEach(function(c) { c.classList.remove("active"); });\n' +
+'    var topBtn = document.querySelector(".cat[data-cat=\\"" + cat + "\\"]");\n' +
+'    if (topBtn) topBtn.classList.add("active");\n' +
+'    searchQ = "";\n' +
+'    document.getElementById("search").value = "";\n' +
+'    loadCat(cat);\n' +
+'    return;\n' +
+'  }\n' +
+'  if (!e.target.closest(".nav-panel")) closeNavMenu();\n' +
+'});\n' +
 '\n' +
 '/* ---- Bottom nav ---- */\n' +
 'document.getElementById("bottomNav").addEventListener("click", function(e) {\n' +
