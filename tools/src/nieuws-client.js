@@ -137,6 +137,82 @@ export function renderNieuwsClient(newsData = null) {
 '\n' +
 '.footer { text-align: center; padding: 32px 16px; color: var(--muted); font-size: .8rem; }\n' +
 '.footer a { color: var(--muted); }\n' +
+'\n' +
+'/* Mobile bottom nav */\n' +
+'.bottom-nav { display: none; }\n' +
+'@media (max-width: 767px) {\n' +
+'  .cats { display: none; }\n' +
+'  body { padding-bottom: 68px; }\n' +
+'  .scroll-top { bottom: 80px; }\n' +
+'  .toast { bottom: 88px; }\n' +
+'  .bottom-nav {\n' +
+'    display: flex; position: fixed; bottom: 0; left: 0; right: 0;\n' +
+'    height: 60px; background: #111; border-top: 1px solid #2a2a2a;\n' +
+'    z-index: 110; box-shadow: 0 -2px 14px rgba(0,0,0,.45);\n' +
+'    padding-bottom: env(safe-area-inset-bottom, 0px);\n' +
+'  }\n' +
+'}\n' +
+'.bn-item {\n' +
+'  flex: 1; display: flex; flex-direction: column; align-items: center;\n' +
+'  justify-content: center; gap: 2px; background: none; border: none;\n' +
+'  cursor: pointer; color: #555; transition: color .15s; padding: 0;\n' +
+'  -webkit-tap-highlight-color: transparent;\n' +
+'}\n' +
+'.bn-icon { font-size: 1.2rem; line-height: 1; }\n' +
+'.bn-label { font-size: .55rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }\n' +
+'.bn-item.active { color: #fff; }\n' +
+'.bn-item.active .bn-icon { filter: drop-shadow(0 0 4px rgba(209,10,16,.6)); }\n' +
+'\n' +
+'/* Drawer overlay */\n' +
+'.drawer-overlay {\n' +
+'  display: none; position: fixed; inset: 0;\n' +
+'  background: rgba(0,0,0,.55); z-index: 200;\n' +
+'  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);\n' +
+'}\n' +
+'.drawer-overlay.open { display: block; }\n' +
+'\n' +
+'/* Drawer panel */\n' +
+'.drawer {\n' +
+'  position: fixed; bottom: 0; left: 0; right: 0;\n' +
+'  background: var(--surface); border-radius: 20px 20px 0 0;\n' +
+'  z-index: 210; transform: translateY(100%);\n' +
+'  transition: transform .28s cubic-bezier(.32,.72,0,1);\n' +
+'  padding-bottom: env(safe-area-inset-bottom, 0px);\n' +
+'  box-shadow: 0 -4px 32px rgba(0,0,0,.25);\n' +
+'}\n' +
+'.drawer.open { transform: translateY(0); }\n' +
+'.drawer-handle {\n' +
+'  width: 40px; height: 4px; background: var(--border);\n' +
+'  border-radius: 2px; margin: 12px auto 0;\n' +
+'}\n' +
+'.drawer-header {\n' +
+'  display: flex; align-items: center; padding: 12px 20px;\n' +
+'  border-bottom: 1px solid var(--border);\n' +
+'}\n' +
+'.drawer-title { font-size: 1rem; font-weight: 800; flex: 1; color: var(--text); letter-spacing: -.3px; }\n' +
+'.drawer-close {\n' +
+'  background: var(--border); border: none; color: var(--muted);\n' +
+'  width: 28px; height: 28px; border-radius: 50%; font-size: .9rem;\n' +
+'  cursor: pointer; display: flex; align-items: center; justify-content: center;\n' +
+'  transition: background .15s;\n' +
+'}\n' +
+'.drawer-close:hover { background: var(--border); color: var(--text); }\n' +
+'.drawer-section-label {\n' +
+'  font-size: .65rem; font-weight: 700; color: var(--muted); letter-spacing: .8px;\n' +
+'  text-transform: uppercase; padding: 14px 20px 4px;\n' +
+'}\n' +
+'.drawer-items { padding: 4px 0; }\n' +
+'.drawer-item {\n' +
+'  display: flex; align-items: center; gap: 14px; width: 100%;\n' +
+'  padding: 13px 20px; background: none; border: none; color: var(--text);\n' +
+'  cursor: pointer; text-align: left; transition: background .12s;\n' +
+'  -webkit-tap-highlight-color: transparent;\n' +
+'}\n' +
+'.drawer-item:active { background: var(--border); }\n' +
+'.drawer-item.dr-active .di-label { color: var(--accent); font-weight: 700; }\n' +
+'.di-icon { font-size: 1.35rem; width: 30px; text-align: center; flex-shrink: 0; }\n' +
+'.di-label { font-size: .95rem; font-weight: 500; }\n' +
+'.drawer-divider { height: 1px; background: var(--border); margin: 6px 20px; }\n' +
 '</style>\n' +
 '</head>\n' +
 '<body>\n' +
@@ -184,6 +260,52 @@ export function renderNieuwsClient(newsData = null) {
 '  Klik een artikel aan om het volledig te lezen op de originele website.</p>\n' +
 '  <p style="margin-top:8px"><a href="/">← LeadExpert</a></p>\n' +
 '</footer>\n' +
+'\n' +
+'<!-- Mobile bottom nav -->\n' +
+'<nav class="bottom-nav" id="bottomNav">\n' +
+'  <button class="bn-item active" data-bn="nieuws">\n' +
+'    <span class="bn-icon">📰</span><span class="bn-label">Actueel</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="tech">\n' +
+'    <span class="bn-icon">💻</span><span class="bn-label">Tech</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="buitenland">\n' +
+'    <span class="bn-icon">🌍</span><span class="bn-label">Wereld</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="showbizz">\n' +
+'    <span class="bn-icon">🎬</span><span class="bn-label">Showbizz</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="__more">\n' +
+'    <span class="bn-icon">☰</span><span class="bn-label">Meer</span>\n' +
+'  </button>\n' +
+'</nav>\n' +
+'\n' +
+'<div class="drawer-overlay" id="drawerOverlay"></div>\n' +
+'\n' +
+'<div class="drawer" id="drawer">\n' +
+'  <div class="drawer-handle"></div>\n' +
+'  <div class="drawer-header">\n' +
+'    <span class="drawer-title">Meer categorieën</span>\n' +
+'    <button class="drawer-close" id="drawerClose" aria-label="Sluiten">&#x2715;</button>\n' +
+'  </div>\n' +
+'  <p class="drawer-section-label">Nieuws</p>\n' +
+'  <div class="drawer-items">\n' +
+'    <button class="drawer-item" data-drcat="islam">\n' +
+'      <span class="di-icon">🕌</span><span class="di-label">Islam</span>\n' +
+'    </button>\n' +
+'    <button class="drawer-item" data-drcat="opgeslagen">\n' +
+'      <span class="di-icon">🔖</span><span class="di-label">Opgeslagen</span>\n' +
+'    </button>\n' +
+'  </div>\n' +
+'  <div class="drawer-divider"></div>\n' +
+'  <p class="drawer-section-label">Instellingen</p>\n' +
+'  <div class="drawer-items">\n' +
+'    <button class="drawer-item" id="drawerThemeBtn">\n' +
+'      <span class="di-icon" id="drawerThemeIcon">🌙</span>\n' +
+'      <span class="di-label" id="drawerThemeLabel">Donkere modus</span>\n' +
+'    </button>\n' +
+'  </div>\n' +
+'</div>\n' +
 '\n' +
 inlineData + '\n' +
 '<script>\n' +
@@ -373,11 +495,31 @@ inlineData + '\n' +
 '  }\n' +
 '});\n' +
 '\n' +
+'/* ---- Bottom nav sync ---- */\n' +
+'function syncBottomNav(cat) {\n' +
+'  var mainCats = ["nieuws", "tech", "buitenland", "showbizz"];\n' +
+'  var isMore = mainCats.indexOf(cat) < 0;\n' +
+'  document.querySelectorAll(".bn-item").forEach(function(item) {\n' +
+'    var bn = item.dataset.bn;\n' +
+'    item.classList.toggle("active", bn === "__more" ? isMore : bn === cat);\n' +
+'  });\n' +
+'  if (isMore) {\n' +
+'    document.querySelectorAll(".drawer-item[data-drcat]").forEach(function(el) {\n' +
+'      el.classList.toggle("dr-active", el.dataset.drcat === cat);\n' +
+'    });\n' +
+'  } else {\n' +
+'    document.querySelectorAll(".drawer-item[data-drcat]").forEach(function(el) {\n' +
+'      el.classList.remove("dr-active");\n' +
+'    });\n' +
+'  }\n' +
+'}\n' +
+'\n' +
 '/* ---- Load category ---- */\n' +
 'async function loadCat(cat) {\n' +
 '  currentCat = cat;\n' +
 '  allArticles = [];\n' +
 '  sourceFilter = "";\n' +
+'  syncBottomNav(cat);\n' +
 '  renderSourceChips([]);\n' +
 '\n' +
 '  if (cat === "opgeslagen") {\n' +
@@ -464,6 +606,62 @@ inlineData + '\n' +
 '    navigator.serviceWorker.register("/nieuws/sw.js", { scope: "/nieuws/" }).catch(function() {});\n' +
 '  });\n' +
 '}\n' +
+'\n' +
+'/* ---- Bottom nav ---- */\n' +
+'document.getElementById("bottomNav").addEventListener("click", function(e) {\n' +
+'  var item = e.target.closest(".bn-item");\n' +
+'  if (!item) return;\n' +
+'  var bn = item.dataset.bn;\n' +
+'  if (bn === "__more") { openDrawer(); return; }\n' +
+'  document.querySelectorAll(".cat").forEach(function(c) { c.classList.remove("active"); });\n' +
+'  var topBtn = document.querySelector(".cat[data-cat=\\"" + bn + "\\"]");\n' +
+'  if (topBtn) topBtn.classList.add("active");\n' +
+'  searchQ = "";\n' +
+'  document.getElementById("search").value = "";\n' +
+'  loadCat(bn);\n' +
+'});\n' +
+'\n' +
+'/* ---- Drawer ---- */\n' +
+'function openDrawer() {\n' +
+'  document.getElementById("drawer").classList.add("open");\n' +
+'  document.getElementById("drawerOverlay").classList.add("open");\n' +
+'}\n' +
+'\n' +
+'function closeDrawer() {\n' +
+'  document.getElementById("drawer").classList.remove("open");\n' +
+'  document.getElementById("drawerOverlay").classList.remove("open");\n' +
+'}\n' +
+'\n' +
+'document.getElementById("drawerOverlay").addEventListener("click", closeDrawer);\n' +
+'document.getElementById("drawerClose").addEventListener("click", closeDrawer);\n' +
+'\n' +
+'document.getElementById("drawer").addEventListener("click", function(e) {\n' +
+'  var catItem = e.target.closest(".drawer-item[data-drcat]");\n' +
+'  if (catItem) {\n' +
+'    var cat = catItem.dataset.drcat;\n' +
+'    closeDrawer();\n' +
+'    document.querySelectorAll(".cat").forEach(function(c) { c.classList.remove("active"); });\n' +
+'    var topBtn = document.querySelector(".cat[data-cat=\\"" + cat + "\\"]");\n' +
+'    if (topBtn) topBtn.classList.add("active");\n' +
+'    searchQ = "";\n' +
+'    document.getElementById("search").value = "";\n' +
+'    loadCat(cat);\n' +
+'    return;\n' +
+'  }\n' +
+'  if (e.target.closest("#drawerThemeBtn")) {\n' +
+'    var cur = document.documentElement.getAttribute("data-theme");\n' +
+'    var sysDark = window.matchMedia("(prefers-color-scheme: dark)").matches;\n' +
+'    var goingDark = cur === "dark" ? false : cur === "light" ? true : !sysDark;\n' +
+'    var theme = goingDark ? "dark" : "light";\n' +
+'    document.documentElement.setAttribute("data-theme", theme);\n' +
+'    try { localStorage.setItem("bnws_theme", theme); } catch(eTheme) {}\n' +
+'    var moonSun = goingDark ? "☀️" : "🌙";\n' +
+'    document.getElementById("themeBtn").textContent = moonSun;\n' +
+'    document.getElementById("drawerThemeIcon").textContent = moonSun;\n' +
+'    document.getElementById("drawerThemeLabel").textContent = goingDark ? "Lichte modus" : "Donkere modus";\n' +
+'    closeDrawer();\n' +
+'  }\n' +
+'});\n' +
 '\n' +
 'loadCat("nieuws");\n' +
 '<\/script>\n' +
