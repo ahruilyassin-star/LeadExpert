@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShakeLight</string>
+
+    <!-- Notification channel -->
+    <string name="channel_name">ShakeLight achtergrondservice</string>
+    <string name="channel_desc">Luistert naar schudbeweging om de zaklamp te bedienen</string>
+
+    <!-- Notification actions -->
+    <string name="notif_listening">Luistert naar schudbeweging…</string>
+    <string name="notif_light_on">Zaklamp is aan</string>
+    <string name="notif_turn_on">Aan</string>
+    <string name="notif_turn_off">Uit</string>
+    <string name="notif_stop">Stop</string>
+
+    <!-- Status labels -->
+    <string name="status_stopped">Service gestopt</string>
+    <string name="status_listening">Luistert… schud krachtig om te activeren</string>
+    <string name="status_light_on">⚡ ZAKLAMP AAN — schud opnieuw om uit te zetten</string>
+
+    <!-- Main UI -->
+    <string name="tap_to_toggle">Tik om handmatig te schakelen</string>
+    <string name="label_shake_intensity">SCHUDINTENSITEIT</string>
+    <string name="meter_hint">Oranje streep = activeringspunt. Groen = bijna getriggerd.</string>
+
+    <!-- Service card -->
+    <string name="label_service">Schuddetectie</string>
+    <string name="label_service_sub">Blijft actief op achtergrond</string>
+
+    <!-- Settings section -->
+    <string name="section_settings">INSTELLINGEN</string>
+    <string name="label_sensitivity">Gevoeligheid</string>
+    <string name="slider_hard">Moeilijker te triggeren</string>
+    <string name="slider_easy">Makkelijker te triggeren</string>
+
+    <!-- Sensitivity levels -->
+    <string name="sens_very_low">Zeer laag</string>
+    <string name="sens_low">Laag</string>
+    <string name="sens_medium">Gemiddeld</string>
+    <string name="sens_high">Hoog</string>
+    <string name="sens_very_high">Zeer hoog</string>
+
+    <!-- Sensitivity descriptions -->
+    <string name="sens_desc_very_low">Vereist 6 krachtige schudden (>3.5G) — nooit vals getriggerd bij stappen</string>
+    <string name="sens_desc_low">Vereist 5 krachtige schudden (>3G) — ideaal voor zakdragen</string>
+    <string name="sens_desc_medium">Vereist 4–5 schudden (>2.5G) — aanbevolen standaard</string>
+    <string name="sens_desc_high">Vereist 4 schudden (>2G) — kan activeren bij harde stappen</string>
+    <string name="sens_desc_very_high">Vereist 3 schudden (>2G) — gevoelig, niet aanbevolen voor zakdragen</string>
+
+    <!-- Auto-start -->
+    <string name="label_auto_start">Automatisch opstarten</string>
+    <string name="label_auto_start_sub">Start bij heropstarten van de telefoon</string>
+
+    <!-- Keep awake -->
+    <string name="label_keep_awake">Scherm-uit modus</string>
+    <string name="label_keep_awake_sub">Detecteert schudden ook als scherm uit is (batterijintensief)</string>
+
+    <!-- Battery -->
+    <string name="section_battery">BATTERIJOPTIMALISATIE</string>
+    <string name="battery_desc">Schakel batterijoptimalisatie uit zodat de app betrouwbaar op de achtergrond blijft draaien, ook als het scherm uit is.</string>
+    <string name="battery_btn">Batterijoptimalisatie uitschakelen</string>
+    <string name="battery_already_exempt">Al vrijgesteld ✓</string>
+
+    <!-- How it works -->
+    <string name="section_how">HOE HET WERKT</string>
+    <string name="how_it_works">Schud de telefoon krachtig heen en weer om de zaklamp aan/uit te zetten.\n\nHet algoritme filtert stappen en normale beweging automatisch weg door:\n\n• Minimale kracht vereist (instelbaar)\n• Beweging in meerdere richtingen tegelijk (X én Z-as)\n• Meerdere snelle schudden binnen 1 seconde\n• 2.5 seconden cooldown na activatie\n\nDe oranje streep in de balk toont wanneer een schud zwaar genoeg is. Als de balk groen kleurt, wordt de teller opgebouwd.</string>
+</resources>
