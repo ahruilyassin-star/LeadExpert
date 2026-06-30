@@ -393,11 +393,20 @@ inlineData + '\n' +
 '    "</div>";\n' +
 '}\n' +
 '\n' +
+'var PAYWALL_RE = /abonnee|premium|betaal|enkel voor|registreer/i;\n' +
+'\n' +
 '/* ---- Render ---- */\n' +
 'function render() {\n' +
 '  var grid = document.getElementById("grid");\n' +
 '  var countEl = document.getElementById("count");\n' +
 '  var arts = allArticles;\n' +
+'  // Drop stubs (no real description) and paywalled articles\n' +
+'  arts = arts.filter(function(a) {\n' +
+'    var d = (a.desc || "").trim();\n' +
+'    if (d.length < 40) return false;\n' +
+'    if (PAYWALL_RE.test(d)) return false;\n' +
+'    return true;\n' +
+'  });\n' +
 '  if (sourceFilter) arts = arts.filter(function(a) { return a.source === sourceFilter; });\n' +
 '  if (searchQ) arts = arts.filter(function(a) {\n' +
 '    return a.title.toLowerCase().indexOf(searchQ) >= 0 ||\n' +

@@ -3,11 +3,10 @@
 const FEEDS = {
   nieuws: [
     { name: 'HLN', src: 'https://www.hln.be/rss.xml', accent: '#d10a10' },
-    { name: 'De Morgen', src: 'https://www.demorgen.be/rss.xml', accent: '#d32f2f' },
-    { name: 'De Standaard', src: 'https://www.standaard.be/rss.xml', accent: '#003a6e' },
     { name: 'Apache', src: 'https://www.apache.be/feed/', accent: '#d97706' },
     { name: 'VRT Nieuws', src: 'https://www.vrt.be/vrtnws/nl.rss.articles.xml', accent: '#e8232a' },
-    { name: 'Nieuwsblad', src: 'https://www.nieuwsblad.be/rss.xml', accent: '#1a237e' },
+    { name: 'MO*', src: 'https://www.mo.be/rss.xml', accent: '#2563eb' },
+    { name: 'Knack', src: 'https://www.knack.be/rss.xml', accent: '#c2410c' },
   ],
   sport: [
     { name: 'Sporza', src: 'https://sporza.be/nl.rss.xml', accent: '#e65100' },
@@ -15,7 +14,6 @@ const FEEDS = {
   ],
   showbizz: [
     { name: 'HLN Showbizz', src: 'https://www.hln.be/showbizz/rss.xml', accent: '#d10a10' },
-    { name: 'De Morgen Cultuur', src: 'https://www.demorgen.be/cultuur/rss.xml', accent: '#d32f2f' },
   ],
   tech: [
     { name: 'Tweakers', src: 'https://feeds.tweakers.net/nieuws.rss', accent: '#cc0000' },
@@ -25,9 +23,8 @@ const FEEDS = {
   ],
   buitenland: [
     { name: 'HLN Buitenland', src: 'https://www.hln.be/buitenland/rss.xml', accent: '#d10a10' },
-    { name: 'De Morgen Wereld', src: 'https://www.demorgen.be/wereld/rss.xml', accent: '#d32f2f' },
-    { name: 'De Standaard Wereld', src: 'https://www.standaard.be/rss.xml', accent: '#003a6e' },
     { name: 'Apache', src: 'https://www.apache.be/feed/', accent: '#d97706' },
+    { name: 'Al Jazeera', src: 'https://www.aljazeera.com/xml/rss/all.xml', accent: '#8b6914' },
   ],
   islam: [
     { name: 'Islam.nl', src: 'https://www.islam.nl/feed/', accent: '#1b7a1b' },
@@ -50,6 +47,24 @@ function xmlAttr(xml, tag, attr) {
   return m ? m[1] : '';
 }
 
+const PAYWALL_PATTERNS = [
+  /abonnee/i, /premium/i, /betaal/i, /\bpro\b/i,
+  /lees verder als abonnee/i, /lees verder voor abonnees/i,
+  /enkel voor abonnees/i, /registreer/i,
+  /isAccessibleForFree['":\s]+false/i,
+];
+
+function isPaywalled(block, desc) {
+  // Explicit RSS paywall flag
+  if (/<isAccessibleForFree[^>]*>\s*false\s*<\/isAccessibleForFree>/i.test(block)) return true;
+  // Paywall keywords in description
+  if (PAYWALL_PATTERNS.some(re => re.test(desc))) return true;
+  // Link contains paywall path segment
+  const link = xmlText(block, 'link') || xmlAttr(block, 'link', 'href');
+  if (/\/premium\/|\/pro\/|\/abonnee\//i.test(link)) return true;
+  return false;
+}
+
 function parseItems(feedXml, feedName, accent) {
   const items = [];
   const itemRe = /<item[^>]*>([\s\S]*?)<\/item>/gi;
@@ -58,16 +73,21 @@ function parseItems(feedXml, feedName, accent) {
     const block = m[1];
     const title = xmlText(block, 'title');
     const link = xmlText(block, 'link') || xmlAttr(block, 'link', 'href');
-    const desc = xmlText(block, 'description').replace(/<[^>]+>/g, '').slice(0, 180);
+    const desc = xmlText(block, 'description').replace(/<[^>]+>/g, '').trim().slice(0, 200);
     const pubDate = xmlText(block, 'pubDate') || xmlText(block, 'dc:date') || xmlText(block, 'published');
     const img = xmlAttr(block, 'enclosure', 'url')
       || xmlAttr(block, 'media:content', 'url')
       || xmlAttr(block, 'media:thumbnail', 'url')
       || (() => { const im = block.match(/<img[^>]+src=["']([^"']+)["']/i); return im ? im[1] : ''; })();
 
-    if (title && link) {
-      items.push({ title, link, desc, pubDate, img, source: feedName, accent, ts: pubDate ? new Date(pubDate).getTime() : 0 });
-    }
+    if (!title || !link) continue;
+    // Skip paywalled articles
+    if (isPaywalled(block, desc)) continue;
+    // Skip stubs: description too short or identical to title (just a headline, no content)
+    const cleanDesc = desc.replace(/\s+/g, ' ').trim();
+    if (cleanDesc.length < 40 || cleanDesc.toLowerCase() === title.toLowerCase().slice(0, cleanDesc.length)) continue;
+
+    items.push({ title, link, desc: cleanDesc.slice(0, 180), pubDate, img, source: feedName, accent, ts: pubDate ? new Date(pubDate).getTime() : 0 });
   }
   return items;
 }
