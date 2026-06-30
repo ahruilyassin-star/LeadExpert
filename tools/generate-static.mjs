@@ -46,7 +46,7 @@ write(join(dist, 'nieuws', 'index.html'), renderNieuwsClient(newsData));
 write(join(dist, 'nieuws', 'data.json'), JSON.stringify(newsData));
 
 // ── service worker voor offline modus
-const swCode = `var CACHE = 'bnws-v1';
+const swCode = `var CACHE = 'bnws-v2';
 var PRECACHE = ['/nieuws/', '/nieuws/index.html', '/nieuws/data.json'];
 
 self.addEventListener('install', function(e) {

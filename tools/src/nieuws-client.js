@@ -179,8 +179,9 @@ export function renderNieuwsClient(newsData = null) {
 '  transition: transform .28s cubic-bezier(.32,.72,0,1);\n' +
 '  padding-bottom: env(safe-area-inset-bottom, 0px);\n' +
 '  box-shadow: 0 -4px 32px rgba(0,0,0,.25);\n' +
+'  pointer-events: none;\n' +
 '}\n' +
-'.drawer.open { transform: translateY(0); }\n' +
+'.drawer.open { transform: translateY(0); pointer-events: auto; }\n' +
 '.drawer-handle {\n' +
 '  width: 40px; height: 4px; background: var(--border);\n' +
 '  border-radius: 2px; margin: 12px auto 0;\n' +
