@@ -137,6 +137,33 @@ export function renderNieuwsClient(newsData = null) {
 '\n' +
 '.footer { text-align: center; padding: 32px 16px; color: var(--muted); font-size: .8rem; }\n' +
 '.footer a { color: var(--muted); }\n' +
+'\n' +
+'/* Mobile bottom nav */\n' +
+'.bottom-nav { display: none; }\n' +
+'@media (max-width: 767px) {\n' +
+'  .cats { display: none; }\n' +
+'  body { padding-bottom: 68px; }\n' +
+'  .scroll-top { bottom: 80px; }\n' +
+'  .toast { bottom: 88px; }\n' +
+'  .bottom-nav {\n' +
+'    display: flex; position: fixed; bottom: 0; left: 0; right: 0;\n' +
+'    height: 60px; background: #111; border-top: 1px solid #2a2a2a;\n' +
+'    z-index: 110; box-shadow: 0 -2px 14px rgba(0,0,0,.45);\n' +
+'    padding-bottom: env(safe-area-inset-bottom, 0px);\n' +
+'    overflow-x: auto; scrollbar-width: none;\n' +
+'  }\n' +
+'  .bottom-nav::-webkit-scrollbar { display: none; }\n' +
+'}\n' +
+'.bn-item {\n' +
+'  flex: 0 0 auto; min-width: 64px; display: flex; flex-direction: column; align-items: center;\n' +
+'  justify-content: center; gap: 2px; background: none; border: none;\n' +
+'  cursor: pointer; color: #555; transition: color .15s; padding: 0 8px;\n' +
+'  -webkit-tap-highlight-color: transparent;\n' +
+'}\n' +
+'.bn-icon { font-size: 1.2rem; line-height: 1; }\n' +
+'.bn-label { font-size: .55rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }\n' +
+'.bn-item.active { color: #fff; }\n' +
+'.bn-item.active .bn-icon { filter: drop-shadow(0 0 4px rgba(209,10,16,.6)); }\n' +
 '</style>\n' +
 '</head>\n' +
 '<body>\n' +
@@ -184,6 +211,28 @@ export function renderNieuwsClient(newsData = null) {
 '  Klik een artikel aan om het volledig te lezen op de originele website.</p>\n' +
 '  <p style="margin-top:8px"><a href="/">← LeadExpert</a></p>\n' +
 '</footer>\n' +
+'\n' +
+'<!-- Mobile bottom nav -->\n' +
+'<nav class="bottom-nav" id="bottomNav">\n' +
+'  <button class="bn-item active" data-bn="nieuws">\n' +
+'    <span class="bn-icon">📰</span><span class="bn-label">Actueel</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="tech">\n' +
+'    <span class="bn-icon">💻</span><span class="bn-label">Tech</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="buitenland">\n' +
+'    <span class="bn-icon">🌍</span><span class="bn-label">Wereld</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="showbizz">\n' +
+'    <span class="bn-icon">🎬</span><span class="bn-label">Showbizz</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="islam">\n' +
+'    <span class="bn-icon">🕌</span><span class="bn-label">Islam</span>\n' +
+'  </button>\n' +
+'  <button class="bn-item" data-bn="opgeslagen">\n' +
+'    <span class="bn-icon">🔖</span><span class="bn-label">Opgeslagen</span>\n' +
+'  </button>\n' +
+'</nav>\n' +
 '\n' +
 inlineData + '\n' +
 '<script>\n' +
@@ -373,11 +422,19 @@ inlineData + '\n' +
 '  }\n' +
 '});\n' +
 '\n' +
+'/* ---- Bottom nav sync ---- */\n' +
+'function syncBottomNav(cat) {\n' +
+'  document.querySelectorAll(".bn-item").forEach(function(item) {\n' +
+'    item.classList.toggle("active", item.dataset.bn === cat);\n' +
+'  });\n' +
+'}\n' +
+'\n' +
 '/* ---- Load category ---- */\n' +
 'async function loadCat(cat) {\n' +
 '  currentCat = cat;\n' +
 '  allArticles = [];\n' +
 '  sourceFilter = "";\n' +
+'  syncBottomNav(cat);\n' +
 '  renderSourceChips([]);\n' +
 '\n' +
 '  if (cat === "opgeslagen") {\n' +
@@ -464,6 +521,19 @@ inlineData + '\n' +
 '    navigator.serviceWorker.register("/nieuws/sw.js", { scope: "/nieuws/" }).catch(function() {});\n' +
 '  });\n' +
 '}\n' +
+'\n' +
+'/* ---- Bottom nav ---- */\n' +
+'document.getElementById("bottomNav").addEventListener("click", function(e) {\n' +
+'  var item = e.target.closest(".bn-item");\n' +
+'  if (!item) return;\n' +
+'  var bn = item.dataset.bn;\n' +
+'  document.querySelectorAll(".cat").forEach(function(c) { c.classList.remove("active"); });\n' +
+'  var topBtn = document.querySelector(".cat[data-cat=\\"" + bn + "\\"]");\n' +
+'  if (topBtn) topBtn.classList.add("active");\n' +
+'  searchQ = "";\n' +
+'  document.getElementById("search").value = "";\n' +
+'  loadCat(bn);\n' +
+'});\n' +
 '\n' +
 'loadCat("nieuws");\n' +
 '<\/script>\n' +
