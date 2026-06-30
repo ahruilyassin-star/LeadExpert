@@ -2,10 +2,12 @@
 
 const FEEDS = {
   nieuws: [
-    { name: 'VRT Nieuws', src: 'https://www.vrt.be/vrtnws/nl.rss.xml', accent: '#e8232a' },
     { name: 'HLN', src: 'https://www.hln.be/rss.xml', accent: '#d10a10' },
-    { name: 'Nieuwsblad', src: 'https://www.nieuwsblad.be/rss.xml', accent: '#1a237e' },
     { name: 'De Morgen', src: 'https://www.demorgen.be/rss.xml', accent: '#d32f2f' },
+    { name: 'De Standaard', src: 'https://www.standaard.be/rss.xml', accent: '#003a6e' },
+    { name: 'Apache', src: 'https://www.apache.be/feed/', accent: '#d97706' },
+    { name: 'VRT Nieuws', src: 'https://www.vrt.be/vrtnws/nl.rss.articles.xml', accent: '#e8232a' },
+    { name: 'Nieuwsblad', src: 'https://www.nieuwsblad.be/rss.xml', accent: '#1a237e' },
   ],
   sport: [
     { name: 'Sporza', src: 'https://sporza.be/nl.rss.xml', accent: '#e65100' },
@@ -13,7 +15,7 @@ const FEEDS = {
   ],
   showbizz: [
     { name: 'HLN Showbizz', src: 'https://www.hln.be/showbizz/rss.xml', accent: '#d10a10' },
-    { name: 'Nieuwsblad Showbizz', src: 'https://www.nieuwsblad.be/cnt/showbizz/rss.xml', accent: '#1a237e' },
+    { name: 'De Morgen Cultuur', src: 'https://www.demorgen.be/cultuur/rss.xml', accent: '#d32f2f' },
   ],
   tech: [
     { name: 'Tweakers', src: 'https://feeds.tweakers.net/nieuws.rss', accent: '#cc0000' },
@@ -24,8 +26,8 @@ const FEEDS = {
   buitenland: [
     { name: 'HLN Buitenland', src: 'https://www.hln.be/buitenland/rss.xml', accent: '#d10a10' },
     { name: 'De Morgen Wereld', src: 'https://www.demorgen.be/wereld/rss.xml', accent: '#d32f2f' },
-    { name: 'VRT Wereld', src: 'https://www.vrt.be/vrtnws/nl/buitenland.rss.xml', accent: '#e8232a' },
-    { name: 'Nieuwsblad Wereld', src: 'https://www.nieuwsblad.be/cnt/buitenland/rss.xml', accent: '#1a237e' },
+    { name: 'De Standaard Wereld', src: 'https://www.standaard.be/rss.xml', accent: '#003a6e' },
+    { name: 'Apache', src: 'https://www.apache.be/feed/', accent: '#d97706' },
   ],
   islam: [
     { name: 'Islam.nl', src: 'https://www.islam.nl/feed/', accent: '#1b7a1b' },
@@ -73,7 +75,11 @@ function parseItems(feedXml, feedName, accent) {
 async function fetchFeed({ src, name, accent }) {
   try {
     const r = await fetch(src, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; BelgischNieuws/1.0)' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+        'Accept-Language': 'nl-BE,nl;q=0.9',
+      },
     });
     if (!r.ok) return [];
     const text = await r.text();
@@ -87,7 +93,7 @@ export async function getArticles(category) {
   const feeds = FEEDS[category] || FEEDS.nieuws;
   const results = await Promise.allSettled(feeds.map(fetchFeed));
   const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
-  return all.sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 60);
+  return all.sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 80);
 }
 
 function timeAgo(ts) {
