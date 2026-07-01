@@ -15,10 +15,26 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        release {
+            def keystoreBase64 = System.getenv('RELEASE_KEYSTORE') ?: ''
+            if (keystoreBase64) {
+                def keystoreFile = file("${buildDir}/shakelight-release.jks")
+                keystoreFile.parentFile.mkdirs()
+                keystoreFile.bytes = Base64.decoder.decode(keystoreBase64)
+                storeFile keystoreFile
+            }
+            storePassword System.getenv('RELEASE_STORE_PASSWORD') ?: ''
+            keyAlias System.getenv('RELEASE_KEY_ALIAS') ?: ''
+            keyPassword System.getenv('RELEASE_KEY_PASSWORD') ?: ''
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
