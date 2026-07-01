@@ -6,6 +6,8 @@ import android.content.Intent
 import android.hardware.SensorManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.*
 import androidx.core.app.NotificationCompat
 import kotlin.math.max
@@ -30,7 +32,7 @@ class FlashlightService : Service() {
         private const val CHANNEL_ID      = "shakelight_svc"
         private const val NOTIFICATION_ID = 1
 
-        @Volatile var isRunning = false
+        @Volatile var isRunning    = false
         @Volatile var supportsDimming = false
     }
 
@@ -43,9 +45,13 @@ class FlashlightService : Service() {
     private var flashlightOn = false
     private var wakeLock: PowerManager.WakeLock? = null
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val autoOffRunnable = Runnable { setTorch(false) }
+
     private val torchCallback = object : CameraManager.TorchCallback() {
         override fun onTorchModeChanged(cId: String, enabled: Boolean) {
             if (cId == cameraId && !enabled && flashlightOn) {
+                mainHandler.removeCallbacks(autoOffRunnable)
                 flashlightOn = false
                 broadcastState(0f, 0f)
                 updateNotification()
@@ -62,7 +68,7 @@ class FlashlightService : Service() {
         cameraId = findTorchCameraId()
         maxTorchStrength = getMaxTorchStrength()
         supportsDimming = maxTorchStrength > 1
-        cameraManager.registerTorchCallback(torchCallback, Handler(Looper.getMainLooper()))
+        cameraManager.registerTorchCallback(torchCallback, mainHandler)
 
         createNotificationChannel()
 
@@ -102,6 +108,7 @@ class FlashlightService : Service() {
 
     override fun onDestroy() {
         isRunning = false
+        mainHandler.removeCallbacks(autoOffRunnable)
         shakeDetector.stop()
         setTorch(false)
         cameraManager.unregisterTorchCallback(torchCallback)
@@ -127,13 +134,61 @@ class FlashlightService : Service() {
             }
             flashlightOn = on
         } catch (_: Exception) {
-            // Fallback to basic on/off
             try { cameraManager.setTorchMode(id, on); flashlightOn = on }
             catch (_: Exception) { flashlightOn = false }
         }
+
+        if (on && flashlightOn) {
+            if (prefs.soundFeedback)     playBeep()
+            if (prefs.vibrationFeedback) vibrate()
+            scheduleAutoOff()
+        } else {
+            mainHandler.removeCallbacks(autoOffRunnable)
+        }
+
         broadcastState(0f, 0f)
         updateNotification()
     }
+
+    // ── Feedback ──────────────────────────────────────────────────────────────
+
+    private fun playBeep() {
+        try {
+            val tg = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 60)
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP, 120)
+            mainHandler.postDelayed({ tg.release() }, 300)
+        } catch (_: Exception) {}
+    }
+
+    @Suppress("DEPRECATION")
+    private fun vibrate() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vm.defaultVibrator.vibrate(
+                    VibrationEffect.createOneShot(60, VibrationEffect.DEFAULT_AMPLITUDE)
+                )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                v.vibrate(VibrationEffect.createOneShot(60, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                v.vibrate(60)
+            }
+        } catch (_: Exception) {}
+    }
+
+    // ── Auto-off timer ────────────────────────────────────────────────────────
+
+    private fun scheduleAutoOff() {
+        mainHandler.removeCallbacks(autoOffRunnable)
+        val minutes = prefs.autoOffMinutes
+        if (minutes > 0) {
+            mainHandler.postDelayed(autoOffRunnable, minutes * 60_000L)
+        }
+    }
+
+    // ── Camera helpers ────────────────────────────────────────────────────────
 
     private fun findTorchCameraId(): String? = try {
         cameraManager.cameraIdList.firstOrNull { id ->

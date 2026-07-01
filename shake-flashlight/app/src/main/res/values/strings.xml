@@ -61,6 +61,23 @@
     <string name="battery_btn">Batterijoptimalisatie uitschakelen</string>
     <string name="battery_already_exempt">Al vrijgesteld ✓</string>
 
+    <!-- Sound feedback -->
+    <string name="label_sound_feedback">Geluidsfeedback</string>
+    <string name="label_sound_feedback_sub">Korte piep als zaklamp aangaat</string>
+
+    <!-- Vibration feedback -->
+    <string name="label_vibration">Trilfeedback</string>
+    <string name="label_vibration_sub">Trilling als zaklamp aangaat</string>
+
+    <!-- Auto-off timer -->
+    <string name="label_auto_off">Auto-uitschakel</string>
+    <string name="label_auto_off_sub">Zaklamp gaat automatisch uit na</string>
+    <string name="auto_off_disabled">Uit</string>
+    <string name="auto_off_1min">1 minuut</string>
+    <string name="auto_off_5min">5 minuten</string>
+    <string name="auto_off_10min">10 minuten</string>
+    <string name="auto_off_30min">30 minuten</string>
+
     <!-- Update dialog -->
     <string name="update_title">Nieuwe versie beschikbaar</string>
     <string name="update_message">Er is een nieuwere versie van ShakeLight beschikbaar. Wil je nu downloaden en installeren?</string>

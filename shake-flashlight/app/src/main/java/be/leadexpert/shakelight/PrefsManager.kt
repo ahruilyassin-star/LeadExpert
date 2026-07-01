@@ -24,4 +24,16 @@ class PrefsManager(context: Context) {
     var brightness: Int
         get() = p.getInt("brightness", 100)
         set(v) = p.edit().putInt("brightness", v).apply()
+
+    var soundFeedback: Boolean
+        get() = p.getBoolean("sound_feedback", false)
+        set(v) = p.edit().putBoolean("sound_feedback", v).apply()
+
+    var vibrationFeedback: Boolean
+        get() = p.getBoolean("vibration_feedback", false)
+        set(v) = p.edit().putBoolean("vibration_feedback", v).apply()
+
+    var autoOffMinutes: Int
+        get() = p.getInt("auto_off_minutes", 0)
+        set(v) = p.edit().putInt("auto_off_minutes", v).apply()
 }

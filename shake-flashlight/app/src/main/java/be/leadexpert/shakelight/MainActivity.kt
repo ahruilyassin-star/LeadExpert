@@ -29,6 +29,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sliderBrightness: SeekBar
     private lateinit var tvBrightnessLabel: TextView
     private lateinit var tvBrightnessDesc: TextView
+    private lateinit var switchSoundFeedback: SwitchCompat
+    private lateinit var switchVibration: SwitchCompat
+    private lateinit var tvAutoOff: TextView
+
+    private val autoOffOptions = listOf(0, 1, 5, 10, 30)
 
     private var flashlightOn = false
 
@@ -83,9 +88,12 @@ class MainActivity : AppCompatActivity() {
         switchAutoStart   = findViewById(R.id.switchAutoStart)
         switchKeepAwake   = findViewById(R.id.switchKeepAwake)
         tvSensDesc        = findViewById(R.id.tvSensDesc)
-        sliderBrightness  = findViewById(R.id.sliderBrightness)
-        tvBrightnessLabel = findViewById(R.id.tvBrightnessLabel)
-        tvBrightnessDesc  = findViewById(R.id.tvBrightnessDesc)
+        sliderBrightness    = findViewById(R.id.sliderBrightness)
+        tvBrightnessLabel   = findViewById(R.id.tvBrightnessLabel)
+        tvBrightnessDesc    = findViewById(R.id.tvBrightnessDesc)
+        switchSoundFeedback = findViewById(R.id.switchSoundFeedback)
+        switchVibration     = findViewById(R.id.switchVibration)
+        tvAutoOff           = findViewById(R.id.tvAutoOff)
     }
 
     private fun setupListeners() {
@@ -121,6 +129,17 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(sb: SeekBar) {}
         })
 
+        switchSoundFeedback.setOnCheckedChangeListener { _, checked -> prefs.soundFeedback = checked }
+
+        switchVibration.setOnCheckedChangeListener { _, checked -> prefs.vibrationFeedback = checked }
+
+        tvAutoOff.setOnClickListener {
+            val current = autoOffOptions.indexOf(prefs.autoOffMinutes).coerceAtLeast(0)
+            val next = autoOffOptions[(current + 1) % autoOffOptions.size]
+            prefs.autoOffMinutes = next
+            updateAutoOffLabel(next)
+        }
+
         switchAutoStart.setOnCheckedChangeListener { _, checked -> prefs.autoStart = checked }
 
         switchKeepAwake.setOnCheckedChangeListener { _, checked ->
@@ -141,6 +160,9 @@ class MainActivity : AppCompatActivity() {
         sliderBrightness.progress = prefs.brightness.coerceAtLeast(1)
         updateBrightnessLabel(prefs.brightness.coerceAtLeast(1))
         updateBrightnessDesc(FlashlightService.supportsDimming)
+        switchSoundFeedback.isChecked = prefs.soundFeedback
+        switchVibration.isChecked     = prefs.vibrationFeedback
+        updateAutoOffLabel(prefs.autoOffMinutes)
         switchAutoStart.isChecked = prefs.autoStart
         switchKeepAwake.isChecked = prefs.keepAwake
         updateStatusText(running)
@@ -174,6 +196,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateBrightnessLabel(pct: Int) {
         tvBrightnessLabel.text = "$pct%"
+    }
+
+    private fun updateAutoOffLabel(minutes: Int) {
+        tvAutoOff.text = when (minutes) {
+            0    -> getString(R.string.auto_off_disabled)
+            1    -> getString(R.string.auto_off_1min)
+            5    -> getString(R.string.auto_off_5min)
+            10   -> getString(R.string.auto_off_10min)
+            else -> getString(R.string.auto_off_30min)
+        }
     }
 
     private fun updateBrightnessDesc(supported: Boolean) {
