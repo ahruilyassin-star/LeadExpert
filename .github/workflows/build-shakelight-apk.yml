@@ -39,15 +39,37 @@ jobs:
         working-directory: shake-flashlight
         run: gradle wrapper --gradle-version 8.4
 
+      - name: Setup signing keystore
+        working-directory: shake-flashlight/app
+        run: |
+          if [ -n "$RELEASE_KEYSTORE" ]; then
+            echo "$RELEASE_KEYSTORE" | base64 -d > release.jks
+            echo "SIGN_PASS=$RELEASE_STORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "SIGN_ALIAS=$RELEASE_KEY_ALIAS" >> "$GITHUB_ENV"
+          else
+            PASS=$(openssl rand -base64 16)
+            keytool -genkeypair \
+              -alias shakelight \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -keystore release.jks \
+              -storepass "$PASS" -keypass "$PASS" \
+              -dname "CN=ShakeLight,OU=LeadExpert,O=LeadExpert,L=Antwerpen,ST=Antwerpen,C=BE" \
+              -noprompt
+            echo "SIGN_PASS=$PASS" >> "$GITHUB_ENV"
+            echo "SIGN_ALIAS=shakelight" >> "$GITHUB_ENV"
+          fi
+        env:
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+
       - name: Build Release APK
         working-directory: shake-flashlight
         run: ./gradlew assembleRelease --no-daemon
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
-          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          SIGN_PASS: ${{ env.SIGN_PASS }}
+          SIGN_ALIAS: ${{ env.SIGN_ALIAS }}
 
       - name: Rename APK
         run: |
