@@ -12,6 +12,9 @@ on:
       - 'shake-flashlight/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build Debug APK
@@ -42,17 +45,35 @@ jobs:
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
 
+      - name: Rename APK
+        run: |
+          cp shake-flashlight/app/build/outputs/apk/debug/app-debug.apk \
+             shake-flashlight/app/build/outputs/apk/debug/ShakeLight.apk
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: ShakeLight-debug-apk
-          path: shake-flashlight/app/build/outputs/apk/debug/app-debug.apk
+          path: shake-flashlight/app/build/outputs/apk/debug/ShakeLight.apk
           retention-days: 30
           if-no-files-found: error
 
-      - name: APK info
-        run: |
-          APK=shake-flashlight/app/build/outputs/apk/debug/app-debug.apk
-          SIZE=$(du -h "$APK" | cut -f1)
-          echo "✅ APK klaar: $SIZE"
-          echo "📱 Download via de 'Artifacts' sectie van deze GitHub Actions run"
+      - name: Publish GitHub Release (publieke downloadlink)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: shakelight-latest
+          name: "ShakeLight — Laatste versie"
+          body: |
+            ## ShakeLight APK
+
+            **Direct installeren op je Android telefoon:**
+            1. Download `ShakeLight.apk` hieronder
+            2. Open het bestand op je telefoon
+            3. Sta installatie toe als gevraagd (Instellingen → Onbekende bronnen)
+            4. Installeer en open ShakeLight
+
+            ---
+            *Automatisch gebouwd vanuit de broncode*
+          files: shake-flashlight/app/build/outputs/apk/debug/ShakeLight.apk
+          make_latest: true
+          prerelease: false
