@@ -6,8 +6,7 @@ import android.content.Intent
 import android.hardware.SensorManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.media.AudioManager
-import android.media.ToneGenerator
+import android.media.MediaPlayer
 import android.os.*
 import androidx.core.app.NotificationCompat
 import kotlin.math.max
@@ -139,7 +138,7 @@ class FlashlightService : Service() {
         }
 
         if (on && flashlightOn) {
-            if (prefs.soundFeedback)     playBeep()
+            if (prefs.soundFeedback)     playSound()
             if (prefs.vibrationFeedback) vibrate()
             scheduleAutoOff()
         } else {
@@ -152,11 +151,20 @@ class FlashlightService : Service() {
 
     // ── Feedback ──────────────────────────────────────────────────────────────
 
-    private fun playBeep() {
+    private val soundResources = intArrayOf(
+        R.raw.snd_01, R.raw.snd_02, R.raw.snd_03, R.raw.snd_04, R.raw.snd_05,
+        R.raw.snd_06, R.raw.snd_07, R.raw.snd_08, R.raw.snd_09, R.raw.snd_10,
+        R.raw.snd_11, R.raw.snd_12, R.raw.snd_13, R.raw.snd_14, R.raw.snd_15,
+        R.raw.snd_16, R.raw.snd_17, R.raw.snd_18, R.raw.snd_19, R.raw.snd_20
+    )
+
+    private fun playSound() {
+        val resId = soundResources.getOrElse(prefs.soundType) { soundResources[0] }
         try {
-            val tg = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 60)
-            tg.startTone(ToneGenerator.TONE_PROP_BEEP, 120)
-            mainHandler.postDelayed({ tg.release() }, 300)
+            MediaPlayer.create(this, resId)?.apply {
+                setOnCompletionListener { release() }
+                start()
+            }
         } catch (_: Exception) {}
     }
 

@@ -29,6 +29,10 @@ class PrefsManager(context: Context) {
         get() = p.getBoolean("sound_feedback", false)
         set(v) = p.edit().putBoolean("sound_feedback", v).apply()
 
+    var soundType: Int
+        get() = p.getInt("sound_type", 0)
+        set(v) = p.edit().putInt("sound_type", v).apply()
+
     var vibrationFeedback: Boolean
         get() = p.getBoolean("vibration_feedback", false)
         set(v) = p.edit().putBoolean("vibration_feedback", v).apply()

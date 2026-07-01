@@ -63,7 +63,32 @@
 
     <!-- Sound feedback -->
     <string name="label_sound_feedback">Geluidsfeedback</string>
-    <string name="label_sound_feedback_sub">Korte piep als zaklamp aangaat</string>
+    <string name="label_sound_feedback_sub">Geluid als zaklamp aangaat</string>
+    <string name="label_sound_type">Geluid kiezen</string>
+    <string name="sound_choose_title">Kies een geluid</string>
+
+    <string-array name="sound_names">
+        <item>🔔 Klassieke piep</item>
+        <item>🔔🔔 Dubbele piep</item>
+        <item>📯 Hoge piep</item>
+        <item>🎺 Lage piep</item>
+        <item>📈 Stijgende toon</item>
+        <item>📉 Dalende toon</item>
+        <item>🔫 Laser</item>
+        <item>⚡ Power aan</item>
+        <item>🪙 Munt</item>
+        <item>🔔 Bel</item>
+        <item>🔔🔔🔔 Drie piepjes</item>
+        <item>⚠️ Waarschuwing</item>
+        <item>🕹️ Retro blip</item>
+        <item>👾 Sci-fi</item>
+        <item>🎵 Fluit</item>
+        <item>🏀 Sprong</item>
+        <item>🤖 Robot</item>
+        <item>📡 Morse</item>
+        <item>⚡ Zap</item>
+        <item>🎺 Fanfare</item>
+    </string-array>
 
     <!-- Vibration feedback -->
     <string name="label_vibration">Trilfeedback</string>

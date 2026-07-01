@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
+import android.media.MediaPlayer
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var switchSoundFeedback: SwitchCompat
     private lateinit var switchVibration: SwitchCompat
     private lateinit var tvAutoOff: TextView
+    private lateinit var tvSoundType: TextView
+
+    private val soundResources = intArrayOf(
+        R.raw.snd_01, R.raw.snd_02, R.raw.snd_03, R.raw.snd_04, R.raw.snd_05,
+        R.raw.snd_06, R.raw.snd_07, R.raw.snd_08, R.raw.snd_09, R.raw.snd_10,
+        R.raw.snd_11, R.raw.snd_12, R.raw.snd_13, R.raw.snd_14, R.raw.snd_15,
+        R.raw.snd_16, R.raw.snd_17, R.raw.snd_18, R.raw.snd_19, R.raw.snd_20
+    )
 
     private val autoOffOptions = listOf(0, 1, 5, 10, 30)
 
@@ -94,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         switchSoundFeedback = findViewById(R.id.switchSoundFeedback)
         switchVibration     = findViewById(R.id.switchVibration)
         tvAutoOff           = findViewById(R.id.tvAutoOff)
+        tvSoundType         = findViewById(R.id.tvSoundType)
     }
 
     private fun setupListeners() {
@@ -131,6 +141,8 @@ class MainActivity : AppCompatActivity() {
 
         switchSoundFeedback.setOnCheckedChangeListener { _, checked -> prefs.soundFeedback = checked }
 
+        tvSoundType.setOnClickListener { showSoundPickerDialog() }
+
         switchVibration.setOnCheckedChangeListener { _, checked -> prefs.vibrationFeedback = checked }
 
         tvAutoOff.setOnClickListener {
@@ -162,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         updateBrightnessDesc(FlashlightService.supportsDimming)
         switchSoundFeedback.isChecked = prefs.soundFeedback
         switchVibration.isChecked     = prefs.vibrationFeedback
+        updateSoundTypeLabel(prefs.soundType)
         updateAutoOffLabel(prefs.autoOffMinutes)
         switchAutoStart.isChecked = prefs.autoStart
         switchKeepAwake.isChecked = prefs.keepAwake
@@ -196,6 +209,35 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateBrightnessLabel(pct: Int) {
         tvBrightnessLabel.text = "$pct%"
+    }
+
+    private fun updateSoundTypeLabel(index: Int) {
+        val names = resources.getStringArray(R.array.sound_names)
+        tvSoundType.text = names.getOrElse(index) { names[0] }
+    }
+
+    private fun showSoundPickerDialog() {
+        val names = resources.getStringArray(R.array.sound_names)
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.sound_choose_title))
+            .setSingleChoiceItems(names, prefs.soundType) { dialog, which ->
+                prefs.soundType = which
+                updateSoundTypeLabel(which)
+                previewSound(which)
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(R.string.update_later), null)
+            .show()
+    }
+
+    private fun previewSound(index: Int) {
+        val resId = soundResources.getOrElse(index) { soundResources[0] }
+        try {
+            MediaPlayer.create(this, resId)?.apply {
+                setOnCompletionListener { release() }
+                start()
+            }
+        } catch (_: Exception) {}
     }
 
     private fun updateAutoOffLabel(minutes: Int) {
