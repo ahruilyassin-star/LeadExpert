@@ -61,6 +61,11 @@
     <string name="battery_btn">Batterijoptimalisatie uitschakelen</string>
     <string name="battery_already_exempt">Al vrijgesteld ✓</string>
 
+    <!-- Brightness -->
+    <string name="label_brightness">Helderheid</string>
+    <string name="brightness_hint_supported">Actief — apparaat ondersteunt variabele LED-helderheid</string>
+    <string name="brightness_hint_unsupported">Vereist Android 13+ met dimbare LED</string>
+
     <!-- How it works -->
     <string name="section_how">HOE HET WERKT</string>
     <string name="how_it_works">Schud de telefoon krachtig heen en weer om de zaklamp aan/uit te zetten.\n\nHet algoritme filtert stappen en normale beweging automatisch weg door:\n\n• Minimale kracht vereist (instelbaar)\n• Beweging in meerdere richtingen tegelijk (X én Z-as)\n• Meerdere snelle schudden binnen 1 seconde\n• 2.5 seconden cooldown na activatie\n\nDe oranje streep in de balk toont wanneer een schud zwaar genoeg is. Als de balk groen kleurt, wordt de teller opgebouwd.</string>

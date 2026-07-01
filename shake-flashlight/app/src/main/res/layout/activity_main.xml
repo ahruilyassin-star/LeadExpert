@@ -202,6 +202,48 @@
                 android:textColor="@color/text_dim"
                 android:textSize="12sp" />
 
+            <!-- Brightness row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_brightness"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tvBrightnessLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/accent"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sliderBrightness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:max="100"
+                android:progress="100" />
+
+            <TextView
+                android:id="@+id/tvBrightnessDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/brightness_hint_unsupported"
+                android:textColor="@color/text_dim"
+                android:textSize="12sp" />
+
             <!-- Divider -->
             <View
                 android:layout_width="match_parent"

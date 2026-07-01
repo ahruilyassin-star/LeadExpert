@@ -20,4 +20,8 @@ class PrefsManager(context: Context) {
     var serviceEnabled: Boolean
         get() = p.getBoolean("service_enabled", false)
         set(v) = p.edit().putBoolean("service_enabled", v).apply()
+
+    var brightness: Int
+        get() = p.getInt("brightness", 100)
+        set(v) = p.edit().putInt("brightness", v).apply()
 }

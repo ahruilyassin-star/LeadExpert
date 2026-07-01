@@ -8,40 +8,44 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.*
 import androidx.core.app.NotificationCompat
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 class FlashlightService : Service() {
 
     companion object {
-        const val ACTION_START  = "be.leadexpert.shakelight.START"
-        const val ACTION_STOP   = "be.leadexpert.shakelight.STOP"
-        const val ACTION_TOGGLE = "be.leadexpert.shakelight.TOGGLE"
+        const val ACTION_START            = "be.leadexpert.shakelight.START"
+        const val ACTION_STOP             = "be.leadexpert.shakelight.STOP"
+        const val ACTION_TOGGLE           = "be.leadexpert.shakelight.TOGGLE"
+        const val ACTION_APPLY_BRIGHTNESS = "be.leadexpert.shakelight.APPLY_BRIGHTNESS"
 
         const val EXTRA_SENSITIVITY = "sensitivity"
 
-        const val BROADCAST_STATE      = "be.leadexpert.shakelight.STATE"
-        const val EXTRA_FLASHLIGHT_ON  = "flashlight_on"
-        const val EXTRA_MAGNITUDE      = "magnitude"
-        const val EXTRA_SHAKE_SCORE    = "shake_score"
+        const val BROADCAST_STATE          = "be.leadexpert.shakelight.STATE"
+        const val EXTRA_FLASHLIGHT_ON      = "flashlight_on"
+        const val EXTRA_MAGNITUDE          = "magnitude"
+        const val EXTRA_SHAKE_SCORE        = "shake_score"
+        const val EXTRA_SUPPORTS_DIMMING   = "supports_dimming"
 
-        private const val CHANNEL_ID    = "shakelight_svc"
+        private const val CHANNEL_ID      = "shakelight_svc"
         private const val NOTIFICATION_ID = 1
 
         @Volatile var isRunning = false
+        @Volatile var supportsDimming = false
     }
 
     private lateinit var prefs: PrefsManager
     private lateinit var shakeDetector: ShakeDetector
     private lateinit var cameraManager: CameraManager
     private var cameraId: String? = null
+    private var maxTorchStrength = 1
 
     private var flashlightOn = false
     private var wakeLock: PowerManager.WakeLock? = null
 
-    // CameraManager callback — another app may steal the torch
     private val torchCallback = object : CameraManager.TorchCallback() {
         override fun onTorchModeChanged(cId: String, enabled: Boolean) {
             if (cId == cameraId && !enabled && flashlightOn) {
-                // External app turned our torch off — reflect in state
                 flashlightOn = false
                 broadcastState(0f, 0f)
                 updateNotification()
@@ -56,6 +60,8 @@ class FlashlightService : Service() {
 
         cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraId = findTorchCameraId()
+        maxTorchStrength = getMaxTorchStrength()
+        supportsDimming = maxTorchStrength > 1
         cameraManager.registerTorchCallback(torchCallback, Handler(Looper.getMainLooper()))
 
         createNotificationChannel()
@@ -79,13 +85,15 @@ class FlashlightService : Service() {
                 toggleFlashlight()
                 return START_STICKY
             }
+            ACTION_APPLY_BRIGHTNESS -> {
+                if (flashlightOn) setTorch(true)
+                return START_STICKY
+            }
         }
 
-        // (Re-)apply sensitivity from intent or saved prefs
         shakeDetector.sensitivity =
             intent?.getIntExtra(EXTRA_SENSITIVITY, prefs.sensitivity) ?: prefs.sensitivity
 
-        // Acquire wake-lock so accelerometer keeps running with screen off
         if (prefs.keepAwake) acquireWakeLock() else releaseWakeLock()
 
         shakeDetector.start()
@@ -110,10 +118,18 @@ class FlashlightService : Service() {
     private fun setTorch(on: Boolean) {
         val id = cameraId ?: return
         try {
-            cameraManager.setTorchMode(id, on)
+            if (on && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && maxTorchStrength > 1) {
+                val pct = prefs.brightness.coerceIn(1, 100)
+                val strength = max(1, (pct * maxTorchStrength / 100f).roundToInt())
+                cameraManager.turnOnTorchWithStrengthLevel(id, strength)
+            } else {
+                cameraManager.setTorchMode(id, on)
+            }
             flashlightOn = on
         } catch (_: Exception) {
-            flashlightOn = false
+            // Fallback to basic on/off
+            try { cameraManager.setTorchMode(id, on); flashlightOn = on }
+            catch (_: Exception) { flashlightOn = false }
         }
         broadcastState(0f, 0f)
         updateNotification()
@@ -126,6 +142,15 @@ class FlashlightService : Service() {
         }
     } catch (_: Exception) { null }
 
+    private fun getMaxTorchStrength(): Int {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return 1
+        val id = cameraId ?: return 1
+        return try {
+            cameraManager.getCameraCharacteristics(id)
+                .get(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL) ?: 1
+        } catch (_: Exception) { 1 }
+    }
+
     // ── Broadcasts ────────────────────────────────────────────────────────────
 
     private fun broadcastState(magnitude: Float, shakeScore: Float) {
@@ -133,6 +158,7 @@ class FlashlightService : Service() {
             putExtra(EXTRA_FLASHLIGHT_ON, flashlightOn)
             putExtra(EXTRA_MAGNITUDE, magnitude)
             putExtra(EXTRA_SHAKE_SCORE, shakeScore)
+            putExtra(EXTRA_SUPPORTS_DIMMING, maxTorchStrength > 1)
             `package` = packageName
         })
     }

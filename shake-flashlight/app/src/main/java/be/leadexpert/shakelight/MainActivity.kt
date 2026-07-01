@@ -25,6 +25,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var switchAutoStart: SwitchCompat
     private lateinit var switchKeepAwake: SwitchCompat
     private lateinit var tvSensDesc: TextView
+    private lateinit var sliderBrightness: SeekBar
+    private lateinit var tvBrightnessLabel: TextView
+    private lateinit var tvBrightnessDesc: TextView
 
     private var flashlightOn = false
 
@@ -33,8 +36,10 @@ class MainActivity : AppCompatActivity() {
             flashlightOn = intent.getBooleanExtra(FlashlightService.EXTRA_FLASHLIGHT_ON, false)
             val mag = intent.getFloatExtra(FlashlightService.EXTRA_MAGNITUDE, 0f)
             val score = intent.getFloatExtra(FlashlightService.EXTRA_SHAKE_SCORE, 0f)
+            val dimming = intent.getBooleanExtra(FlashlightService.EXTRA_SUPPORTS_DIMMING, false)
             updateFlashIcon()
             shakeMeter.update(mag, score)
+            updateBrightnessDesc(dimming)
         }
     }
 
@@ -76,6 +81,9 @@ class MainActivity : AppCompatActivity() {
         switchAutoStart   = findViewById(R.id.switchAutoStart)
         switchKeepAwake   = findViewById(R.id.switchKeepAwake)
         tvSensDesc        = findViewById(R.id.tvSensDesc)
+        sliderBrightness  = findViewById(R.id.sliderBrightness)
+        tvBrightnessLabel = findViewById(R.id.tvBrightnessLabel)
+        tvBrightnessDesc  = findViewById(R.id.tvBrightnessDesc)
     }
 
     private fun setupListeners() {
@@ -98,6 +106,19 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(sb: SeekBar) {}
         })
 
+        sliderBrightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
+                val pct = progress.coerceAtLeast(1)
+                prefs.brightness = pct
+                updateBrightnessLabel(pct)
+                if (FlashlightService.isRunning)
+                    sendServiceAction(FlashlightService.ACTION_APPLY_BRIGHTNESS)
+            }
+            override fun onStartTrackingTouch(sb: SeekBar) {}
+            override fun onStopTrackingTouch(sb: SeekBar) {}
+        })
+
         switchAutoStart.setOnCheckedChangeListener { _, checked -> prefs.autoStart = checked }
 
         switchKeepAwake.setOnCheckedChangeListener { _, checked ->
@@ -115,6 +136,9 @@ class MainActivity : AppCompatActivity() {
         switchService.isChecked = running
         sliderSensitivity.progress = prefs.sensitivity
         updateSensLabel(prefs.sensitivity)
+        sliderBrightness.progress = prefs.brightness.coerceAtLeast(1)
+        updateBrightnessLabel(prefs.brightness.coerceAtLeast(1))
+        updateBrightnessDesc(FlashlightService.supportsDimming)
         switchAutoStart.isChecked = prefs.autoStart
         switchKeepAwake.isChecked = prefs.keepAwake
         updateStatusText(running)
@@ -144,6 +168,17 @@ class MainActivity : AppCompatActivity() {
     private fun updateSensLabel(progress: Int) {
         tvSensLabel.text = sensLabel(progress)
         tvSensDesc.text  = sensDesc(progress)
+    }
+
+    private fun updateBrightnessLabel(pct: Int) {
+        tvBrightnessLabel.text = "$pct%"
+    }
+
+    private fun updateBrightnessDesc(supported: Boolean) {
+        tvBrightnessDesc.text = if (supported)
+            getString(R.string.brightness_hint_supported)
+        else
+            getString(R.string.brightness_hint_unsupported)
     }
 
     private fun sensLabel(p: Int) = when {
