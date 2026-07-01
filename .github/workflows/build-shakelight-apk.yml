@@ -40,7 +40,7 @@ jobs:
         working-directory: shake-flashlight
         run: ./gradlew assembleDebug --no-daemon
         env:
-          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_HOME: /usr/local/lib/android/sdk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
