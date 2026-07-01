@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         setupListeners()
 
         requestNeededPermissions()
+        UpdateChecker.checkAsync(this) { showUpdateDialog() }
     }
 
     override fun onResume() {
@@ -242,6 +244,20 @@ class MainActivity : AppCompatActivity() {
         }.onFailure {
             startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         }
+    }
+
+    // ── Update dialog ─────────────────────────────────────────────────────────
+
+    private fun showUpdateDialog() {
+        if (isFinishing || isDestroyed) return
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.update_title))
+            .setMessage(getString(R.string.update_message))
+            .setPositiveButton(getString(R.string.update_download)) { _, _ ->
+                UpdateChecker.openDownload(this)
+            }
+            .setNegativeButton(getString(R.string.update_later), null)
+            .show()
     }
 
     // ── Runtime permissions ───────────────────────────────────────────────────

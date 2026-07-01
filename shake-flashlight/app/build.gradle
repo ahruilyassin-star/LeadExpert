@@ -7,12 +7,17 @@ android {
     namespace 'be.leadexpert.shakelight'
     compileSdk 34
 
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId "be.leadexpert.shakelight"
         minSdk 23
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        buildConfigField "long", "BUILD_TIME", "${System.currentTimeMillis()}L"
     }
 
     signingConfigs {

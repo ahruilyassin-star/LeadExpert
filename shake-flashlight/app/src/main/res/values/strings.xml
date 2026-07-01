@@ -61,6 +61,12 @@
     <string name="battery_btn">Batterijoptimalisatie uitschakelen</string>
     <string name="battery_already_exempt">Al vrijgesteld ✓</string>
 
+    <!-- Update dialog -->
+    <string name="update_title">Nieuwe versie beschikbaar</string>
+    <string name="update_message">Er is een nieuwere versie van ShakeLight beschikbaar. Wil je nu downloaden en installeren?</string>
+    <string name="update_download">Downloaden</string>
+    <string name="update_later">Later</string>
+
     <!-- Brightness -->
     <string name="label_brightness">Helderheid</string>
     <string name="brightness_hint_supported">Actief — apparaat ondersteunt variabele LED-helderheid</string>
