@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"WORKFLOW INSTRUCTIE: Splits deze taak waar mogelijk op en gebruik PROACTIEF meerdere parallelle subagents via de Agent tool om het werk sneller af te ronden. Identificeer onafhankelijke deeltaken (research, zoeken in de codebase, meerdere bestanden/features, parallelle implementaties) en start die agents in EEN bericht met meerdere Agent tool-calls zodat ze gelijktijdig draaien. Reserveer dit voor werk dat echt parallelliseerbaar is: voor een triviale eenstaps-taak of strikt sequentieel werk doe je het direct zelf zonder onnodige overhead.\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}
