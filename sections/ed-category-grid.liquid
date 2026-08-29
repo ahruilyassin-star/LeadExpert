@@ -1,0 +1,131 @@
+<section class="ecg-wrap" id="ecg-{{ section.id }}">
+  <div class="ecg-inner">
+    <div class="ecg-header">
+      <span class="ecg-eyebrow">{{ section.settings.eyebrow | default: 'Categorías' }}</span>
+      <h2 class="ecg-title">{{ section.settings.title | default: 'Explora la colección' }}</h2>
+    </div>
+    <div class="ecg-grid">
+      {%- for i in (1..4) -%}
+        {%- assign idx = forloop.index -%}
+        {%- assign name_key = 'tile' | append: idx | append: '_name' -%}
+        {%- assign desc_key = 'tile' | append: idx | append: '_desc' -%}
+        {%- assign url_key = 'tile' | append: idx | append: '_url' -%}
+        {%- assign img_key = 'tile' | append: idx | append: '_image' -%}
+        {%- assign tile_name = section.settings[name_key] -%}
+        {%- assign tile_desc = section.settings[desc_key] -%}
+        {%- assign tile_url = section.settings[url_key] -%}
+        {%- assign tile_img = section.settings[img_key] -%}
+        <a class="ecg-tile" href="{{ tile_url | default: '/collections/all' }}" data-idx="{{ forloop.index0 }}">
+          <div class="ecg-tile__img-wrap">
+            {%- if tile_img != blank -%}
+              <img class="ecg-tile__img" src="{{ tile_img | img_url: '800x' }}" alt="{{ tile_name }}" loading="lazy" width="800" height="1000">
+            {%- else -%}
+              <div class="ecg-tile__img ecg-tile__img--ph"></div>
+            {%- endif -%}
+            <div class="ecg-tile__overlay"></div>
+          </div>
+          <div class="ecg-tile__content">
+            <div class="ecg-tile__text">
+              <span class="ecg-tile__index">0{{ idx }}</span>
+              <h3 class="ecg-tile__name">{{ tile_name | default: 'Categoría' }}</h3>
+              {%- if tile_desc != blank -%}
+                <p class="ecg-tile__desc">{{ tile_desc }}</p>
+              {%- endif -%}
+            </div>
+            <span class="ecg-tile__cta">
+              Ver colección
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+#ecg-{{ section.id }} {background:#fafafa;padding:100px 48px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#ecg-{{ section.id }} .ecg-inner {max-width:1380px;margin:0 auto;}
+#ecg-{{ section.id }} .ecg-header {text-align:center;margin-bottom:56px;}
+#ecg-{{ section.id }} .ecg-eyebrow {display:block;font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:#9a9a9a;margin-bottom:12px;}
+#ecg-{{ section.id }} .ecg-title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.9rem,3.4vw,2.6rem);font-weight:400;color:#0a0a0a;margin:0;letter-spacing:-0.02em;}
+#ecg-{{ section.id }} .ecg-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+#ecg-{{ section.id }} .ecg-tile {position:relative;display:block;text-decoration:none;overflow:hidden;background:#0a0a0a;aspect-ratio:3/4;opacity:0;transform:translateY(24px);transition:opacity 0.7s,transform 0.7s;}
+#ecg-{{ section.id }} .ecg-tile.ecg--visible {opacity:1;transform:translateY(0);}
+#ecg-{{ section.id }} .ecg-tile__img-wrap {position:absolute;inset:0;}
+#ecg-{{ section.id }} .ecg-tile__img {width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecg-{{ section.id }} .ecg-tile:hover .ecg-tile__img {transform:scale(1.06);}
+#ecg-{{ section.id }} .ecg-tile__img--ph {background:linear-gradient(135deg,#2a2a2a,#1a1a1a);}
+#ecg-{{ section.id }} .ecg-tile__overlay {position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.75) 100%);}
+#ecg-{{ section.id }} .ecg-tile__content {position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:#fff;}
+#ecg-{{ section.id }} .ecg-tile__index {display:block;font-size:0.72rem;font-weight:500;letter-spacing:0.16em;color:rgba(255,255,255,0.85);}
+#ecg-{{ section.id }} .ecg-tile__text {margin-top:auto;}
+#ecg-{{ section.id }} .ecg-tile__name {font-family:'Playfair Display',Georgia,serif;font-size:1.65rem;font-weight:400;color:#fff;margin:8px 0 6px;letter-spacing:-0.01em;line-height:1.1;}
+#ecg-{{ section.id }} .ecg-tile__desc {font-size:0.84rem;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;font-weight:400;}
+#ecg-{{ section.id }} .ecg-tile__cta {display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:0.72rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#fff;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.5);align-self:flex-start;transition:gap 0.3s,border-color 0.3s;}
+#ecg-{{ section.id }} .ecg-tile:hover .ecg-tile__cta {gap:12px;border-color:#fff;}
+@media(max-width:1100px){
+#ecg-{{ section.id }} .ecg-grid {grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+#ecg-{{ section.id }} {padding:64px 20px;}
+#ecg-{{ section.id }} .ecg-grid {gap:12px;}
+#ecg-{{ section.id }} .ecg-tile__name {font-size:1.3rem;}
+#ecg-{{ section.id }} .ecg-tile__content {padding:18px;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ecg-' + sid);
+  if (!wrap) return;
+  var tiles = wrap.querySelectorAll('.ecg-tile');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        var t = e.target;
+        var idx = parseInt(t.getAttribute('data-idx'), 10) || 0;
+        setTimeout(function(){ t.classList.add('ecg--visible'); }, idx * 100);
+        obs.unobserve(t);
+      }
+    });
+  }, { threshold: 0.1 });
+  tiles.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Category Grid",
+  "tag": "section",
+  "class": "ed-section",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Categorías"},
+    {"type":"text","id":"title","label":"Title","default":"Explora la colección"},
+    {"type":"header","content":"Tile 1"},
+    {"type":"text","id":"tile1_name","label":"Name","default":"Hombre"},
+    {"type":"text","id":"tile1_desc","label":"Description","default":"Fragancias potentes y elegantes"},
+    {"type":"url","id":"tile1_url","label":"URL"},
+    {"type":"image_picker","id":"tile1_image","label":"Image"},
+    {"type":"header","content":"Tile 2"},
+    {"type":"text","id":"tile2_name","label":"Name","default":"Mujer"},
+    {"type":"text","id":"tile2_desc","label":"Description","default":"Esencias femeninas seductoras"},
+    {"type":"url","id":"tile2_url","label":"URL"},
+    {"type":"image_picker","id":"tile2_image","label":"Image"},
+    {"type":"header","content":"Tile 3"},
+    {"type":"text","id":"tile3_name","label":"Name","default":"Sets & Regalos"},
+    {"type":"text","id":"tile3_desc","label":"Description","default":"Para regalar lujo árabe"},
+    {"type":"url","id":"tile3_url","label":"URL"},
+    {"type":"image_picker","id":"tile3_image","label":"Image"},
+    {"type":"header","content":"Tile 4"},
+    {"type":"text","id":"tile4_name","label":"Name","default":"Oud & Orientales"},
+    {"type":"text","id":"tile4_desc","label":"Description","default":"El alma de la perfumería árabe"},
+    {"type":"url","id":"tile4_url","label":"URL"},
+    {"type":"image_picker","id":"tile4_image","label":"Image"}
+  ],
+  "presets": [
+    {"name":"ED – Category Grid"}
+  ]
+}
+{% endschema %}

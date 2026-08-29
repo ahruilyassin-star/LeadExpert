@@ -1,0 +1,94 @@
+{% unless customer %}
+<div id="ed-popup" class="ed-popup" role="dialog" aria-modal="true" aria-label="Oferta especial newsletter" hidden>
+  <div class="ed-popup__backdrop" id="ed-popup-backdrop"></div>
+  <div class="ed-popup__box">
+    <button class="ed-popup__close" id="ed-popup-close" aria-label="Cerrar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="ed-popup__deco">✦</div>
+    <p class="ed-popup__eyebrow">Oferta exclusiva para suscriptores</p>
+    <h2 class="ed-popup__title">10% de descuento<br>en tu primer pedido</h2>
+    <p class="ed-popup__sub">Suscríbete y recibe tu código de descuento, acceso anticipado a nuevos lanzamientos y las mejores ofertas de perfumería árabe.</p>
+    {% form 'customer', id: 'ed-popup-form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter,popup">
+      <div class="ed-popup__input-wrap">
+        <input
+          type="email"
+          name="contact[email]"
+          id="ed-popup-email"
+          class="ed-popup__input"
+          placeholder="Tu correo electrónico"
+          required
+          autocomplete="email"
+        >
+        <button type="submit" class="ed-popup__submit">
+          Obtener 10%
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+      {% if form.errors %}
+        <p class="ed-popup__error">Por favor introduce un email válido.</p>
+      {% endif %}
+      {% if form.posted_successfully? %}
+        <p class="ed-popup__success">¡Gracias! Revisa tu correo para el código <strong>BIENVENIDO10</strong>.</p>
+      {% endif %}
+    {% endform %}
+    <p class="ed-popup__disclaimer">Sin spam. Puedes darte de baja en cualquier momento.</p>
+  </div>
+</div>
+
+<style>
+.ed-popup{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}
+.ed-popup[hidden]{display:none}
+.ed-popup.is-open{display:flex}
+.ed-popup__backdrop{position:absolute;inset:0;background:rgba(10,8,5,0.7);backdrop-filter:blur(6px);cursor:pointer}
+.ed-popup__box{position:relative;z-index:1;background:#fff;max-width:480px;width:100%;border-radius:4px;padding:48px 44px 40px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.35);animation:popupIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes popupIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ed-popup__close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:#999;padding:6px;transition:color .2s;line-height:0}
+.ed-popup__close:hover{color:#1a1a1a}
+.ed-popup__deco{font-size:22px;color:#c9a96e;margin-bottom:8px;display:block;animation:spin360 8s linear infinite}
+@keyframes spin360{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ed-popup__eyebrow{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#c9a96e;margin:0 0 12px;font-weight:600}
+.ed-popup__title{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2rem,5vw,2.6rem);font-weight:400;color:#1a1a1a;margin:0 0 14px;line-height:1.15}
+.ed-popup__sub{font-size:14px;color:#666;line-height:1.65;margin:0 0 28px;max-width:380px;margin-left:auto;margin-right:auto}
+.ed-popup__input-wrap{display:flex;border:1.5px solid #e0d8d0;border-radius:4px;overflow:hidden;margin-bottom:12px;transition:border-color .2s}
+.ed-popup__input-wrap:focus-within{border-color:#c9a96e}
+.ed-popup__input{flex:1;border:none;outline:none;padding:14px 16px;font-size:14px;font-family:'Inter',sans-serif;color:#1a1a1a;background:#fff;min-width:0}
+.ed-popup__input::placeholder{color:#bbb}
+.ed-popup__submit{background:linear-gradient(135deg,#c9a96e,#a07840);color:#fff;border:none;cursor:pointer;padding:14px 20px;font-size:13px;font-weight:600;letter-spacing:.06em;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:opacity .2s;font-family:'Inter',sans-serif}
+.ed-popup__submit:hover{opacity:.85}
+.ed-popup__error{color:#c0392b;font-size:12px;margin:0 0 8px}
+.ed-popup__success{color:#27ae60;font-size:13px;margin:0 0 8px;font-weight:500}
+.ed-popup__disclaimer{font-size:11px;color:#bbb;margin:0}
+@media(max-width:480px){.ed-popup__box{padding:36px 24px 28px}.ed-popup__input-wrap{flex-direction:column}.ed-popup__submit{justify-content:center;padding:12px}}
+</style>
+
+<script>
+(function(){
+  var POPUP_KEY = 'ed_popup_v1';
+  var DELAY_MS = 8000;
+  var popup = document.getElementById('ed-popup');
+  var closeBtn = document.getElementById('ed-popup-close');
+  var backdrop = document.getElementById('ed-popup-backdrop');
+  if (!popup) return;
+  function getCookie(n){return document.cookie.split('; ').find(function(r){return r.startsWith(n+'=');});}
+  function setCookie(n,v,d){var e=new Date();e.setTime(e.getTime()+d*864e5);document.cookie=n+'='+v+'; expires='+e.toUTCString()+'; path=/; SameSite=Lax';}
+  if(getCookie(POPUP_KEY)) return;
+  function openPopup(){popup.hidden=false;popup.classList.add('is-open');document.body.style.overflow='hidden';}
+  function closePopup(){popup.hidden=true;popup.classList.remove('is-open');document.body.style.overflow='';setCookie(POPUP_KEY,'closed',30);}
+  if(closeBtn) closeBtn.addEventListener('click', closePopup);
+  if(backdrop) backdrop.addEventListener('click', closePopup);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape') closePopup();});
+  var timer = setTimeout(openPopup, DELAY_MS);
+  document.addEventListener('mouseleave',function(e){
+    if(e.clientY<=0){clearTimeout(timer);openPopup();}
+  }, {once:true});
+  var form = document.getElementById('ed-popup-form');
+  if(form){
+    form.addEventListener('submit',function(){
+      setTimeout(function(){setCookie(POPUP_KEY,'subscribed',365);},500);
+    });
+  }
+})();
+</script>
+{% endunless %}

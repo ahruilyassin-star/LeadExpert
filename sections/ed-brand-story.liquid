@@ -1,0 +1,165 @@
+<div class="ebs-wrap" id="ebs-{{ section.id }}">
+  <div class="ebs-inner">
+    <div class="ebs-img-col">
+      <div class="ebs-img-frame" id="ebs-frame-{{ section.id }}">
+        <div class="ebs-img-inner">
+          {%- if section.settings.image != blank -%}
+            <img class="ebs-img" src="{{ section.settings.image | img_url: '700x' }}" alt="{{ section.settings.title | default: 'Nuestra Historia' }}" loading="lazy" width="700" height="875">
+          {%- else -%}
+            <div class="ebs-img ebs-img--placeholder"></div>
+          {%- endif -%}
+        </div>
+      </div>
+      <div class="ebs-stat-box">
+        <span class="ebs-stat-box__num">{{ section.settings.stat_number | default: '15+' }}</span>
+        <span class="ebs-stat-box__label">{{ section.settings.stat_label | default: 'Años de experiencia' }}</span>
+      </div>
+      <div class="ebs-particles">
+        <span class="ebs-particle ebs-particle--1"></span>
+        <span class="ebs-particle ebs-particle--2"></span>
+        <span class="ebs-particle ebs-particle--3"></span>
+        <span class="ebs-particle ebs-particle--4"></span>
+        <span class="ebs-particle ebs-particle--5"></span>
+        <span class="ebs-particle ebs-particle--6"></span>
+        <span class="ebs-particle ebs-particle--7"></span>
+      </div>
+    </div>
+    <div class="ebs-text-col">
+      <div class="ebs-eyebrow">
+        <span class="ebs-eyebrow__line"></span>
+        <span class="ebs-eyebrow__text">{{ section.settings.eyebrow | default: 'Nuestra Historia' }}</span>
+        <span class="ebs-eyebrow__line"></span>
+      </div>
+      <h2 class="ebs-title">{{ section.settings.title | default: 'El Arte de la Perfumería Árabe' }}</h2>
+      <p class="ebs-text">{{ section.settings.text1 | default: 'Nacidos del amor por los aromas de Oriente, en Esencias de Dubai llevamos años trayendo a España la esencia auténtica de la perfumería árabe. Cada fragancia ha sido seleccionada personalmente en los zocos más exclusivos de Dubai, Abu Dhabi y Mascate.' }}</p>
+      <p class="ebs-text">{{ section.settings.text2 | default: 'Trabajamos directamente con maestros perfumeros que preservan técnicas ancestrales, asegurándonos de que cada botella sea una obra de arte olfativa irrepetible, elaborada con oud, rosa de Taif, ambergris y almizcle blanco.' }}</p>
+      <div class="ebs-pillars">
+        <div class="ebs-pillar">
+          <span class="ebs-pillar__icon">✦</span>
+          <div class="ebs-pillar__body">
+            <strong class="ebs-pillar__title">Autenticidad Garantizada</strong>
+            <p class="ebs-pillar__desc">Todos nuestros productos son 100% originales, adquiridos directamente de fabricantes certificados en la región del Golfo.</p>
+          </div>
+        </div>
+        <div class="ebs-pillar">
+          <span class="ebs-pillar__icon">✦</span>
+          <div class="ebs-pillar__body">
+            <strong class="ebs-pillar__title">Ingredientes de Excepción</strong>
+            <p class="ebs-pillar__desc">Solo utilizamos materias primas de la más alta calidad: oud Camboya, rosa de Taif, ambar gris y almizcle natural.</p>
+          </div>
+        </div>
+        <div class="ebs-pillar">
+          <span class="ebs-pillar__icon">✦</span>
+          <div class="ebs-pillar__body">
+            <strong class="ebs-pillar__title">Envío Express a España</strong>
+            <p class="ebs-pillar__desc">Recibe tu pedido en 24-48 horas con embalaje de lujo y certificado de autenticidad incluido.</p>
+          </div>
+        </div>
+      </div>
+      <a class="ebs-btn" href="{{ section.settings.cta_url | default: '/pages/sobre-nosotros' }}">{{ section.settings.cta_text | default: 'Conocer Nuestra Historia' }}</a>
+    </div>
+  </div>
+</div>
+
+<style>
+#ebs-{{ section.id }} {background:#0d0d0d;padding:100px 40px;overflow:hidden;}
+#ebs-{{ section.id }} .ebs-inner {display:grid;grid-template-columns:1fr 1fr;gap:80px;max-width:1200px;margin:0 auto;align-items:center;}
+#ebs-{{ section.id }} .ebs-img-col {position:relative;}
+#ebs-{{ section.id }} .ebs-img-frame {position:relative;cursor:default;will-change:transform;}
+#ebs-{{ section.id }} .ebs-img-frame::before {content:'';position:absolute;top:-16px;left:-16px;right:16px;bottom:16px;border:1px solid rgba(201,168,76,0.3);border-radius:4px;pointer-events:none;z-index:0;}
+#ebs-{{ section.id }} .ebs-img-inner {position:relative;z-index:1;border-radius:4px;overflow:hidden;line-height:0;}
+#ebs-{{ section.id }} .ebs-img {width:100%;height:auto;display:block;border-radius:4px;object-fit:cover;}
+#ebs-{{ section.id }} .ebs-img--placeholder {width:100%;padding-top:125%;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);}
+#ebs-{{ section.id }} .ebs-stat-box {position:absolute;bottom:-24px;right:-24px;z-index:5;background:linear-gradient(135deg,#c9a84c,#e8c96e);padding:24px 28px;border-radius:4px;text-align:center;min-width:130px;}
+#ebs-{{ section.id }} .ebs-stat-box__num {display:block;font-family:'Playfair Display',Georgia,serif;font-size:2.2rem;font-weight:700;color:#060606;line-height:1;}
+#ebs-{{ section.id }} .ebs-stat-box__label {display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(6,6,6,0.75);margin-top:4px;}
+#ebs-{{ section.id }} .ebs-particles {position:absolute;inset:0;pointer-events:none;z-index:2;}
+#ebs-{{ section.id }} .ebs-particle {position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(201,168,76,0.6);}
+#ebs-{{ section.id }} .ebs-particle--1 {top:10%;left:-20px;animation:ebs-float-{{ section.id }} 4.2s ease-in-out infinite;}
+#ebs-{{ section.id }} .ebs-particle--2 {top:25%;right:-14px;width:4px;height:4px;animation:ebs-float-{{ section.id }} 5.1s ease-in-out 0.8s infinite;}
+#ebs-{{ section.id }} .ebs-particle--3 {top:55%;left:-18px;width:5px;height:5px;animation:ebs-float-{{ section.id }} 3.7s ease-in-out 1.2s infinite;}
+#ebs-{{ section.id }} .ebs-particle--4 {bottom:20%;right:-20px;animation:ebs-float-{{ section.id }} 4.8s ease-in-out 0.4s infinite;}
+#ebs-{{ section.id }} .ebs-particle--5 {top:5%;right:20%;width:4px;height:4px;animation:ebs-float-{{ section.id }} 6.0s ease-in-out 2s infinite;}
+#ebs-{{ section.id }} .ebs-particle--6 {bottom:30%;left:-24px;width:3px;height:3px;animation:ebs-float-{{ section.id }} 3.4s ease-in-out 0.6s infinite;}
+#ebs-{{ section.id }} .ebs-particle--7 {bottom:5%;right:-12px;width:5px;height:5px;animation:ebs-float-{{ section.id }} 5.5s ease-in-out 1.6s infinite;}
+@keyframes ebs-float-{{ section.id }} {0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+#ebs-{{ section.id }} .ebs-text-col {padding-left:16px;}
+#ebs-{{ section.id }} .ebs-eyebrow {display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+#ebs-{{ section.id }} .ebs-eyebrow__line {flex:0 0 36px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c);}
+#ebs-{{ section.id }} .ebs-eyebrow__line:last-child {background:linear-gradient(90deg,#c9a84c,transparent);}
+#ebs-{{ section.id }} .ebs-eyebrow__text {font-family:'Playfair Display',Georgia,serif;font-size:0.75rem;letter-spacing:0.25em;text-transform:uppercase;color:#c9a84c;white-space:nowrap;}
+#ebs-{{ section.id }} .ebs-title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:400;color:#fff;line-height:1.2;margin:0 0 24px;}
+#ebs-{{ section.id }} .ebs-text {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.95rem;color:rgba(255,255,255,0.6);line-height:1.8;margin:0 0 20px;}
+#ebs-{{ section.id }} .ebs-pillars {display:flex;flex-direction:column;gap:20px;margin:32px 0 36px;padding-top:8px;border-top:1px solid rgba(201,168,76,0.15);}
+#ebs-{{ section.id }} .ebs-pillar {display:flex;gap:16px;align-items:flex-start;}
+#ebs-{{ section.id }} .ebs-pillar__icon {flex:0 0 auto;font-size:1rem;color:#c9a84c;margin-top:2px;line-height:1;}
+#ebs-{{ section.id }} .ebs-pillar__body {flex:1;}
+#ebs-{{ section.id }} .ebs-pillar__title {display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.9rem;font-weight:600;color:#fff;margin-bottom:4px;}
+#ebs-{{ section.id }} .ebs-pillar__desc {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6;margin:0;}
+#ebs-{{ section.id }} .ebs-btn {display:inline-flex;align-items:center;padding:14px 32px;background:transparent;border:1px solid rgba(201,168,76,0.5);color:#c9a84c;border-radius:2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;transition:all 0.3s;}
+#ebs-{{ section.id }} .ebs-btn:hover {background:rgba(201,168,76,0.08);border-color:#c9a84c;transform:translateY(-2px);}
+@media(max-width:1024px){#ebs-{{ section.id }} .ebs-inner {gap:48px;}}
+@media(max-width:768px){
+#ebs-{{ section.id }} {padding:60px 24px;}
+#ebs-{{ section.id }} .ebs-inner {grid-template-columns:1fr;gap:60px;}
+#ebs-{{ section.id }} .ebs-img-col {order:1;}
+#ebs-{{ section.id }} .ebs-text-col {order:2;padding-left:0;}
+#ebs-{{ section.id }} .ebs-stat-box {right:-8px;bottom:-16px;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var frame = document.getElementById('ebs-frame-' + sid);
+  if (!frame) return;
+  var curRX = 0, curRY = 0, tgtRX = 0, tgtRY = 0;
+  var isHovered = false, animating = false;
+  var MAX_TILT = 8;
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function animate() {
+    curRX = lerp(curRX, tgtRX, 0.07);
+    curRY = lerp(curRY, tgtRY, 0.07);
+    frame.style.transform = 'perspective(1000px) rotateX(' + curRY + 'deg) rotateY(' + curRX + 'deg)';
+    if (Math.abs(curRX - tgtRX) > 0.01 || Math.abs(curRY - tgtRY) > 0.01 || isHovered) {
+      requestAnimationFrame(animate);
+    } else {
+      frame.style.transform = '';
+      animating = false;
+    }
+  }
+  frame.addEventListener('mousemove', function(e) {
+    var rect = frame.getBoundingClientRect();
+    tgtRX = ((e.clientX - rect.left) / rect.width - 0.5) * MAX_TILT;
+    tgtRY = -((e.clientY - rect.top) / rect.height - 0.5) * MAX_TILT;
+    isHovered = true;
+    if (!animating) { animating = true; requestAnimationFrame(animate); }
+  });
+  frame.addEventListener('mouseleave', function() {
+    tgtRX = 0; tgtRY = 0; isHovered = false;
+    if (!animating) { animating = true; requestAnimationFrame(animate); }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Brand Story",
+  "tag": "section",
+  "class": "ed-section",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Nuestra Historia"},
+    {"type":"text","id":"title","label":"Title","default":"El Arte de la Perfumería Árabe"},
+    {"type":"textarea","id":"text1","label":"Paragraph 1","default":"Nacidos del amor por los aromas de Oriente, en Esencias de Dubai llevamos años trayendo a España la esencia auténtica de la perfumería árabe. Cada fragancia ha sido seleccionada personalmente en los zocos más exclusivos de Dubai, Abu Dhabi y Mascate."},
+    {"type":"textarea","id":"text2","label":"Paragraph 2","default":"Trabajamos directamente con maestros perfumeros que preservan técnicas ancestrales, asegurándonos de que cada botella sea una obra de arte olfativa irrepetible, elaborada con oud, rosa de Taif, ambergris y almizcle blanco."},
+    {"type":"image_picker","id":"image","label":"Image"},
+    {"type":"text","id":"stat_number","label":"Stat Number","default":"15+"},
+    {"type":"text","id":"stat_label","label":"Stat Label","default":"Años de experiencia"},
+    {"type":"text","id":"cta_text","label":"CTA Text","default":"Conocer Nuestra Historia"},
+    {"type":"url","id":"cta_url","label":"CTA URL"}
+  ],
+  "presets": [
+    {"name":"ED – Brand Story"}
+  ]
+}
+{% endschema %}

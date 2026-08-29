@@ -1,0 +1,122 @@
+<section class="ecs-wrap" id="ecs-{{ section.id }}">
+  <div class="ecs-inner">
+    <div class="ecs-text">
+      <span class="ecs-eyebrow">{{ section.settings.eyebrow | default: 'Nuestra Historia' }}</span>
+      <h2 class="ecs-title">{{ section.settings.title | default: 'El alma de Dubai, en cada frasco' }}</h2>
+      <p class="ecs-para">{{ section.settings.text1 | default: 'Nacimos del amor por los aromas del Oriente Medio. Desde los zocos de Dubai hasta tu hogar, traemos las fragancias más exclusivas del mundo árabe con autenticidad garantizada.' }}</p>
+      <p class="ecs-para">{{ section.settings.text2 | default: 'Cada perfume está seleccionado directamente de los mejores maestros perfumeros de Emiratos, Arabia Saudí y Egipto — una experiencia olfativa sin igual.' }}</p>
+      <div class="ecs-pillars">
+        <div class="ecs-pillar">
+          <span class="ecs-pillar__num">01</span>
+          <div>
+            <strong>Autenticidad</strong>
+            <p>100% originales, adquiridos directamente de fabricantes certificados.</p>
+          </div>
+        </div>
+        <div class="ecs-pillar">
+          <span class="ecs-pillar__num">02</span>
+          <div>
+            <strong>Calidad excepcional</strong>
+            <p>Oud Camboya, rosa de Taif, ámbar gris y almizcle natural.</p>
+          </div>
+        </div>
+        <div class="ecs-pillar">
+          <span class="ecs-pillar__num">03</span>
+          <div>
+            <strong>Envío 24-48h</strong>
+            <p>Embalaje de lujo con certificado de autenticidad incluido.</p>
+          </div>
+        </div>
+      </div>
+      <a class="ecs-btn" href="{{ section.settings.cta_url | default: '/pages/sobre-nosotros' }}">
+        <span>{{ section.settings.cta_text | default: 'Conocer nuestra historia' }}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="ecs-visual">
+      <div class="ecs-visual__frame">
+        {%- if section.settings.image != blank -%}
+          <img class="ecs-img" src="{{ section.settings.image | img_url: '800x' }}" alt="{{ section.settings.title }}" loading="lazy" width="800" height="1000">
+        {%- else -%}
+          <div class="ecs-img ecs-img--ph"></div>
+        {%- endif -%}
+      </div>
+      <div class="ecs-stat">
+        <span class="ecs-stat__num">{{ section.settings.stat_number | default: '5.000+' }}</span>
+        <span class="ecs-stat__label">{{ section.settings.stat_label | default: 'Clientes satisfechos' }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+#ecs-{{ section.id }} {background:#fff;padding:120px 48px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#ecs-{{ section.id }} .ecs-inner {display:grid;grid-template-columns:1fr 1fr;gap:96px;max-width:1300px;margin:0 auto;align-items:center;}
+#ecs-{{ section.id }} .ecs-text {opacity:0;transform:translateY(24px);transition:opacity 0.9s,transform 0.9s;}
+#ecs-{{ section.id }} .ecs-text.ecs--visible {opacity:1;transform:translateY(0);}
+#ecs-{{ section.id }} .ecs-eyebrow {display:block;font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:#9a9a9a;margin-bottom:18px;}
+#ecs-{{ section.id }} .ecs-title {font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2rem,3.6vw,2.8rem);font-weight:400;color:#0a0a0a;margin:0 0 28px;letter-spacing:-0.02em;line-height:1.15;}
+#ecs-{{ section.id }} .ecs-para {font-size:1rem;line-height:1.75;color:#5a5a5a;margin:0 0 18px;max-width:520px;}
+#ecs-{{ section.id }} .ecs-pillars {display:flex;flex-direction:column;gap:24px;margin:40px 0 36px;padding-top:32px;border-top:1px solid #ebebeb;}
+#ecs-{{ section.id }} .ecs-pillar {display:flex;gap:18px;align-items:flex-start;}
+#ecs-{{ section.id }} .ecs-pillar__num {flex:0 0 auto;font-family:'Cormorant Garamond',Georgia,serif;font-size:1.15rem;font-weight:400;color:#0a0a0a;width:36px;line-height:1;padding-top:2px;}
+#ecs-{{ section.id }} .ecs-pillar strong {display:block;font-size:0.92rem;font-weight:600;color:#0a0a0a;margin-bottom:4px;letter-spacing:-0.005em;}
+#ecs-{{ section.id }} .ecs-pillar p {font-size:0.85rem;color:#7a7a7a;margin:0;line-height:1.55;}
+#ecs-{{ section.id }} .ecs-btn {display:inline-flex;align-items:center;gap:10px;padding:16px 30px;background:#0a0a0a;color:#fff;border:1px solid #0a0a0a;border-radius:2px;font-size:0.82rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;transition:all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecs-{{ section.id }} .ecs-btn:hover {background:#262626;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.12);}
+#ecs-{{ section.id }} .ecs-btn svg {transition:transform 0.35s;}
+#ecs-{{ section.id }} .ecs-btn:hover svg {transform:translateX(4px);}
+#ecs-{{ section.id }} .ecs-visual {position:relative;opacity:0;transform:translateY(24px);transition:opacity 1s 0.15s,transform 1s 0.15s;}
+#ecs-{{ section.id }} .ecs-visual.ecs--visible {opacity:1;transform:translateY(0);}
+#ecs-{{ section.id }} .ecs-visual__frame {overflow:hidden;background:#f5f5f5;}
+#ecs-{{ section.id }} .ecs-img {width:100%;height:auto;display:block;aspect-ratio:4/5;object-fit:cover;transition:transform 1.6s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecs-{{ section.id }} .ecs-visual:hover .ecs-img {transform:scale(1.04);}
+#ecs-{{ section.id }} .ecs-img--ph {background:linear-gradient(135deg,#f0f0f0,#e0e0e0);}
+#ecs-{{ section.id }} .ecs-stat {position:absolute;bottom:-32px;left:-32px;background:#0a0a0a;color:#fff;padding:28px 32px;min-width:160px;}
+#ecs-{{ section.id }} .ecs-stat__num {display:block;font-family:'Cormorant Garamond',Georgia,serif;font-size:2rem;font-weight:400;line-height:1;letter-spacing:-0.02em;}
+#ecs-{{ section.id }} .ecs-stat__label {display:block;font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-top:8px;}
+@media(max-width:960px){
+#ecs-{{ section.id }} {padding:80px 24px;}
+#ecs-{{ section.id }} .ecs-inner {grid-template-columns:1fr;gap:56px;}
+#ecs-{{ section.id }} .ecs-visual {order:-1;}
+#ecs-{{ section.id }} .ecs-stat {bottom:-20px;left:-12px;padding:20px 24px;min-width:130px;}
+#ecs-{{ section.id }} .ecs-stat__num {font-size:1.5rem;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ecs-' + sid);
+  if (!wrap) return;
+  var els = wrap.querySelectorAll('.ecs-text, .ecs-visual');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('ecs--visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el){ obs.observe(el); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Clean Story",
+  "tag": "section",
+  "class": "ed-section",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Nuestra Historia"},
+    {"type":"text","id":"title","label":"Title","default":"El alma de Dubai, en cada frasco"},
+    {"type":"textarea","id":"text1","label":"Paragraph 1","default":"Nacimos del amor por los aromas del Oriente Medio. Desde los zocos de Dubai hasta tu hogar, traemos las fragancias más exclusivas del mundo árabe con autenticidad garantizada."},
+    {"type":"textarea","id":"text2","label":"Paragraph 2","default":"Cada perfume está seleccionado directamente de los mejores maestros perfumeros de Emiratos, Arabia Saudí y Egipto — una experiencia olfativa sin igual."},
+    {"type":"image_picker","id":"image","label":"Image"},
+    {"type":"text","id":"stat_number","label":"Stat number","default":"5.000+"},
+    {"type":"text","id":"stat_label","label":"Stat label","default":"Clientes satisfechos"},
+    {"type":"text","id":"cta_text","label":"CTA text","default":"Conocer nuestra historia"},
+    {"type":"url","id":"cta_url","label":"CTA URL"}
+  ],
+  "presets": [
+    {"name":"ED – Clean Story"}
+  ]
+}
+{% endschema %}

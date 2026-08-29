@@ -1,0 +1,116 @@
+<section class="ebs-wrap" id="ebs-{{ section.id }}">
+  <div class="ebs-inner">
+    {%- if section.settings.show_header -%}
+      <div class="ebs-header">
+        <span class="ebs-eyebrow">{{ section.settings.eyebrow | default: 'Nuestras Marcas' }}</span>
+        <h2 class="ebs-title">{{ section.settings.title | default: 'Más de 10 marcas árabes premium' }}</h2>
+      </div>
+    {%- endif -%}
+    <div class="ebs-marquee">
+      <div class="ebs-track">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.logo_url != blank -%}
+            <a class="ebs-item" href="{{ block.settings.logo_url }}" aria-label="{{ block.settings.name }}" {{ block.shopify_attributes }}>
+          {%- else -%}
+            <div class="ebs-item" {{ block.shopify_attributes }}>
+          {%- endif -%}
+            {%- if block.settings.logo != blank -%}
+              <img class="ebs-logo" src="{{ block.settings.logo | img_url: '300x' }}" alt="{{ block.settings.name }}" loading="lazy" width="300" height="120">
+            {%- else -%}
+              <span class="ebs-text">{{ block.settings.name | default: 'Marca' }}</span>
+            {%- endif -%}
+          {%- if block.settings.logo_url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+        {%- endfor -%}
+        {%- comment -%} Duplicate the items for seamless marquee loop {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.logo_url != blank -%}
+            <a class="ebs-item" href="{{ block.settings.logo_url }}" aria-label="{{ block.settings.name }}" aria-hidden="true">
+          {%- else -%}
+            <div class="ebs-item" aria-hidden="true">
+          {%- endif -%}
+            {%- if block.settings.logo != blank -%}
+              <img class="ebs-logo" src="{{ block.settings.logo | img_url: '300x' }}" alt="" loading="lazy" width="300" height="120">
+            {%- else -%}
+              <span class="ebs-text">{{ block.settings.name | default: 'Marca' }}</span>
+            {%- endif -%}
+          {%- if block.settings.logo_url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+#ebs-{{ section.id }} {background:{{ section.settings.bg_color | default: '#fff' }};padding:64px 0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;border-top:1px solid #ebebeb;border-bottom:1px solid #ebebeb;overflow:hidden;}
+#ebs-{{ section.id }} .ebs-inner {max-width:1380px;margin:0 auto;}
+#ebs-{{ section.id }} .ebs-header {text-align:center;margin-bottom:40px;padding:0 24px;}
+#ebs-{{ section.id }} .ebs-eyebrow {display:block;font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:#9a9a9a;margin-bottom:12px;}
+#ebs-{{ section.id }} .ebs-title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:400;color:#0a0a0a;margin:0;letter-spacing:-0.02em;}
+#ebs-{{ section.id }} .ebs-marquee {overflow:hidden;position:relative;}
+#ebs-{{ section.id }} .ebs-marquee::before, #ebs-{{ section.id }} .ebs-marquee::after {content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;}
+#ebs-{{ section.id }} .ebs-marquee::before {left:0;background:linear-gradient(90deg,{{ section.settings.bg_color | default: '#fff' }} 0%,transparent 100%);}
+#ebs-{{ section.id }} .ebs-marquee::after {right:0;background:linear-gradient(270deg,{{ section.settings.bg_color | default: '#fff' }} 0%,transparent 100%);}
+#ebs-{{ section.id }} .ebs-track {display:flex;align-items:center;gap:64px;width:max-content;animation:ebs-scroll-{{ section.id }} {{ section.settings.speed | default: 40 }}s linear infinite;}
+#ebs-{{ section.id }} .ebs-marquee:hover .ebs-track {animation-play-state:paused;}
+#ebs-{{ section.id }} .ebs-item {flex:0 0 auto;display:flex;align-items:center;justify-content:center;height:64px;text-decoration:none;transition:opacity 0.3s;opacity:0.55;filter:grayscale(100%);}
+#ebs-{{ section.id }} .ebs-item:hover {opacity:1;filter:grayscale(0%);}
+#ebs-{{ section.id }} .ebs-logo {max-height:60px;width:auto;max-width:180px;object-fit:contain;display:block;}
+#ebs-{{ section.id }} .ebs-text {font-family:'Playfair Display',Georgia,serif;font-size:1.6rem;font-weight:400;color:#0a0a0a;letter-spacing:0.04em;white-space:nowrap;}
+@keyframes ebs-scroll-{{ section.id }} {
+  0% {transform:translateX(0);}
+  100% {transform:translateX(-50%);}
+}
+@media(max-width:768px){
+#ebs-{{ section.id }} {padding:48px 0;}
+#ebs-{{ section.id }} .ebs-header {margin-bottom:28px;padding:0 16px;}
+#ebs-{{ section.id }} .ebs-track {gap:40px;}
+#ebs-{{ section.id }} .ebs-item {height:48px;}
+#ebs-{{ section.id }} .ebs-logo {max-height:44px;max-width:140px;}
+#ebs-{{ section.id }} .ebs-text {font-size:1.3rem;}
+#ebs-{{ section.id }} .ebs-marquee::before, #ebs-{{ section.id }} .ebs-marquee::after {width:60px;}
+}
+</style>
+
+{% schema %}
+{
+  "name": "ED – Brand Strip",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 20,
+  "settings": [
+    {"type":"checkbox","id":"show_header","label":"Show header","default":true},
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Nuestras Marcas"},
+    {"type":"text","id":"title","label":"Title","default":"Más de 10 marcas árabes premium"},
+    {"type":"color","id":"bg_color","label":"Background color","default":"#ffffff"},
+    {"type":"range","id":"speed","label":"Scroll speed (seconds per cycle)","min":15,"max":80,"step":5,"default":40}
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {"type":"text","id":"name","label":"Brand name","default":"Lattafa"},
+        {"type":"image_picker","id":"logo","label":"Brand logo (PNG transparent recommended)"},
+        {"type":"url","id":"logo_url","label":"Link URL (optional)"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Brand Strip",
+      "blocks": [
+        {"type":"brand","settings":{"name":"LATTAFA"}},
+        {"type":"brand","settings":{"name":"ARMAF"}},
+        {"type":"brand","settings":{"name":"AFNAN"}},
+        {"type":"brand","settings":{"name":"RASASI"}},
+        {"type":"brand","settings":{"name":"MAISON ALHAMBRA"}},
+        {"type":"brand","settings":{"name":"AL HARAMAIN"}},
+        {"type":"brand","settings":{"name":"NUSUK"}},
+        {"type":"brand","settings":{"name":"RIIFFS"}},
+        {"type":"brand","settings":{"name":"FRAGRANCE WORLD"}},
+        {"type":"brand","settings":{"name":"FRENCH AVENUE"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

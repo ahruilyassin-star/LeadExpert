@@ -1,0 +1,302 @@
+<div class="edh-wrap" id="edh-{{ section.id }}">
+  <canvas class="edh-canvas" id="edh-canvas-{{ section.id }}"></canvas>
+
+  <div class="edh-orb edh-orb--1" id="edh-orb1-{{ section.id }}"></div>
+  <div class="edh-orb edh-orb--2" id="edh-orb2-{{ section.id }}"></div>
+  <div class="edh-orb edh-orb--3" id="edh-orb3-{{ section.id }}"></div>
+
+  <div class="edh-corner edh-corner--tl"></div>
+  <div class="edh-corner edh-corner--tr"></div>
+  <div class="edh-corner edh-corner--bl"></div>
+  <div class="edh-corner edh-corner--br"></div>
+
+  <div class="edh-scene" id="edh-scene-{{ section.id }}">
+    <div class="edh-content">
+      <div class="edh-eyebrow">
+        <span class="edh-eyebrow__line"></span>
+        <span class="edh-eyebrow__text">{{ section.settings.eyebrow | default: 'Perfumería de Lujo Árabe' }}</span>
+        <span class="edh-eyebrow__line"></span>
+      </div>
+      <h1 class="edh-h1">
+        <span class="edh-h1__line1">{{ section.settings.heading1 | default: 'Esencias' }}</span>
+        <span class="edh-h1__line2">{{ section.settings.heading2 | default: 'de Dubai' }}</span>
+      </h1>
+      <p class="edh-sub">{{ section.settings.subheading | default: 'Descubre la magia de los perfumes árabes más exclusivos. Fragancias únicas, elaboradas con los ingredientes más preciados de Oriente.' }}</p>
+      <div class="edh-ctas">
+        <a class="edh-btn edh-btn--primary" href="{{ section.settings.cta1_url | default: '/collections/all' }}">{{ section.settings.cta1_text | default: 'Explorar Colección' }}</a>
+        <a class="edh-btn edh-btn--secondary" href="{{ section.settings.cta2_url | default: '/pages/sobre-nosotros' }}">{{ section.settings.cta2_text | default: 'Nuestra Historia' }}</a>
+      </div>
+      <div class="edh-badges">
+        <div class="edh-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Envío Seguro</span>
+        </div>
+        <div class="edh-badge__sep"></div>
+        <div class="edh-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Entrega 48h</span>
+        </div>
+        <div class="edh-badge__sep"></div>
+        <div class="edh-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+          <span>100% Original</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="edh-stats" id="edh-stats-{{ section.id }}">
+    <div class="edh-stat">
+      <span class="edh-stat__num" data-target="194" data-suffix="">0</span>
+      <span class="edh-stat__label">Fragancias</span>
+    </div>
+    <div class="edh-stat__div"></div>
+    <div class="edh-stat">
+      <span class="edh-stat__num" data-target="10" data-suffix="+">0</span>
+      <span class="edh-stat__label">Marcas</span>
+    </div>
+    <div class="edh-stat__div"></div>
+    <div class="edh-stat">
+      <span class="edh-stat__num edh-stat__num--static">48h</span>
+      <span class="edh-stat__label">Envío</span>
+    </div>
+    <div class="edh-stat__div"></div>
+    <div class="edh-stat">
+      <span class="edh-stat__num edh-stat__num--static">5★</span>
+      <span class="edh-stat__label">Valoración</span>
+    </div>
+  </div>
+
+  <div class="edh-scroll">
+    <div class="edh-scroll__mouse">
+      <div class="edh-scroll__dot"></div>
+    </div>
+    <span class="edh-scroll__label">Descubrir</span>
+  </div>
+</div>
+
+<style>
+#edh-{{ section.id }} {position:relative;width:100%;min-height:100vh;background:#060606;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#edh-{{ section.id }} .edh-canvas {position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+#edh-{{ section.id }} .edh-orb {position:absolute;border-radius:50%;pointer-events:none;will-change:transform;}
+#edh-{{ section.id }} .edh-orb--1 {width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);top:-150px;left:-200px;z-index:2;}
+#edh-{{ section.id }} .edh-orb--2 {width:400px;height:400px;background:radial-gradient(circle,rgba(201,168,76,0.09) 0%,transparent 70%);bottom:10%;right:5%;z-index:2;}
+#edh-{{ section.id }} .edh-orb--3 {width:300px;height:300px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);top:40%;left:60%;z-index:2;}
+#edh-{{ section.id }} .edh-corner {position:absolute;width:60px;height:60px;z-index:5;pointer-events:none;}
+#edh-{{ section.id }} .edh-corner--tl {top:24px;left:24px;border-top:1px solid rgba(201,168,76,0.5);border-left:1px solid rgba(201,168,76,0.5);}
+#edh-{{ section.id }} .edh-corner--tr {top:24px;right:24px;border-top:1px solid rgba(201,168,76,0.5);border-right:1px solid rgba(201,168,76,0.5);}
+#edh-{{ section.id }} .edh-corner--bl {bottom:24px;left:24px;border-bottom:1px solid rgba(201,168,76,0.5);border-left:1px solid rgba(201,168,76,0.5);}
+#edh-{{ section.id }} .edh-corner--br {bottom:24px;right:24px;border-bottom:1px solid rgba(201,168,76,0.5);border-right:1px solid rgba(201,168,76,0.5);}
+#edh-{{ section.id }} .edh-scene {position:relative;z-index:10;width:100%;display:flex;align-items:center;justify-content:center;flex:1;will-change:transform;transform-style:preserve-3d;}
+#edh-{{ section.id }} .edh-content {text-align:center;padding:80px 24px 40px;max-width:860px;}
+#edh-{{ section.id }} .edh-eyebrow {display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px;opacity:0;transform:translateY(20px);transition:opacity 0.7s 0.1s,transform 0.7s 0.1s;}
+#edh-{{ section.id }}.edh--v .edh-eyebrow {opacity:1;transform:translateY(0);}
+#edh-{{ section.id }} .edh-eyebrow__line {flex:0 0 48px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c);}
+#edh-{{ section.id }} .edh-eyebrow__line:last-child {background:linear-gradient(90deg,#c9a84c,transparent);}
+#edh-{{ section.id }} .edh-eyebrow__text {font-family:'Playfair Display',Georgia,serif;font-size:0.75rem;letter-spacing:0.25em;text-transform:uppercase;color:#c9a84c;white-space:nowrap;}
+#edh-{{ section.id }} .edh-h1 {margin:0 0 24px;display:flex;flex-direction:column;gap:4px;}
+#edh-{{ section.id }} .edh-h1__line1 {font-family:'Playfair Display',Georgia,serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:400;color:#ffffff;line-height:1.05;letter-spacing:-0.01em;opacity:0;transform:translateY(30px);transition:opacity 0.8s 0.25s,transform 0.8s 0.25s;}
+#edh-{{ section.id }}.edh--v .edh-h1__line1 {opacity:1;transform:translateY(0);}
+#edh-{{ section.id }} .edh-h1__line2 {font-family:'Playfair Display',Georgia,serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:400;font-style:italic;line-height:1.05;letter-spacing:-0.01em;background:linear-gradient(90deg,#9a6e1a 0%,#e8c96e 30%,#c9a84c 50%,#e8c96e 70%,#9a6e1a 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:edh-shimmer-{{ section.id }} 4s linear infinite;opacity:0;transform:translateY(30px);transition:opacity 0.8s 0.4s,transform 0.8s 0.4s;}
+#edh-{{ section.id }}.edh--v .edh-h1__line2 {opacity:1;transform:translateY(0);}
+@keyframes edh-shimmer-{{ section.id }} {0%{background-position:200% center}100%{background-position:-200% center}}
+#edh-{{ section.id }} .edh-sub {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:clamp(0.95rem,1.8vw,1.1rem);color:rgba(255,255,255,0.6);max-width:560px;margin:0 auto 36px;line-height:1.75;opacity:0;transform:translateY(20px);transition:opacity 0.7s 0.55s,transform 0.7s 0.55s;}
+#edh-{{ section.id }}.edh--v .edh-sub {opacity:1;transform:translateY(0);}
+#edh-{{ section.id }} .edh-ctas {display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;opacity:0;transform:translateY(20px);transition:opacity 0.7s 0.7s,transform 0.7s 0.7s;}
+#edh-{{ section.id }}.edh--v .edh-ctas {opacity:1;transform:translateY(0);}
+#edh-{{ section.id }} .edh-btn {display:inline-flex;align-items:center;padding:14px 32px;border-radius:2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all 0.3s;}
+#edh-{{ section.id }} .edh-btn--primary {background:linear-gradient(135deg,#c9a84c,#e8c96e);color:#060606;font-weight:600;}
+#edh-{{ section.id }} .edh-btn--primary:hover {background:linear-gradient(135deg,#e8c96e,#c9a84c);transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,168,76,0.35);}
+#edh-{{ section.id }} .edh-btn--secondary {background:transparent;color:#c9a84c;border:1px solid rgba(201,168,76,0.5);}
+#edh-{{ section.id }} .edh-btn--secondary:hover {border-color:#c9a84c;background:rgba(201,168,76,0.08);transform:translateY(-2px);}
+#edh-{{ section.id }} .edh-badges {display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;opacity:0;transform:translateY(20px);transition:opacity 0.7s 0.85s,transform 0.7s 0.85s;}
+#edh-{{ section.id }}.edh--v .edh-badges {opacity:1;transform:translateY(0);}
+#edh-{{ section.id }} .edh-badge {display:flex;align-items:center;gap:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.8rem;color:rgba(255,255,255,0.55);letter-spacing:0.05em;}
+#edh-{{ section.id }} .edh-badge__sep {width:1px;height:16px;background:rgba(201,168,76,0.25);}
+#edh-{{ section.id }} .edh-stats {position:absolute;bottom:0;left:0;right:0;z-index:10;display:flex;align-items:stretch;justify-content:center;background:rgba(255,255,255,0.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(201,168,76,0.15);padding:20px 40px;}
+#edh-{{ section.id }} .edh-stat {display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 40px;}
+#edh-{{ section.id }} .edh-stat__num {font-family:'Playfair Display',Georgia,serif;font-size:2rem;font-weight:700;color:#c9a84c;line-height:1;}
+#edh-{{ section.id }} .edh-stat__label {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);}
+#edh-{{ section.id }} .edh-stat__div {width:1px;background:rgba(201,168,76,0.2);align-self:stretch;}
+#edh-{{ section.id }} .edh-scroll {position:absolute;bottom:90px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:edh-fadein-{{ section.id }} 1s 1.5s forwards;}
+@keyframes edh-fadein-{{ section.id }} {to{opacity:1}}
+#edh-{{ section.id }} .edh-scroll__mouse {width:24px;height:38px;border:1px solid rgba(201,168,76,0.5);border-radius:12px;display:flex;justify-content:center;padding-top:6px;}
+#edh-{{ section.id }} .edh-scroll__dot {width:4px;height:8px;background:#c9a84c;border-radius:2px;animation:edh-sdot-{{ section.id }} 2s ease-in-out infinite;}
+@keyframes edh-sdot-{{ section.id }} {0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(12px);opacity:0.3}}
+#edh-{{ section.id }} .edh-scroll__label {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
+@media(max-width:768px){
+#edh-{{ section.id }} .edh-stats {padding:16px;}
+#edh-{{ section.id }} .edh-stat {padding:0 16px;}
+#edh-{{ section.id }} .edh-stat__num {font-size:1.4rem;}
+#edh-{{ section.id }} .edh-scroll {display:none;}
+#edh-{{ section.id }} .edh-corner {width:36px;height:36px;}
+#edh-{{ section.id }} .edh-orb--1 {width:300px;height:300px;}
+#edh-{{ section.id }} .edh-orb--2 {width:200px;height:200px;}
+#edh-{{ section.id }} .edh-orb--3 {display:none;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('edh-' + sid);
+  if (!wrap) return;
+
+  // ── Entry animation ──────────────────────────────────────────────
+  setTimeout(function(){ wrap.classList.add('edh--v'); }, 80);
+
+  // ── Particle constellation canvas ────────────────────────────────
+  var canvas = document.getElementById('edh-canvas-' + sid);
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var NUM = 70;
+  var MAX_DIST = 140;
+
+  function resizeCanvas() {
+    canvas.width = wrap.offsetWidth;
+    canvas.height = wrap.offsetHeight;
+  }
+  resizeCanvas();
+
+  var resizeTO;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTO);
+    resizeTO = setTimeout(resizeCanvas, 120);
+  });
+
+  for (var i = 0; i < NUM; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r: Math.random() * 1.8 + 0.4
+    });
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(201,168,76,0.7)';
+      ctx.fill();
+      for (var j = i + 1; j < particles.length; j++) {
+        var q = particles[j];
+        var dx = p.x - q.x;
+        var dy = p.y - q.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          var alpha = (1 - dist / MAX_DIST) * 0.25;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = 'rgba(201,168,76,' + alpha + ')';
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  // ── 3D mouse parallax scene ──────────────────────────────────────
+  var scene = document.getElementById('edh-scene-' + sid);
+  var orb1 = document.getElementById('edh-orb1-' + sid);
+  var orb2 = document.getElementById('edh-orb2-' + sid);
+  var orb3 = document.getElementById('edh-orb3-' + sid);
+
+  var targetMX = 0, targetMY = 0;
+  var curX = 0, curY = 0;
+  var orb1X = 0, orb1Y = 0;
+  var orb2X = 0, orb2Y = 0;
+  var orb3X = 0, orb3Y = 0;
+  var MAX_TILT = 4.5;
+
+  wrap.addEventListener('mousemove', function(e) {
+    var rect = wrap.getBoundingClientRect();
+    targetMX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    targetMY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+  });
+
+  wrap.addEventListener('mouseleave', function() {
+    targetMX = 0;
+    targetMY = 0;
+  });
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function rafTick() {
+    curX = lerp(curX, targetMX * MAX_TILT, 0.07);
+    curY = lerp(curY, -targetMY * MAX_TILT, 0.07);
+    scene.style.transform = 'perspective(1400px) rotateY(' + curX + 'deg) rotateX(' + curY + 'deg)';
+
+    orb1X = lerp(orb1X, targetMX * -28, 0.04);
+    orb1Y = lerp(orb1Y, targetMY * -28, 0.04);
+    orb1.style.transform = 'translate(' + orb1X + 'px,' + orb1Y + 'px)';
+
+    orb2X = lerp(orb2X, targetMX * 18, 0.06);
+    orb2Y = lerp(orb2Y, targetMY * 18, 0.06);
+    orb2.style.transform = 'translate(' + orb2X + 'px,' + orb2Y + 'px)';
+
+    orb3X = lerp(orb3X, targetMX * -12, 0.08);
+    orb3Y = lerp(orb3Y, targetMY * -12, 0.08);
+    orb3.style.transform = 'translate(' + orb3X + 'px,' + orb3Y + 'px)';
+
+    requestAnimationFrame(rafTick);
+  }
+  rafTick();
+
+  // ── Stats counter ────────────────────────────────────────────────
+  var statsBar = document.getElementById('edh-stats-' + sid);
+  var counted = false;
+  var obs = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !counted) {
+      counted = true;
+      var nums = statsBar.querySelectorAll('[data-target]');
+      nums.forEach(function(el) {
+        var target = parseInt(el.getAttribute('data-target'), 10);
+        var suffix = el.getAttribute('data-suffix') || '';
+        var startTime = null;
+        var duration = 1800;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          var prog = Math.min((ts - startTime) / duration, 1);
+          var ease = 1 - Math.pow(1 - prog, 3);
+          el.textContent = Math.round(ease * target) + suffix;
+          if (prog < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+  }, { threshold: 0.3 });
+  obs.observe(statsBar);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Luxury Hero",
+  "tag": "section",
+  "class": "ed-section",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow Text","default":"Perfumería de Lujo Árabe"},
+    {"type":"text","id":"heading1","label":"Heading Line 1","default":"Esencias"},
+    {"type":"text","id":"heading2","label":"Heading Line 2 (gold shimmer)","default":"de Dubai"},
+    {"type":"textarea","id":"subheading","label":"Subheading","default":"Descubre la magia de los perfumes árabes más exclusivos. Fragancias únicas, elaboradas con los ingredientes más preciados de Oriente."},
+    {"type":"text","id":"cta1_text","label":"CTA 1 Text","default":"Explorar Colección"},
+    {"type":"url","id":"cta1_url","label":"CTA 1 URL"},
+    {"type":"text","id":"cta2_text","label":"CTA 2 Text","default":"Nuestra Historia"},
+    {"type":"url","id":"cta2_url","label":"CTA 2 URL"}
+  ],
+  "presets": [
+    {"name":"ED – Luxury Hero"}
+  ]
+}
+{% endschema %}

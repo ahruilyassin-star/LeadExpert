@@ -1,0 +1,222 @@
+<section class="ehs-wrap" id="ehs-{{ section.id }}" data-autoplay="{{ section.settings.autoplay }}" data-interval="{{ section.settings.interval | default: 6000 }}">
+  <div class="ehs-track" id="ehs-track-{{ section.id }}">
+    {%- for block in section.blocks -%}
+      <div class="ehs-slide{% if forloop.first %} ehs--active{% endif %}" data-idx="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+        <div class="ehs-slide__inner">
+          <div class="ehs-slide__text">
+            {%- if block.settings.eyebrow != blank -%}
+              <span class="ehs-eyebrow">{{ block.settings.eyebrow }}</span>
+            {%- endif -%}
+            <h2 class="ehs-title">
+              <span class="ehs-title__l1">{{ block.settings.title1 }}</span>
+              {%- if block.settings.title2 != blank -%}
+                <span class="ehs-title__l2">{{ block.settings.title2 }}</span>
+              {%- endif -%}
+            </h2>
+            {%- if block.settings.subtitle != blank -%}
+              <p class="ehs-sub">{{ block.settings.subtitle }}</p>
+            {%- endif -%}
+            <div class="ehs-ctas">
+              {%- if block.settings.cta1_text != blank -%}
+                <a class="ehs-btn ehs-btn--primary" href="{{ block.settings.cta1_url | default: '/collections/all' }}">
+                  <span>{{ block.settings.cta1_text }}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              {%- endif -%}
+              {%- if block.settings.cta2_text != blank -%}
+                <a class="ehs-btn ehs-btn--secondary" href="{{ block.settings.cta2_url | default: '/collections/all' }}">{{ block.settings.cta2_text }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+          <div class="ehs-slide__visual">
+            <div class="ehs-slide__frame">
+              {%- if block.settings.image != blank -%}
+                <img class="ehs-slide__img" src="{{ block.settings.image | img_url: '1000x' }}" alt="{{ block.settings.title1 }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" width="1000" height="1250">
+              {%- else -%}
+                <div class="ehs-slide__img ehs-slide__img--ph"></div>
+              {%- endif -%}
+            </div>
+            {%- if block.settings.badge_text != blank -%}
+              <span class="ehs-badge">{{ block.settings.badge_text }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- if section.blocks.size > 1 -%}
+    <button class="ehs-arrow ehs-arrow--prev" type="button" aria-label="Anterior">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <button class="ehs-arrow ehs-arrow--next" type="button" aria-label="Siguiente">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+    <div class="ehs-dots">
+      {%- for block in section.blocks -%}
+        <button class="ehs-dot{% if forloop.first %} ehs--active{% endif %}" type="button" data-go="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+      {%- endfor -%}
+    </div>
+    <div class="ehs-progress"><div class="ehs-progress__bar" id="ehs-pb-{{ section.id }}"></div></div>
+  {%- endif -%}
+</section>
+
+<style>
+#ehs-{{ section.id }} {position:relative;background:#fff;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#ehs-{{ section.id }} .ehs-track {position:relative;display:flex;width:100%;}
+#ehs-{{ section.id }} .ehs-slide {position:absolute;inset:0;width:100%;opacity:0;visibility:hidden;transition:opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94),visibility 0s 0.9s;pointer-events:none;}
+#ehs-{{ section.id }} .ehs-slide.ehs--active {opacity:1;visibility:visible;transition:opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94),visibility 0s;pointer-events:auto;position:relative;}
+#ehs-{{ section.id }} .ehs-slide__inner {display:grid;grid-template-columns:1.05fr 1fr;gap:80px;max-width:1380px;margin:0 auto;width:100%;align-items:center;padding:80px 64px;min-height:80vh;}
+#ehs-{{ section.id }} .ehs-slide__text {opacity:0;transform:translateY(20px);transition:opacity 0.8s 0.2s,transform 0.8s 0.2s;}
+#ehs-{{ section.id }} .ehs-slide.ehs--active .ehs-slide__text {opacity:1;transform:translateY(0);}
+#ehs-{{ section.id }} .ehs-eyebrow {display:inline-block;font-size:0.7rem;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:#0a0a0a;padding:7px 16px;border:1px solid #e5e5e5;border-radius:100px;margin-bottom:30px;}
+#ehs-{{ section.id }} .ehs-title {font-family:'Playfair Display',Georgia,serif;font-size:clamp(2.4rem,5.8vw,5rem);font-weight:400;line-height:1.04;color:#0a0a0a;margin:0 0 28px;letter-spacing:-0.025em;}
+#ehs-{{ section.id }} .ehs-title__l1 {display:block;}
+#ehs-{{ section.id }} .ehs-title__l2 {display:block;font-style:italic;color:#4a4a4a;}
+#ehs-{{ section.id }} .ehs-sub {font-size:1.02rem;line-height:1.7;color:#6b6b6b;max-width:460px;margin:0 0 38px;}
+#ehs-{{ section.id }} .ehs-ctas {display:flex;gap:12px;flex-wrap:wrap;}
+#ehs-{{ section.id }} .ehs-btn {display:inline-flex;align-items:center;gap:10px;padding:16px 30px;font-size:0.82rem;font-weight:500;letter-spacing:0.06em;text-decoration:none;transition:all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);border-radius:2px;text-transform:uppercase;}
+#ehs-{{ section.id }} .ehs-btn--primary {background:#0a0a0a;color:#fff;border:1px solid #0a0a0a;}
+#ehs-{{ section.id }} .ehs-btn--primary:hover {background:#262626;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.12);}
+#ehs-{{ section.id }} .ehs-btn--primary svg {transition:transform 0.35s;}
+#ehs-{{ section.id }} .ehs-btn--primary:hover svg {transform:translateX(4px);}
+#ehs-{{ section.id }} .ehs-btn--secondary {background:transparent;color:#0a0a0a;border:1px solid #d6d6d6;}
+#ehs-{{ section.id }} .ehs-btn--secondary:hover {border-color:#0a0a0a;background:#0a0a0a;color:#fff;transform:translateY(-2px);}
+#ehs-{{ section.id }} .ehs-slide__visual {position:relative;opacity:0;transform:translateY(28px);transition:opacity 1s 0.35s,transform 1s 0.35s;}
+#ehs-{{ section.id }} .ehs-slide.ehs--active .ehs-slide__visual {opacity:1;transform:translateY(0);}
+#ehs-{{ section.id }} .ehs-slide__frame {position:relative;overflow:hidden;background:#f5f5f5;border-radius:2px;}
+#ehs-{{ section.id }} .ehs-slide__img {width:100%;height:auto;display:block;aspect-ratio:4/5;object-fit:cover;}
+#ehs-{{ section.id }} .ehs-slide__img--ph {width:100%;aspect-ratio:4/5;background:linear-gradient(135deg,#f5f5f5,#ebebeb);}
+#ehs-{{ section.id }} .ehs-badge {position:absolute;top:24px;right:24px;background:#0a0a0a;color:#fff;padding:8px 16px;border-radius:100px;font-size:0.7rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;}
+#ehs-{{ section.id }} .ehs-arrow {position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border:1px solid #e5e5e5;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0a0a0a;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);z-index:5;}
+#ehs-{{ section.id }} .ehs-arrow:hover {background:#0a0a0a;color:#fff;border-color:#0a0a0a;}
+#ehs-{{ section.id }} .ehs-arrow--prev {left:24px;}
+#ehs-{{ section.id }} .ehs-arrow--next {right:24px;}
+#ehs-{{ section.id }} .ehs-dots {position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:5;}
+#ehs-{{ section.id }} .ehs-dot {width:32px;height:3px;border:none;background:rgba(10,10,10,0.18);cursor:pointer;padding:0;border-radius:0;transition:background 0.3s;}
+#ehs-{{ section.id }} .ehs-dot:hover {background:rgba(10,10,10,0.4);}
+#ehs-{{ section.id }} .ehs-dot.ehs--active {background:#0a0a0a;}
+#ehs-{{ section.id }} .ehs-progress {position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(10,10,10,0.04);z-index:5;}
+#ehs-{{ section.id }} .ehs-progress__bar {height:100%;background:#0a0a0a;width:0%;transition:width 0.15s linear;}
+@media(max-width:960px){
+#ehs-{{ section.id }} .ehs-slide__inner {grid-template-columns:1fr;gap:32px;padding:48px 20px;min-height:auto;}
+#ehs-{{ section.id }} .ehs-slide__visual {order:-1;}
+#ehs-{{ section.id }} .ehs-slide__img {aspect-ratio:4/3;}
+#ehs-{{ section.id }} .ehs-arrow {width:40px;height:40px;}
+#ehs-{{ section.id }} .ehs-arrow--prev {left:12px;}
+#ehs-{{ section.id }} .ehs-arrow--next {right:12px;}
+#ehs-{{ section.id }} .ehs-dots {bottom:18px;}
+#ehs-{{ section.id }} .ehs-dot {width:24px;}
+#ehs-{{ section.id }} .ehs-btn {padding:14px 22px;font-size:0.78rem;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ehs-' + sid);
+  if (!wrap) return;
+  var slides = wrap.querySelectorAll('.ehs-slide');
+  var dots = wrap.querySelectorAll('.ehs-dot');
+  var prevBtn = wrap.querySelector('.ehs-arrow--prev');
+  var nextBtn = wrap.querySelector('.ehs-arrow--next');
+  var progressBar = document.getElementById('ehs-pb-' + sid);
+  var current = 0;
+  var n = slides.length;
+  if (n < 2) return;
+  var autoplay = wrap.getAttribute('data-autoplay') === 'true';
+  var interval = parseInt(wrap.getAttribute('data-interval'), 10) || 6000;
+  var timer = null, progressTimer = null, progressStart = 0;
+  function go(idx){
+    slides[current].classList.remove('ehs--active');
+    dots[current].classList.remove('ehs--active');
+    current = (idx + n) % n;
+    slides[current].classList.add('ehs--active');
+    dots[current].classList.add('ehs--active');
+    resetProgress();
+  }
+  function next(){ go(current + 1); }
+  function prev(){ go(current - 1); }
+  function resetProgress(){
+    if (!progressBar) return;
+    progressBar.style.width = '0%';
+    progressStart = Date.now();
+  }
+  function tickProgress(){
+    if (!progressBar || !autoplay) return;
+    var pct = Math.min(100, ((Date.now() - progressStart) / interval) * 100);
+    progressBar.style.width = pct + '%';
+  }
+  function startTimer(){
+    if (!autoplay) return;
+    resetProgress();
+    timer = setInterval(next, interval);
+    progressTimer = setInterval(tickProgress, 60);
+  }
+  function stopTimer(){
+    if (timer) { clearInterval(timer); timer = null; }
+    if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+  }
+  if (prevBtn) prevBtn.addEventListener('click', function(){ stopTimer(); prev(); startTimer(); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ stopTimer(); next(); startTimer(); });
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){
+      stopTimer();
+      go(parseInt(d.getAttribute('data-go'), 10));
+      startTimer();
+    });
+  });
+  wrap.addEventListener('mouseenter', stopTimer);
+  wrap.addEventListener('mouseleave', startTimer);
+  // Touch swipe
+  var touchStartX = 0;
+  wrap.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; stopTimer(); }, { passive: true });
+  wrap.addEventListener('touchend', function(e){
+    var diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) { diff < 0 ? next() : prev(); }
+    startTimer();
+  });
+  startTimer();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Hero Slider",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 6,
+  "settings": [
+    {"type":"checkbox","id":"autoplay","label":"Autoplay","default":true},
+    {"type":"range","id":"interval","label":"Slide interval (ms)","min":3000,"max":9500,"step":500,"default":6000}
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Perfumería Árabe"},
+        {"type":"text","id":"title1","label":"Heading line 1","default":"Esencias"},
+        {"type":"text","id":"title2","label":"Heading line 2 (italic)","default":"de Dubai"},
+        {"type":"textarea","id":"subtitle","label":"Subtitle","default":"Fragancias auténticas del Oriente Medio."},
+        {"type":"text","id":"cta1_text","label":"CTA 1 text","default":"Comprar ahora"},
+        {"type":"url","id":"cta1_url","label":"CTA 1 URL"},
+        {"type":"text","id":"cta2_text","label":"CTA 2 text"},
+        {"type":"url","id":"cta2_url","label":"CTA 2 URL"},
+        {"type":"image_picker","id":"image","label":"Slide image"},
+        {"type":"text","id":"badge_text","label":"Badge text (optional)"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Hero Slider",
+      "blocks": [
+        {"type":"slide","settings":{"eyebrow":"Perfumería Árabe · Anno 2026","title1":"Esencias","title2":"de Dubai","subtitle":"Fragancias auténticas del Oriente Medio. Envío gratis a partir de 49€.","cta1_text":"Comprar ahora","cta2_text":"Descubrir Oud","badge_text":"Nuevo"}},
+        {"type":"slide","settings":{"eyebrow":"Bestsellers","title1":"Los más","title2":"vendidos","subtitle":"Las fragancias que más enamoran. Club de Nuit Intense, Khamrah, Yara y más.","cta1_text":"Ver bestsellers","badge_text":"Top ventas"}},
+        {"type":"slide","settings":{"eyebrow":"Oferta especial","title1":"-20% en","title2":"Sets de regalo","subtitle":"El lujo árabe para regalar. Sets exclusivos con envoltorio de lujo.","cta1_text":"Ver sets","badge_text":"-20%"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

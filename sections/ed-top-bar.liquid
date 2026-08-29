@@ -1,0 +1,81 @@
+<section class="etb-wrap" id="etb-{{ section.id }}">
+  <div class="etb-inner">
+    <ul class="etb-usps">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'usp' -%}
+          <li class="etb-usp" {{ block.shopify_attributes }}>
+            <svg class="etb-usp__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="etb-usp__text">{{ block.settings.text }}</span>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    {%- if section.settings.show_trustpilot -%}
+      <a class="etb-trust" href="{{ section.settings.trustpilot_url | default: '#' }}" target="_blank" rel="noopener">
+        <span class="etb-trust__num">{{ section.settings.review_count | default: '4K reviews' }}</span>
+        <span class="etb-trust__stars">
+          {%- for i in (1..5) -%}<span class="etb-trust__star">★</span>{%- endfor -%}
+        </span>
+        <span class="etb-trust__label">Trustpilot</span>
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+#etb-{{ section.id }} {background:{{ section.settings.bg_color | default: '#f7efe6' }};padding:12px 24px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;border-bottom:1px solid rgba(0,0,0,0.04);}
+#etb-{{ section.id }} .etb-inner {max-width:1440px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+#etb-{{ section.id }} .etb-usps {list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:32px;flex-wrap:wrap;}
+#etb-{{ section.id }} .etb-usp {display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#0a0a0a;}
+#etb-{{ section.id }} .etb-usp__icon {flex:0 0 auto;color:#0a0a0a;}
+#etb-{{ section.id }} .etb-usp__text strong {font-weight:600;}
+#etb-{{ section.id }} .etb-trust {display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#0a0a0a;text-decoration:none;flex-shrink:0;}
+#etb-{{ section.id }} .etb-trust__num {font-weight:500;}
+#etb-{{ section.id }} .etb-trust__stars {display:inline-flex;gap:1px;color:#00b67a;font-size:0.95rem;letter-spacing:-1px;}
+#etb-{{ section.id }} .etb-trust__label {font-weight:600;}
+@media(max-width:768px){
+#etb-{{ section.id }} {padding:10px 16px;}
+#etb-{{ section.id }} .etb-inner {gap:12px;justify-content:center;}
+#etb-{{ section.id }} .etb-usps {gap:14px;justify-content:center;}
+#etb-{{ section.id }} .etb-usp {font-size:0.74rem;}
+#etb-{{ section.id }} .etb-trust {font-size:0.74rem;}
+}
+@media(max-width:480px){
+#etb-{{ section.id }} .etb-usp__text {display:none;}
+#etb-{{ section.id }} .etb-usp:nth-child(1) .etb-usp__text {display:inline;}
+}
+</style>
+
+{% schema %}
+{
+  "name": "ED – Top Bar",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 5,
+  "settings": [
+    {"type":"color","id":"bg_color","label":"Background color","default":"#f7efe6"},
+    {"type":"checkbox","id":"show_trustpilot","label":"Show Trustpilot badge","default":true},
+    {"type":"text","id":"review_count","label":"Trustpilot review count","default":"4K reviews"},
+    {"type":"url","id":"trustpilot_url","label":"Trustpilot URL"}
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "USP",
+      "settings": [
+        {"type":"text","id":"text","label":"Text (use <strong>x</strong> for bold)","default":"<strong>Envío gratis</strong> a partir de 49€"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Top Bar",
+      "blocks": [
+        {"type":"usp","settings":{"text":"<strong>Envío gratis</strong> a partir de 49€"}},
+        {"type":"usp","settings":{"text":"<strong>Entrega 24-48h</strong> en toda España"}},
+        {"type":"usp","settings":{"text":"<strong>Devolución gratuita</strong> en 14 días"}}
+      ]
+    }
+  ]
+}
+{% endschema %}
