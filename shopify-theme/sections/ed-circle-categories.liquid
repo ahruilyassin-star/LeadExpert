@@ -1,0 +1,148 @@
+<section class="ecc-wrap" id="ecc-{{ section.id }}">
+  <div class="ecc-inner">
+    {%- if section.settings.show_header -%}
+      <div class="ecc-header">
+        <h2 class="ecc-title">{{ section.settings.title | default: 'Categorías populares' }}</h2>
+        <div class="ecc-nav">
+          <button class="ecc-arrow ecc-arrow--prev" type="button" aria-label="Anterior">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <button class="ecc-arrow ecc-arrow--next" type="button" aria-label="Siguiente">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    {%- endif -%}
+    <div class="ecc-scroll" id="ecc-scroll-{{ section.id }}">
+      <div class="ecc-track">
+        {%- for block in section.blocks -%}
+          {%- assign icon_val = block.settings.icon | strip -%}
+          <a class="ecc-item" href="{{ block.settings.url | default: '/collections/all' }}" {{ block.shopify_attributes }}>
+            <div class="ecc-item__circle" style="background:{{ block.settings.bg_color | default: '#f0ebe6' }};">
+              {%- if block.settings.image_url != blank -%}
+                <img class="ecc-item__img" src="{{ block.settings.image_url }}" alt="{{ block.settings.name }}" loading="lazy" width="300" height="300">
+              {%- elsif block.settings.image != blank -%}
+                <img class="ecc-item__img" src="{{ block.settings.image | img_url: '300x' }}" alt="{{ block.settings.name }}" loading="lazy" width="300" height="300">
+              {%- elsif icon_val == '♀' or icon_val == 'mujer' or icon_val == 'Mujer' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="6" r="3"/><path d="M20 9v3M24 9v3"/><path d="M16 12h12l4 8v16a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V20z"/><path d="M13 29h18"/></svg>
+              {%- elsif icon_val == '♂' or icon_val == 'hombre' or icon_val == 'Hombre' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="3" width="16" height="6" rx="1"/><path d="M19 9v3M25 9v3"/><rect x="9" y="13" width="26" height="24" rx="2"/><path d="M9 29h26"/></svg>
+              {%- elsif icon_val == 'unisex' or icon_val == 'Unisex' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="6" r="3.5"/><path d="M22 9.5v3"/><rect x="16" y="12" width="12" height="28" rx="3"/><path d="M16 30h12"/></svg>
+              {%- elsif icon_val == '%' or icon_val == 'oferta' or icon_val == 'Oferta' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"><path d="M8 36l28-28"/><circle cx="13" cy="14" r="4"/><circle cx="31" cy="30" r="4"/></svg>
+              {%- elsif icon_val == '★' or icon_val == '☆' or icon_val == 'top' or icon_val == 'Top' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4l4.8 9.8 10.2 1.5-7.5 7.3 1.8 10.4L22 28l-9.3 5 1.8-10.4L7 15.3l10.2-1.5z"/></svg>
+              {%- elsif icon_val == '◆' or icon_val == 'oud' or icon_val == 'Oud' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4l18 14-18 22L4 18z"/></svg>
+              {%- elsif icon_val == 'regalo' or icon_val == 'Regalo' -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="18" width="32" height="22" rx="1"/><rect x="4" y="11" width="36" height="7" rx="1"/><path d="M22 11v29M15 11c0-4 3.5-7 7-7M29 11c0-4-3.5-7-7-7"/></svg>
+              {%- else -%}
+                <svg class="ecc-item__svg" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="4" width="8" height="5" rx="1"/><path d="M20 9v3M24 9v3"/><rect x="12" y="12" width="20" height="28" rx="6"/><path d="M12 30h20"/></svg>
+              {%- endif -%}
+            </div>
+            <span class="ecc-item__name">{{ block.settings.name | default: 'Categoría' }}</span>
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+#ecc-{{ section.id }} {background:#faf9f7;padding:56px 24px;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;}
+#ecc-{{ section.id }} .ecc-inner {max-width:1440px;margin:0 auto;}
+#ecc-{{ section.id }} .ecc-header {display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:16px;}
+#ecc-{{ section.id }} .ecc-title {font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.4rem,2.4vw,1.9rem);font-weight:400;color:#0a0a0a;margin:0;letter-spacing:-0.02em;}
+#ecc-{{ section.id }} .ecc-nav {display:flex;gap:8px;}
+#ecc-{{ section.id }} .ecc-arrow {width:38px;height:38px;border:1px solid #d8d0c8;background:transparent;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0a0a0a;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecc-{{ section.id }} .ecc-arrow:hover {background:#0a0a0a;color:#fff;border-color:#0a0a0a;}
+#ecc-{{ section.id }} .ecc-arrow:disabled {opacity:0.25;cursor:not-allowed;}
+#ecc-{{ section.id }} .ecc-arrow:disabled:hover {background:transparent;color:#0a0a0a;border-color:#d8d0c8;}
+#ecc-{{ section.id }} .ecc-scroll {overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;}
+#ecc-{{ section.id }} .ecc-scroll::-webkit-scrollbar {display:none;}
+#ecc-{{ section.id }} .ecc-track {display:flex;gap:32px;padding:8px 4px 16px;width:max-content;}
+#ecc-{{ section.id }} .ecc-item {flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-decoration:none;cursor:pointer;}
+#ecc-{{ section.id }} .ecc-item__circle {width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.4s;border:1px solid rgba(0,0,0,0.06);}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__circle {transform:scale(1.06);box-shadow:0 10px 28px rgba(0,0,0,0.1);}
+#ecc-{{ section.id }} .ecc-item__img {width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__img {transform:scale(1.08);}
+#ecc-{{ section.id }} .ecc-item__svg {color:#2a2a2a;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);flex-shrink:0;}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__svg {transform:scale(1.12);color:#0a0a0a;}
+#ecc-{{ section.id }} .ecc-item__name {font-size:0.85rem;font-weight:500;color:#2a2a2a;letter-spacing:0.04em;text-transform:uppercase;text-align:center;transition:color 0.25s;}
+#ecc-{{ section.id }} .ecc-item:hover .ecc-item__name {color:#0a0a0a;}
+@media(max-width:768px){
+#ecc-{{ section.id }} {padding:36px 16px;}
+#ecc-{{ section.id }} .ecc-header {margin-bottom:20px;}
+#ecc-{{ section.id }} .ecc-track {gap:18px;}
+#ecc-{{ section.id }} .ecc-item__circle {width:90px;height:90px;}
+#ecc-{{ section.id }} .ecc-item__svg {width:32px;height:32px;}
+#ecc-{{ section.id }} .ecc-item__name {font-size:0.72rem;}
+#ecc-{{ section.id }} .ecc-arrow {display:none;}
+}
+</style>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.getElementById('ecc-' + sid);
+  if (!wrap) return;
+  var scroll = document.getElementById('ecc-scroll-' + sid);
+  var prevBtn = wrap.querySelector('.ecc-arrow--prev');
+  var nextBtn = wrap.querySelector('.ecc-arrow--next');
+  if (!scroll) return;
+  function updateBtns(){
+    if (!prevBtn || !nextBtn) return;
+    prevBtn.disabled = scroll.scrollLeft <= 4;
+    nextBtn.disabled = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 4;
+  }
+  function scrollBy(dir){
+    scroll.scrollBy({ left: dir * scroll.clientWidth * 0.7, behavior: 'smooth' });
+  }
+  if (prevBtn) prevBtn.addEventListener('click', function(){ scrollBy(-1); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ scrollBy(1); });
+  scroll.addEventListener('scroll', updateBtns);
+  window.addEventListener('resize', updateBtns);
+  updateBtns();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ED – Circle Categories",
+  "tag": "section",
+  "class": "ed-section",
+  "max_blocks": 12,
+  "settings": [
+    {"type":"checkbox","id":"show_header","label":"Show header","default":true},
+    {"type":"text","id":"title","label":"Title","default":"Categorías populares"}
+  ],
+  "blocks": [
+    {
+      "type": "circle",
+      "name": "Circle",
+      "settings": [
+        {"type":"text","id":"name","label":"Name","default":"Categoría"},
+        {"type":"text","id":"icon","label":"Icon (Hombre / Mujer / Unisex / Oud / Oferta / Regalo)","default":"Hombre"},
+        {"type":"text","id":"image_url","label":"Image URL (product photo, overrides everything)"},
+        {"type":"image_picker","id":"image","label":"Image PNG transparent (overrides icon)"},
+        {"type":"color","id":"bg_color","label":"Circle background","default":"#f0ebe6"},
+        {"type":"url","id":"url","label":"Link URL"}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ED – Circle Categories",
+      "blocks": [
+        {"type":"circle","settings":{"name":"Hombre","icon":"Hombre","bg_color":"#e8edf5"}},
+        {"type":"circle","settings":{"name":"Mujer","icon":"Mujer","bg_color":"#f5e8e8"}},
+        {"type":"circle","settings":{"name":"Unisex","icon":"Unisex","bg_color":"#e8ede8"}},
+        {"type":"circle","settings":{"name":"Oud","icon":"Oud","bg_color":"#ede8e0"}},
+        {"type":"circle","settings":{"name":"Sets Regalo","icon":"Regalo","bg_color":"#e8ecf0"}},
+        {"type":"circle","settings":{"name":"Ofertas","icon":"Oferta","bg_color":"#f5ede5"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,119 @@
+{%- assign logo_url = settings.logo | image_url: width: 60 -%}
+{%- comment -%} Beveiliging: directe OpenRouter-aanroep met hardcoded API-sleutel verwijderd. Vragen worden nu veilig doorgestuurd naar WhatsApp, zonder geheimen in de client. {%- endcomment -%}
+<style>
+#ed-cb{position:fixed;bottom:24px;left:24px;z-index:9998;width:58px;height:58px;cursor:pointer;}
+#ed-cb-inner{width:100%;height:100%;border-radius:50%;background:#fff;border:2px solid #c9a84c;box-shadow:0 4px 18px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:transform .2s;animation:edcbpulse 2.6s infinite;}
+#ed-cb:hover #ed-cb-inner{transform:scale(1.08) translateY(-3px);}
+#ed-cb img{width:42px;height:42px;object-fit:contain;border-radius:50%;}
+#ed-cb-online{position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#4cd964;border:2.5px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.04);}
+#ed-cbn{position:absolute;top:-5px;right:-5px;background:#e23744;min-width:19px;height:19px;padding:0 5px;border-radius:10px;font-size:11px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #fdfaf5;box-sizing:border-box;}
+@keyframes edcbpulse{0%{box-shadow:0 4px 18px rgba(0,0,0,.18),0 0 0 0 rgba(76,217,100,.45);}70%{box-shadow:0 4px 18px rgba(0,0,0,.18),0 0 0 13px rgba(76,217,100,0);}100%{box-shadow:0 4px 18px rgba(0,0,0,.18),0 0 0 0 rgba(76,217,100,0);}}
+#ed-cb-tip{position:fixed;left:24px;bottom:96px;z-index:9997;width:252px;max-width:calc(100vw - 48px);background:#fff;color:#2c1a08;border:1px solid rgba(201,168,76,.28);box-shadow:0 10px 30px rgba(0,0,0,.17);border-radius:16px;border-bottom-left-radius:5px;padding:12px 13px 13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;opacity:0;transform:translateY(10px) scale(.96);transform-origin:bottom left;pointer-events:none;transition:opacity .35s,transform .35s;}
+#ed-cb-tip.show{opacity:1;transform:none;pointer-events:auto;}
+#ed-cb-tip .ed-tip-x{position:absolute;top:5px;right:8px;background:none;border:none;color:#b0a070;font-size:17px;line-height:1;cursor:pointer;padding:2px;}
+.ed-tip-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.ed-tip-av{width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.ed-tip-av img{width:28px;height:28px;object-fit:contain;border-radius:50%;}
+.ed-tip-name{font-weight:600;font-size:13px;color:#2c1a08;line-height:1.2;}
+.ed-tip-on{font-size:11px;color:#3a9c4a;display:flex;align-items:center;gap:4px;margin-top:1px;}
+.ed-tip-on .ed-ch-dot{width:6px;height:6px;background:#4cd964;border-radius:50%;display:inline-block;}
+.ed-tip-msg{font-size:13px;line-height:1.45;color:#46362a;background:#f7f1e3;border-radius:4px 12px 12px 12px;padding:9px 11px;}
+.ed-tip-msg strong{color:#a9852c;}
+#ed-cp{position:fixed;bottom:92px;left:24px;z-index:9999;width:340px;max-width:calc(100vw - 32px);height:480px;background:#fdfaf5;border:1px solid rgba(201,168,76,.2);border-radius:18px;box-shadow:0 12px 50px rgba(0,0,0,.14);display:none;flex-direction:column;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+#ed-cp.open{display:flex;}
+.ed-ch{background:linear-gradient(135deg,#2c1a08,#4a2c0a);padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.ed-ch-logo{width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative;}
+.ed-ch-logo img{width:30px;height:30px;object-fit:contain;}
+.ed-ch-logo .ed-ch-on{position:absolute;bottom:0;right:0;width:10px;height:10px;background:#4cd964;border:2px solid #2c1a08;border-radius:50%;}
+.ed-ch-info{flex:1;}
+.ed-ch-name{color:#fff;font-weight:600;font-size:14px;letter-spacing:.01em;}
+.ed-ch-status{color:rgba(255,255,255,.6);font-size:11px;display:flex;align-items:center;gap:4px;}
+.ed-ch-dot{width:6px;height:6px;background:#4cd964;border-radius:50%;display:inline-block;}
+.ed-cx{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:20px;padding:0 2px;line-height:1;}
+.ed-msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth;}
+.ed-msgs::-webkit-scrollbar{width:3px;}.ed-msgs::-webkit-scrollbar-thumb{background:#e0d0b0;border-radius:3px;}
+.ed-msg{max-width:82%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.45;word-break:break-word;}
+.ed-msg.bot{align-self:flex-start;background:#fff;color:#1a1a1a;border-radius:3px 14px 14px 14px;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.ed-msg.usr{align-self:flex-end;background:#2c1a08;color:#fff;border-radius:14px 14px 3px 14px;}
+.ed-msg a{color:#a9852c;font-weight:600;}
+.ed-typing{align-self:flex-start;background:#fff;border-radius:3px 14px 14px 14px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:11px 14px;display:flex;gap:4px;}
+.ed-typing span{width:6px;height:6px;background:#c9a84c;border-radius:50%;opacity:.4;animation:edtyp 1.2s infinite;}
+.ed-typing span:nth-child(2){animation-delay:.2s;}.ed-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes edtyp{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+.ed-cq{padding:6px 12px 0;display:flex;flex-wrap:wrap;gap:5px;}
+.ed-qb{background:#fff;border:1px solid #e0c87a;color:#7a5c00;border-radius:20px;padding:5px 11px;font-size:11.5px;cursor:pointer;transition:background .15s;}
+.ed-qb:hover{background:#fff8e6;}
+.ed-cf{padding:10px 10px 12px;border-top:1px solid #f0e8d0;display:flex;gap:8px;align-items:flex-end;background:#fdfaf5;}
+#ed-ci{flex:1;background:#fff;border:1px solid #e0d0b0;border-radius:20px;padding:8px 14px;color:#1a1a1a;font-size:13px;outline:none;font-family:inherit;resize:none;max-height:70px;line-height:1.4;}
+#ed-ci:focus{border-color:#c9a84c;}
+#ed-cs{background:#2c1a08;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+#ed-cs:hover{background:#4a2c0a;}
+#ed-cs svg{width:16px;height:16px;fill:#fff;}
+@media(max-width:480px){#ed-cp{width:calc(100vw - 28px);height:420px;bottom:92px;left:16px;}#ed-cb{left:20px;bottom:20px;}#ed-cb-tip{width:230px;max-width:calc(100vw - 96px);left:20px;bottom:90px;}}
+</style>
+<div id="ed-cb" onclick="edChatToggle()" title="Habla con nosotros">
+  <div id="ed-cb-inner">
+    <img src="{{ logo_url }}" alt="E" onerror="this.outerHTML='<span style=font-size:22px>🌙</span>'">
+  </div>
+  <span id="ed-cb-online"></span>
+  <div id="ed-cbn">1</div>
+</div>
+<div id="ed-cb-tip" onclick="edTipOpen()">
+  <button class="ed-tip-x" onclick="edTipClose(event)" aria-label="Cerrar">&times;</button>
+  <div class="ed-tip-row">
+    <div class="ed-tip-av"><img src="{{ logo_url }}" alt="logo" onerror="this.style.display='none'"></div>
+    <div>
+      <div class="ed-tip-name">Esencias de Dubai</div>
+      <div class="ed-tip-on"><span class="ed-ch-dot"></span>En línea ahora</div>
+    </div>
+  </div>
+  <div class="ed-tip-msg">👋 <strong>¡Hola!</strong> ¿Tienes preguntas? Escríbenos y te ayudamos al momento.</div>
+</div>
+<div id="ed-cp">
+  <div class="ed-ch">
+    <div class="ed-ch-logo"><img src="{{ logo_url }}" alt="logo" onerror="this.style.display='none'"><span class="ed-ch-on"></span></div>
+    <div class="ed-ch-info">
+      <div class="ed-ch-name">Esencias de Dubai</div>
+      <div class="ed-ch-status"><span class="ed-ch-dot"></span>En línea · Responde al momento</div>
+    </div>
+    <button class="ed-cx" onclick="edChatToggle()" aria-label="Cerrar">&times;</button>
+  </div>
+  <div class="ed-msgs" id="ed-msgs">
+    <div class="ed-msg bot">¡Hola! 👋 ¿En qué te podemos ayudar? Escribe tu pregunta y te atendemos personalmente por WhatsApp.</div>
+  </div>
+  <div class="ed-cq" id="ed-cq">
+    <button class="ed-qb" onclick="edAsk('Hola, ¿cuál es vuestro perfume más vendido?')">Mas vendido</button>
+    <button class="ed-qb" onclick="edAsk('Hola, busco un perfume para mujer')">Para mujer</button>
+    <button class="ed-qb" onclick="edAsk('Hola, busco un perfume para hombre')">Para hombre</button>
+    <button class="ed-qb" onclick="edAsk('Hola, ¿cuánto cuesta el envío?')">Envio</button>
+  </div>
+  <div class="ed-cf">
+    <textarea id="ed-ci" placeholder="Escribe tu pregunta..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();edSend();}"></textarea>
+    <button id="ed-cs" onclick="edSend()" aria-label="Enviar"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+  </div>
+</div>
+<script>
+(function(){
+  var open=false;
+  var WA='https://wa.me/34600000000';
+  function addMsg(html,role){var m=document.getElementById('ed-msgs');if(!m)return;var d=document.createElement('div');d.className='ed-msg '+role;d.innerHTML=html;m.appendChild(d);m.scrollTop=m.scrollHeight;return d;}
+  function esc(s){return (s||'').replace(/[<>&]/g,function(c){return c==='<'?'&lt;':c==='>'?'&gt;':'&amp;';});}
+  function typing(){var m=document.getElementById('ed-msgs');if(!m)return null;var d=document.createElement('div');d.className='ed-typing';d.innerHTML='<span></span><span></span><span></span>';m.appendChild(d);m.scrollTop=m.scrollHeight;return d;}
+  window.edChatToggle=function(){var p=document.getElementById('ed-cp'),b=document.getElementById('ed-cbn');open=!open;p.classList.toggle('open',open);if(open){if(b)b.style.display='none';setTimeout(function(){var i=document.getElementById('ed-ci');if(i)i.focus();},100);}};
+  window.edAsk=function(q){var inp=document.getElementById('ed-ci');if(inp)inp.value=q;edSend();};
+  window.edSend=function(){var inp=document.getElementById('ed-ci');if(!inp)return;var txt=(inp.value||'').trim();if(!txt)return;addMsg(esc(txt),'usr');inp.value='';inp.style.height='auto';var cq=document.getElementById('ed-cq');if(cq)cq.style.display='none';var wa=WA+'?text='+encodeURIComponent(txt);var t=typing();setTimeout(function(){if(t)t.remove();addMsg('¡Gracias por tu mensaje! Te atendemos personalmente por WhatsApp. <a href="'+wa+'" target="_blank" rel="noopener">Continuar en WhatsApp →</a>','bot');try{window.open(wa,'_blank');}catch(e){}},900);};
+  var ta=document.getElementById('ed-ci');if(ta){ta.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,70)+'px';});}
+})();
+</script>
+<script>
+(function(){
+  function tip(){return document.getElementById('ed-cb-tip');}
+  function chatOpen(){var p=document.getElementById('ed-cp');return p&&p.classList.contains('open');}
+  function hideTip(){var t=tip();if(t)t.classList.remove('show');}
+  function showTip(){if(chatOpen())return;try{if(sessionStorage.getItem('edTipX'))return;}catch(e){}var t=tip();if(t)t.classList.add('show');}
+  window.edTipOpen=function(){hideTip();try{sessionStorage.setItem('edTipX','1');}catch(e){}if(window.edChatToggle&&!chatOpen()){window.edChatToggle();}};
+  window.edTipClose=function(e){if(e)e.stopPropagation();hideTip();try{sessionStorage.setItem('edTipX','1');}catch(_){}};
+  var cb=document.getElementById('ed-cb');if(cb)cb.addEventListener('click',hideTip);
+  setTimeout(showTip,3500);
+})();
+</script>
