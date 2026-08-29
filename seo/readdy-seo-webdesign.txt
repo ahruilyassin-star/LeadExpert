@@ -1,0 +1,135 @@
+========================================================
+  SEO CONTENT – webdesign.leadexpert.be  (Readdy.ai)
+  Plak deze teksten in: Pagina-instellingen → SEO
+========================================================
+
+BELANGRIJK EERST:
+  1. Ga naar search.google.com/search-console
+  2. Voeg webdesign.leadexpert.be toe
+  3. Kopieer de verificatiecode → plak in Readdy.ai onder Site-instellingen → SEO → Google Verification
+  4. Dien je sitemap in: webdesign.leadexpert.be/sitemap.xml
+
+--------------------------------------------------------
+PAGINA 1 – HOMEPAGE
+--------------------------------------------------------
+SEO-titel (max 60 tekens):
+  Webdesign België | Professionele Websites – LeadExpert
+
+Meta description (max 155 tekens):
+  Professioneel webdesign laten maken in België? LeadExpert bouwt snelle, mooie websites die bezoekers omzetten in klanten. Vraag vrijblijvend offerte aan.
+
+H1 (grote koptekst bovenaan de pagina):
+  Webdesign dat klanten aantrekt
+
+Intro-alinea (plak dit als eerste tekstblok):
+  Wij bouwen professionele websites voor ondernemers en bedrijven in België.
+  Geen generieke templates — een website die uw merk versterkt en gevonden wordt in Google.
+  Van webdesign en SEO tot onderhoud: LeadExpert regelt het voor u.
+
+Kernwoorden verwerkt in de paginatekst (gebruik ze in koppen en alinea's):
+  - webdesign België
+  - website laten maken België
+  - professionele website
+  - snelle website
+  - mobiel-vriendelijk webdesign
+
+--------------------------------------------------------
+PAGINA 2 – DIENSTEN / SERVICES
+--------------------------------------------------------
+SEO-titel:
+  Webdesign Diensten | Websites, SEO & Onderhoud – LeadExpert
+
+Meta description:
+  Ontdek onze webdesign diensten: op maat gemaakte websites, SEO-optimalisatie en maandelijks onderhoud. Voor ondernemers in heel België.
+
+H1:
+  Onze webdesign diensten
+
+Blok-teksten (één alinea per dienst):
+
+  [WEBDESIGN]
+  Wij ontwerpen websites die er niet alleen mooi uitzien, maar ook goed presteren in Google.
+  Elke website is mobiel-vriendelijk, snel en gebouwd met uw klanten in gedachten.
+
+  [SEO]
+  Een mooie website zonder bezoekers werkt niet. Wij optimaliseren uw website zodat u gevonden wordt
+  op Google voor de zoektermen die uw klanten gebruiken.
+
+  [ONDERHOUD]
+  Uw website veilig, snel en up-to-date houden? Wij zorgen voor maandelijks onderhoud zodat
+  u zich kunt focussen op uw business.
+
+Kernwoorden:
+  - webdesign op maat België
+  - SEO-optimalisatie België
+  - website onderhoud België
+  - mobiel-vriendelijke website
+
+--------------------------------------------------------
+PAGINA 3 – OVER ONS / ABOUT
+--------------------------------------------------------
+SEO-titel:
+  Over LeadExpert | Webdesign Bureau België
+
+Meta description:
+  LeadExpert is een Belgisch webdesign bureau gespecialiseerd in professionele websites voor KMO's en zelfstandigen. Leer ons kennen.
+
+H1:
+  Wie zijn wij?
+
+Alinea:
+  LeadExpert is een webdesign bureau gevestigd in België.
+  Wij helpen KMO's en zelfstandigen aan een professionele online aanwezigheid die werkt.
+  Onze aanpak: duidelijk, transparant en gericht op resultaat.
+
+Kernwoorden:
+  - webdesign bureau België
+  - KMO website België
+  - zelfstandige website laten maken
+
+--------------------------------------------------------
+PAGINA 4 – CONTACT
+--------------------------------------------------------
+SEO-titel:
+  Contact | Webdesign Offerte Aanvragen – LeadExpert
+
+Meta description:
+  Vraag vrijblijvend een offerte aan voor uw website. LeadExpert, uw webdesign bureau in België. Reactie binnen 24 uur.
+
+H1:
+  Neem contact op
+
+Tekst boven contactformulier:
+  Klaar om uw website naar het volgende niveau te tillen?
+  Vraag vandaag nog een vrijblijvende offerte aan. Wij reageren binnen 24 uur.
+
+--------------------------------------------------------
+TREFWOORDEN VOOR READDY.AI BLOG (als die optie beschikbaar is)
+--------------------------------------------------------
+Schrijf korte blogartikels (400-600 woorden) over:
+
+  1. "Hoeveel kost een professionele website in België?"
+     → Trefwoord: "website laten maken prijs België"
+     → Hoog zoekvolume, directe koopintentie
+
+  2. "5 redenen waarom uw website niet gevonden wordt in Google"
+     → Trefwoord: "website niet gevonden Google"
+     → Trekt bezoekers aan die jouw dienst nodig hebben
+
+  3. "Webdesign voor zelfstandigen: wat hebt u nodig?"
+     → Trefwoord: "website zelfstandige België"
+
+  4. "Waarom een snelle website meer klanten oplevert"
+     → Trefwoord: "snelle website meer conversie"
+
+--------------------------------------------------------
+TECHNISCHE CHECKLIST (doe dit één keer)
+--------------------------------------------------------
+[ ] Google Search Console instellen + sitemap indienen
+[ ] Bing Webmaster Tools instellen (gratis extra verkeer)
+[ ] Google Business Profile aanmaken (indien lokaal actief)
+[ ] Afbeeldingen hernoemen met keywords vóór uploaden
+    (bv. "webdesign-bureau-belgie.jpg" i.p.v. "IMG_001.jpg")
+[ ] Alt-tekst instellen op alle afbeeldingen in Readdy.ai
+[ ] Controleer of de site HTTPS gebruikt (https://)
+[ ] Zorg dat de site snel laadt (test op: pagespeed.web.dev)
