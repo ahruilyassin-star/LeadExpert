@@ -3,3 +3,4 @@ deploy.zip
 node_modules/
 .env
 .env.local
+__pycache__/

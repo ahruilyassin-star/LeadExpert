@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "youtube": {
+      "command": "python3",
+      "args": ["tools/youtube-mcp/server.py"],
+      "env": {
+        "REQUESTS_CA_BUNDLE": "/root/.ccr/ca-bundle.crt",
+        "SSL_CERT_FILE": "/root/.ccr/ca-bundle.crt"
+      }
+    }
+  }
+}
